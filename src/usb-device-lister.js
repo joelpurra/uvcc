@@ -23,7 +23,7 @@ const {
 } = require("child_process");
 
 // NOTE: using external code to avoid directly depending on the "usb" package.
-const usbDeviceListerPath = "./node_modules/uvc-control/list-devices.js";
+const usbDeviceListerPath = `${__dirname}/../node_modules/uvc-control/list-devices.js`;
 
 module.exports = class UsbDeviceLister {
     constructor() {

@@ -1,6 +1,6 @@
 {
   "name": "uvcc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "USB Video Class (UVC) device configurator. Used for webcams, camcorders, etcetera.",
   "homepage": "https://joelpurra.com/projects/uvcc/",
   "main": "index.js",
