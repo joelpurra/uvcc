@@ -1,0 +1,63 @@
+{
+  "name": "uvcc",
+  "version": "1.0.0",
+  "description": "USB Video Class (UVC) device configurator. Used for webcams, camcorders, etcetera.",
+  "homepage": "https://joelpurra.com/projects/uvcc/",
+  "main": "index.js",
+  "bin": {
+    "uvcc": "index.js"
+  },
+  "scripts": {
+    "test": "npm run --silent lint:fast",
+    "lint": "npm run --silent lint:full",
+    "lint:fast": "npm run --silent eslint && npm run --silent lint:copyright",
+    "lint:full": "npm run --silent lint:fast",
+    "lint:copyright": "find . -not \\( -path './.git/*' -or -path './node_modules/*' -or -path './dist/*' \\) -type f \\( -iname '*.js' \\) -print0 | xargs -0 grep -L 'This file is part of uvcc' | sed 's/^/File is missing copyright notice: /'",
+    "eslint": "eslint --ext .js .",
+    "eslint:fix": "eslint --ext .js --fix ."
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "sort-object-keys": "^1.1.2",
+    "stream-to-promise": "^2.2.0",
+    "uvc-control": "^1.0.2",
+    "yargs": "^11.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.16.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-no-unsafe-innerhtml": "^1.0.16",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "keywords": [
+    "usb",
+    "usb video class",
+    "uvc",
+    "camera",
+    "webcamera",
+    "controls",
+    "configuration",
+    "libusb",
+    "libuvc",
+    "uvc-control"
+  ],
+  "bugs": {
+    "url": "https://github.com/joelpurra/uvcc/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joelpurra/uvcc.git"
+  },
+  "author": {
+    "name": "Joel Purra",
+    "email": "mig@joelpurra.se",
+    "url": "https://joelpurra.com/"
+  },
+  "license": "GPL-3.0"
+}
