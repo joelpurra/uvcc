@@ -37,7 +37,7 @@ const main = async() => {
         const output = new Output(runtimeConfig.verbose);
 
         process.on("unhandledRejection", (...args) => output.verbose(...args));
-        process.on("unhandledException", (...args) => output.verbose(...args));
+        process.on("uncaughtException", (...args) => output.verbose(...args));
 
         const cameraFactory = new CameraFactory(UVCControl);
         const cameraHelperFactory = new CameraHelperFactory(output, CameraHelper, UVCControl);
