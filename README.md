@@ -17,7 +17,9 @@ Use `uvcc` to **fine-tune camera configuration**, such as brightness, contrast, 
 - Export configuration to JSON.
 - Import configuration from JSON.
 - Per-user or per-directory configuration files.
-- See details of [available controls](https://github.com/makenai/node-uvc-control#currently-supported-controls) from the upstream project [uvc-control](https://github.com/makenai/node-uvc-control#currently-supported-controls).
+- See details in the upstream project [uvc-control](https://github.com/makenai/node-uvc-control#currently-supported-controls).
+  - [Currently supported controls](https://github.com/makenai/node-uvc-control#currently-supported-controls).
+  - [Note on `inputTerminalId`/`processingUnitId`](https://github.com/makenai/node-uvc-control#note-on-inputterminalid--processingunitid).
 
 
 
@@ -31,7 +33,9 @@ npm install --global uvcc
 
 - Optionally omit the `--global` flag and use `./node_modules/.bin/uvcc` from the install directory.
 - Uses [`libusb`](http://libusb.info/) through the [npm package `usb`](https://www.npmjs.com/package/usb).
-- Tested using Node.js v8.9.4 on macOS 10.13 High Sierra.
+- Tested using:
+  - Node.js v8.9.4 on macOS 10.13 High Sierra.
+  - Node.js v11.7.0 on macOS 10.14 Mojave.
 
 
 
@@ -78,22 +82,28 @@ uvcc --help
 USB Video Class (UVC) device configurator. Used for webcams, camcorders,
 etcetera.
 
+Numbers may be supplied in hexadecimal (0x000) or decimal (0000) format.
+
 Commands:
   uvcc get <name>          Get current control value from the webcam.
   uvcc set <name> <value>  Set control value on the webcam.
-  uvcc range <name>        Get possible range (min and max) for a control from
-                           the webcam.
+  uvcc range <name>        Get possible range (min and max) for a control
+                               from the webcam.
   uvcc ranges              Get all ranges (min and max) for all available
-                           controls from the webcam.
-  uvcc devices             List connected USB devices with vendor id (vId) and
-                           product id (pId).
+                               controls from the webcam.
+  uvcc devices             List connected USB devices with vendor id (vId)
+                               and product id (pId).
   uvcc controls            List all supported controls.
   uvcc export              Output configuration in JSON format, on stdout.
   uvcc import              Input configuration in JSON format, from stdin.
 
 Webcam selection:
-  --vendor   Webcam vendor id in hex (0x000) or decimal (0000) format.  [number]
-  --product  Webcam product id in hex (0x000) or decimal (0000) format. [number]
+  --vendor   Webcam vendor id.                                          [number]
+  --product  Webcam product id.                                         [number]
+
+Advanced:
+  --input-terminal   The webcam's input terminal id.       [number] [default: 1]
+  --processing-unit  The webcam's processing unit id.      [number] [default: 3]
 
 Options:
   --version  Show version number                                       [boolean]
@@ -111,6 +121,8 @@ are welcome to redistribute it under certain conditions. See GPL-3.0 license for
 details.
 
 See also: https://joelpurra.com/projects/uvcc/
+
+Please provide a single command.
 ```
 
 
@@ -245,6 +257,14 @@ uvcc --vendor 0x46d --product 0x82d ranges
   ]
 }
 ```
+
+
+
+## Troubleshooting
+
+### Error message contains `LIBUSB_TRANSFER_STALL`
+
+You may need to configure `uvcc` to use the camera's USB input terminal id (default `0x01`) and processing unit id (default `0x03`) to match your system. See [note in `uvc-control`](https://github.com/makenai/node-uvc-control#note-on-inputterminalid--processingunitid).
 
 
 

@@ -46,8 +46,14 @@ const demandVendorProductOptions = (yargsToApplyTo) => {
 };
 
 module.exports = () => {
+    // NOTE: defaults taken from node-uvc-control.
+    // https://github.com/makenai/node-uvc-control/blob/0b90c78e99ee889cb84e477ab67207c8a9474e6f/index.js#L7-L8
+    const UVC_INPUT_TERMINAL_ID = 0x01;
+    const UVC_PROCESSING_UNIT_ID = 0x03;
+
     const applicationBinaryName = Object.keys(packageJson.bin)[0];
-    const applicationDescription = packageJson.description;
+    const additionalNotes = "Numbers may be supplied in hexadecimal (0x000) or decimal (0000) format.";
+    const applicationDescription = packageJson.description + "\n\n" + additionalNotes;
     const homepage = packageJson.homepage;
 
     const epilogue = `uvcc Copyright © 2018 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
@@ -114,18 +120,12 @@ module.exports = () => {
         .command("import", "Input configuration in JSON format, from stdin.", (yargsToApplyTo) => demandVendorProductOptions(yargsToApplyTo))
         .option("vendor", {
             type: "number",
-            describe: "Webcam vendor id in hex (0x000) or decimal (0000) format.",
+            describe: "Webcam vendor id.",
         })
         .option("product", {
             type: "number",
-            describe: "Webcam product id in hex (0x000) or decimal (0000) format.",
+            describe: "Webcam product id.",
         })
-        .option("verbose", {
-            type: "boolean",
-            default: false,
-            describe: "Enable verbose output.",
-        })
-        .demandCommand(1, 1, "Please provide a single command.", "Please provide a single command.")
         .group(
             [
                 "vendor",
@@ -133,6 +133,29 @@ module.exports = () => {
             ],
             "Webcam selection:"
         )
+        .option("input-terminal", {
+            type: "number",
+            describe: "The webcam's input terminal id.",
+            default: UVC_INPUT_TERMINAL_ID
+        })
+        .option("processing-unit", {
+            type: "number",
+            describe: "The webcam's processing unit id.",
+            default: UVC_PROCESSING_UNIT_ID
+        })
+        .group(
+            [
+                "input-terminal",
+                "processing-unit",
+            ],
+            "Advanced:"
+        )
+        .option("verbose", {
+            type: "boolean",
+            default: false,
+            describe: "Enable verbose output.",
+        })
+        .demandCommand(1, 1, "Please provide a single command.", "Please provide a single command.")
         .help()
         .example("$0 --vendor 0x46d --product 0x82d get whiteBalanceTemperature")
         .epilogue(epilogue);

@@ -26,14 +26,23 @@ module.exports = class CameraFactory {
         this._UVCControl = UVCControl;
     }
 
-    async get(vendor, product) {
-        assert.strictEqual(arguments.length, 2);
+    async get(vendor, product, inputTerminal, processingUnit) {
+        assert.strictEqual(arguments.length, 4);
         assert.strictEqual(typeof vendor, "number");
         assert(vendor > 0);
         assert.strictEqual(typeof product, "number");
         assert(product > 0);
+        assert.strictEqual(typeof inputTerminal, "number");
+        assert(inputTerminal > 0);
+        assert.strictEqual(typeof processingUnit, "number");
+        assert(processingUnit > 0);
 
-        const camera = new this._UVCControl(vendor, product);
+        const options = {
+            inputTerminalId: inputTerminal,
+            processingUnitId: processingUnit,
+        };
+
+        const camera = new this._UVCControl(vendor, product, options);
 
         return camera;
     }
