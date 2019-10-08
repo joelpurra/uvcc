@@ -134,7 +134,7 @@ module.exports = () => {
             "Webcam selection:"
         )
         .help()
-        .example("$0 --vendor 0x46d --product 0x82d get whiteBalanceTemperature")
+        .example("$0 --vendor 0x46d --product 0x82d get white_balance_temperature")
         .epilogue(epilogue);
 
     const argv = yargs.argv;

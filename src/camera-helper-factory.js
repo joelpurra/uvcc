@@ -19,27 +19,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 const assert = require("assert");
 
 module.exports = class CameraHelperFactory {
-    constructor(output, CameraHelper, UVCControl) {
+    constructor(output, uvcControlHelper, CameraHelper) {
         assert.strictEqual(arguments.length, 3);
         assert.strictEqual(typeof output, "object");
+        assert.strictEqual(typeof uvcControlHelper, "object");
         assert.strictEqual(typeof CameraHelper, "function");
-        assert.strictEqual(typeof UVCControl, "function");
 
         this._output = output;
+        this._uvcControlHelper = uvcControlHelper;
         this._CameraHelper = CameraHelper;
-        this._UVCControl = UVCControl;
-    }
-
-    _getControls() {
-        return this._UVCControl.controls;
     }
 
     async get(camera) {
         assert.strictEqual(arguments.length, 1);
         assert.strictEqual(typeof camera, "object");
 
-        const controls = this._getControls();
-        const cameraHelper = new this._CameraHelper(this._output, camera, controls);
+        const cameraHelper = new this._CameraHelper(this._output, this._uvcControlHelper, camera);
 
         return cameraHelper;
     }

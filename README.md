@@ -53,8 +53,8 @@ uvcc --vendor 0x46d --product 0x82d set autoExposureMode 1
 uvcc --vendor 0x46d --product 0x82d set autoWhiteBalance 0
 
 # Set the white balance temperature to 2000.
-# NOTE: the whiteBalanceTemperature range for Logitech C920 is 2000-6500.
-uvcc --vendor 0x46d --product 0x82d set whiteBalanceTemperature 2000
+# NOTE: the white_balance_temperature range for Logitech C920 is 2000-6500.
+uvcc --vendor 0x46d --product 0x82d set white_balance_temperature 2000
 
 # Set the contrast to 192.
 # NOTE: the contrast range for Logitech C920 is 0-255, default value 128.
@@ -102,7 +102,7 @@ Options:
   --help     Show help                                                 [boolean]
 
 Examples:
-  uvcc --vendor 0x46d --product 0x82d get whiteBalanceTemperature
+  uvcc --vendor 0x46d --product 0x82d get white_balance_temperature
 
 uvcc Copyright © 2018 Joel Purra <https://joelpurra.com/>
 

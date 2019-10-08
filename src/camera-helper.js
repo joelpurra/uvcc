@@ -20,48 +20,54 @@ const assert = require("assert");
 const Promise = require("bluebird");
 
 module.exports = class CameraHelper {
-    constructor(output, camera, availableControls) {
+    constructor(output, uvcControlHelper, camera) {
         assert.strictEqual(arguments.length, 3);
         assert.strictEqual(typeof output, "object");
+        assert.strictEqual(typeof uvcControlHelper, "object");
         assert.strictEqual(typeof camera, "object");
-        assert(Array.isArray(availableControls));
 
         this._output = output;
+        this._uvcControlHelper = uvcControlHelper;
         this._camera = camera;
-        this._availableControls = availableControls;
-
-        this._cameraGetValue = Promise.promisify(this._camera.get, {
-            context: camera,
-        });
-
-        this._cameraSetValue = Promise.promisify(this._camera.set, {
-            context: camera,
-        });
-
-        this._cameraGetRange = Promise.promisify(this._camera.range, {
-            context: camera,
-        });
-    }
-
-    async availableControls() {
-        return this._availableControls.concat();
-    }
-
-    async getRange(name) {
-        return this._cameraGetRange(name);
     }
 
     async getValue(name) {
-        return this._cameraGetValue(name);
+        const gettableControlNames = await this._uvcControlHelper.getGettableControlNames();
+
+        if (!gettableControlNames.includes(name)) {
+            throw new Error(`Could not find a gettable control named ${JSON.stringify(name)}.`);
+        }
+
+        return this._camera.get(name);
+    }
+
+    async getRange(name) {
+        const rangedControlNames = await this._uvcControlHelper.getRangedControlNames();
+
+        if (!rangedControlNames.includes(name)) {
+            throw new Error(`Could not find a ranged control named ${JSON.stringify(name)}.`);
+        }
+
+        return this._camera.range(name);
     }
 
     async setValue(name, value) {
-        return this._cameraSetValue(name, value);
+        const settableControlNames = await this._uvcControlHelper.getSettableControlNames();
+
+        if (!settableControlNames.includes(name)) {
+            throw new Error(`Could not find a settable control named ${JSON.stringify(name)}.`);
+        }
+
+        return this._camera.set(name, value);
+    }
+
+    async getControlNames() {
+        return this._uvcControlHelper.getControlNames();
     }
 
     async getRanges() {
         return Promise.reduce(
-            this._availableControls,
+            await this._uvcControlHelper.getRangedControlNames(),
             (obj, name) => this.getRange(name)
                 .then((range) => {
                     obj[name] = range;
@@ -69,6 +75,7 @@ module.exports = class CameraHelper {
                     return obj;
                 })
                 .catch((error) => {
+                    // TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
                     this._output.verbose("Error getting range, ignoring.", name, error);
 
                     return obj;
@@ -79,7 +86,7 @@ module.exports = class CameraHelper {
 
     async getValues() {
         return Promise.reduce(
-            this._availableControls,
+            await this._uvcControlHelper.getControlNames(),
             (obj, name) => this.getValue(name)
                 .then((value) => {
                     obj[name] = value;
@@ -87,6 +94,7 @@ module.exports = class CameraHelper {
                     return obj;
                 })
                 .catch((error) => {
+                    // TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
                     this._output.verbose("Error getting value, ignoring.", name, error);
 
                     return obj;
@@ -96,15 +104,24 @@ module.exports = class CameraHelper {
     }
 
     async setValues(configuration) {
-        const keys = Object.keys(configuration);
+        const names = Object.keys(configuration);
+        const settableControlNames = this._uvcControlHelper.getSettableControlNames();
+
+        // NOTE: checking all names before attempting to set any.
+        names.forEach(name => {
+            if (!settableControlNames.includes(name)) {
+                throw new Error(`Could not find a settable control named ${JSON.stringify(name)}.`);
+            }
+        });
 
         return Promise.map(
-            keys,
+            names,
             (name) => {
                 const value = configuration[name];
 
                 return this.setValue(name, value)
                     .catch((error) => {
+                        // TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
                         this._output.verbose("Error setting value, ignoring.", name, value, error);
 
                         return undefined;

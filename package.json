@@ -18,10 +18,12 @@
   },
   "dependencies": {
     "bluebird": "^3.5.1",
+    "filter-obj": "^2.0.1",
     "find-up": "^2.1.0",
-    "sort-object-keys": "^1.1.2",
+    "map-obj": "^4.1.0",
+    "sort-keys": "^4.0.0",
     "stream-to-promise": "^2.2.0",
-    "uvc-control": "^1.0.2",
+    "uvc-control": "joelpurra/node-uvc-control#v2-control-transfer-target-device",
     "yargs": "^11.0.0"
   },
   "devDependencies": {

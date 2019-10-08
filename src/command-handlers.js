@@ -19,7 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 const assert = require("assert");
 
 const streamToPromise = require("stream-to-promise");
-const sortObjectKeys = require("sort-object-keys");
 
 module.exports = class CommandHandlers {
     constructor(output, usbDeviceLister) {
@@ -73,8 +72,7 @@ module.exports = class CommandHandlers {
         assert.strictEqual(arguments.length, 1);
 
         const ranges = await cameraHelper.getRanges();
-        const sorted = sortObjectKeys(ranges);
-        const json = JSON.stringify(sorted, null, 2);
+        const json = JSON.stringify(ranges, null, 2);
 
         this._output.normal(json);
     }
@@ -102,10 +100,8 @@ module.exports = class CommandHandlers {
     async export(cameraHelper) {
         assert.strictEqual(arguments.length, 1);
 
-        // TODO: sort values by key.
         const values = await cameraHelper.getValues();
-        const sorted = sortObjectKeys(values);
-        const json = JSON.stringify(sorted, null, 2);
+        const json = JSON.stringify(values, null, 2);
 
         this._output.normal(json);
     }
@@ -134,9 +130,8 @@ module.exports = class CommandHandlers {
     async controls(cameraHelper) {
         assert.strictEqual(arguments.length, 1);
 
-        const availableControls = await cameraHelper.availableControls();
-        availableControls.sort();
-        const json = JSON.stringify(availableControls, null, 2);
+        const controlNames = await cameraHelper.getControlNames();
+        const json = JSON.stringify(controlNames, null, 2);
 
         this._output.normal(json);
     }
