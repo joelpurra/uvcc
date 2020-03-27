@@ -21,11 +21,11 @@ const runtimeConfigurator = require("./src/runtime-configurator");
 
 // https://github.com/makenai/node-uvc-control
 const UVCControl = require("uvc-control");
-const uvcControlConstants = require("uvc-control/lib/constants");
 
 const Output = require("./src/output");
 const CameraFactory = require("./src/camera-factory");
-const UVCControlHelper = require("./src/uvc-control-helper");
+const CameraControlHelper = require("./src/camera-control-helper");
+const CameraControlHelperFactory = require("./src/camera-control-helper-factory");
 const CameraHelper = require("./src/camera-helper");
 const CameraHelperFactory = require("./src/camera-helper-factory");
 const UsbDeviceLister = require("./src/usb-device-lister");
@@ -42,8 +42,8 @@ const main = async() => {
         process.on("uncaughtException", (...args) => output.verbose(...args));
 
         const cameraFactory = new CameraFactory(UVCControl);
-        const uvcControlHelper = new UVCControlHelper(UVCControl, uvcControlConstants);
-        const cameraHelperFactory = new CameraHelperFactory(output, uvcControlHelper, CameraHelper);
+        const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
+        const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
         const usbDeviceLister = new UsbDeviceLister();
         const commandHandlers = new CommandHandlers(output, usbDeviceLister);
         const commandManager = new CommandManager(output, cameraFactory, cameraHelperFactory, commandHandlers);

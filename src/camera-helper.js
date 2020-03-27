@@ -20,19 +20,19 @@ const assert = require("assert");
 const Promise = require("bluebird");
 
 module.exports = class CameraHelper {
-    constructor(output, uvcControlHelper, camera) {
+    constructor(output, cameraControlHelper, camera) {
         assert.strictEqual(arguments.length, 3);
         assert.strictEqual(typeof output, "object");
-        assert.strictEqual(typeof uvcControlHelper, "object");
+        assert.strictEqual(typeof cameraControlHelper, "object");
         assert.strictEqual(typeof camera, "object");
 
         this._output = output;
-        this._uvcControlHelper = uvcControlHelper;
+        this._cameraControlHelper = cameraControlHelper;
         this._camera = camera;
     }
 
     async getValue(name) {
-        const gettableControlNames = await this._uvcControlHelper.getGettableControlNames();
+        const gettableControlNames = await this._cameraControlHelper.getGettableControlNames();
 
         if (!gettableControlNames.includes(name)) {
             throw new Error(`Could not find a gettable control named ${JSON.stringify(name)}.`);
@@ -42,7 +42,7 @@ module.exports = class CameraHelper {
     }
 
     async getRange(name) {
-        const rangedControlNames = await this._uvcControlHelper.getRangedControlNames();
+        const rangedControlNames = await this._cameraControlHelper.getRangedControlNames();
 
         if (!rangedControlNames.includes(name)) {
             throw new Error(`Could not find a ranged control named ${JSON.stringify(name)}.`);
@@ -52,7 +52,7 @@ module.exports = class CameraHelper {
     }
 
     async setValue(name, value) {
-        const settableControlNames = await this._uvcControlHelper.getSettableControlNames();
+        const settableControlNames = await this._cameraControlHelper.getSettableControlNames();
 
         if (!settableControlNames.includes(name)) {
             throw new Error(`Could not find a settable control named ${JSON.stringify(name)}.`);
@@ -62,12 +62,12 @@ module.exports = class CameraHelper {
     }
 
     async getControlNames() {
-        return this._uvcControlHelper.getControlNames();
+        return this._cameraControlHelper.getControlNames();
     }
 
     async getRanges() {
         return Promise.reduce(
-            await this._uvcControlHelper.getRangedControlNames(),
+            await this._cameraControlHelper.getRangedControlNames(),
             (obj, name) => this.getRange(name)
                 .then((range) => {
                     obj[name] = range;
@@ -86,7 +86,7 @@ module.exports = class CameraHelper {
 
     async getValues() {
         return Promise.reduce(
-            await this._uvcControlHelper.getControlNames(),
+            await this._cameraControlHelper.getControlNames(),
             (obj, name) => this.getValue(name)
                 .then((value) => {
                     obj[name] = value;
@@ -105,11 +105,11 @@ module.exports = class CameraHelper {
 
     async setValues(configuration) {
         const names = Object.keys(configuration);
-        const settableControlNames = this._uvcControlHelper.getSettableControlNames();
+        const settableControlNames = this._cameraControlHelper.getSettableControlNames();
 
         // NOTE: checking all names before attempting to set any.
         names.forEach(name => {
-            if (!settableControlNames.includes(name)) {
+            if (!Object.keys(settableControlNames).includes(name)) {
                 throw new Error(`Could not find a settable control named ${JSON.stringify(name)}.`);
             }
         });
