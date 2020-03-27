@@ -38,7 +38,18 @@ module.exports = class CameraHelper {
             throw new Error(`Could not find a gettable control named ${JSON.stringify(name)}.`);
         }
 
-        return this._camera.get(name);
+        const valueObject = await this._camera.get(name);
+        const values = Object.values(valueObject);
+        let value;
+
+        if (values.length === 1) {
+            value = values[0];
+        } else {
+            // NOTE: presumably the same order has to be used when setting values later.
+            value = values;
+        }
+
+        return value;
     }
 
     async getRange(name) {
