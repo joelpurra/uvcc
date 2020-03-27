@@ -103,14 +103,33 @@ module.exports = class CameraHelper {
         );
     }
 
+    async getSettableValues() {
+        return Promise.reduce(
+            await this._cameraControlHelper.getSettableControlNames(),
+            (obj, name) => this.getValue(name)
+                .then((value) => {
+                    obj[name] = value;
+
+                    return obj;
+                })
+                .catch((error) => {
+                    // TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
+                    this._output.verbose("Error getting settable value, ignoring.", name, error);
+
+                    return obj;
+                }),
+            {}
+        );
+    }
+
     async setValues(configuration) {
         const names = Object.keys(configuration);
-        const settableControlNames = this._cameraControlHelper.getSettableControlNames();
+        const settableControlNames = await this._cameraControlHelper.getSettableControlNames();
 
         // NOTE: checking all names before attempting to set any.
         names.forEach(name => {
-            if (!Object.keys(settableControlNames).includes(name)) {
-                throw new Error(`Could not find a settable control named ${JSON.stringify(name)}.`);
+            if (!settableControlNames.includes(name)) {
+                throw new Error(`Could not find a settable control named ${JSON.stringify(name)}, aborting setting values.`);
             }
         });
 

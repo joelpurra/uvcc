@@ -100,7 +100,9 @@ module.exports = class CommandHandlers {
     async export(cameraHelper) {
         assert.strictEqual(arguments.length, 1);
 
-        const values = await cameraHelper.getValues();
+        // NOTE: exporting un-settable values breaks imports because of strict settable value checks.
+        // TODO: export also un-settable values with --all flag?
+        const values = await cameraHelper.getSettableValues();
         const json = JSON.stringify(values, null, 2);
 
         this._output.normal(json);
