@@ -85,15 +85,19 @@ Commands:
                            the camera.
   uvcc ranges              Get all ranges (min and max) for all available
                            controls from the camera.
-  uvcc devices             List connected USB devices with vendor id (vId) and
-                           product id (pId).
+  uvcc devices             List connected UVC devices with name, vendor id
+                           (vId), product id (pId), and device address.
   uvcc controls            List all supported controls.
   uvcc export              Output configuration in JSON format, on stdout.
   uvcc import              Input configuration in JSON format, from stdin.
 
 Camera selection:
-  --vendor   Camera vendor id in hex (0x000) or decimal (0000) format.  [number]
-  --product  Camera product id in hex (0x000) or decimal (0000) format. [number]
+  --vendor   Camera vendor id in hex (0x000) or decimal (0000) format.
+                                                           [number] [default: 0]
+  --product  Camera product id in hex (0x000) or decimal (0000) format.
+                                                           [number] [default: 0]
+  --address  Camera device address in decimal (00) format. Only used for
+             multi-camera setups.                          [number] [default: 0]
 
 Options:
   --version  Show version number                                       [boolean]

@@ -98,7 +98,7 @@ module.exports = () => {
                 });
         })
         .command("ranges", "Get all ranges (min and max) for all available controls from the camera.")
-        .command("devices", "List connected USB devices with vendor id (vId) and product id (pId).")
+        .command("devices", "List connected UVC devices with name, vendor id (vId), product id (pId), and device address.")
         .command("controls", "List all supported controls.")
         .command("export", "Output configuration in JSON format, on stdout.")
         .command("import", "Input configuration in JSON format, from stdin.")
@@ -112,6 +112,11 @@ module.exports = () => {
             default: 0,
             describe: "Camera product id in hex (0x000) or decimal (0000) format.",
         })
+        .option("address", {
+            type: "number",
+            default: 0,
+            describe: "Camera device address in decimal (00) format. Only used for multi-camera setups.",
+        })
         .option("verbose", {
             type: "boolean",
             default: false,
@@ -122,6 +127,7 @@ module.exports = () => {
             [
                 "vendor",
                 "product",
+                "address",
             ],
             "Camera selection:"
         )

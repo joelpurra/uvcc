@@ -88,7 +88,7 @@ module.exports = class CommandManager {
 
         // TODO: smarter solution.
         if (commandArguments.includes(this._injectCameraHelperArgumentName)) {
-            camera = await this._cameraFactory.get(runtimeConfig.vendor, runtimeConfig.product);
+            camera = await this._cameraFactory.get(runtimeConfig.vendor, runtimeConfig.product, runtimeConfig.address);
         }
 
         try {
