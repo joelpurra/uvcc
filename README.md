@@ -47,10 +47,10 @@ uvcc devices
 uvcc export
 
 # Set exposure to manual.
-uvcc set autoExposureMode 1
+uvcc set auto_exposure_mode 1
 
 # Turn off automatic white balance.
-uvcc set autoWhiteBalance 0
+uvcc set auto_white_balance_temperature 0
 
 # Set the white balance temperature to 2000.
 # NOTE: the white_balance_temperature range for Logitech C920 is 2000-6500.
