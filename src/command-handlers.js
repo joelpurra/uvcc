@@ -21,13 +21,13 @@ const assert = require("assert");
 const streamToPromise = require("stream-to-promise");
 
 module.exports = class CommandHandlers {
-    constructor(output, usbDeviceLister) {
+    constructor(output, uvcDeviceLister) {
         assert.strictEqual(arguments.length, 2);
         assert.strictEqual(typeof output, "object");
-        assert.strictEqual(typeof usbDeviceLister, "object");
+        assert.strictEqual(typeof uvcDeviceLister, "object");
 
         this._output = output;
-        this._usbDeviceLister = usbDeviceLister;
+        this._uvcDeviceLister = uvcDeviceLister;
     }
 
     async getArguments() {
@@ -145,7 +145,9 @@ module.exports = class CommandHandlers {
     async devices() {
         assert.strictEqual(arguments.length, 0);
 
-        // TODO: replace with a local function and fix formatting?
-        await this._usbDeviceLister.logToConsole();
+        const devices = await this._uvcDeviceLister.get();
+        const json = JSON.stringify(devices, null, 2);
+
+        this._output.normal(json);
     }
 };

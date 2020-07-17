@@ -28,7 +28,7 @@ const CameraControlHelper = require("./src/camera-control-helper");
 const CameraControlHelperFactory = require("./src/camera-control-helper-factory");
 const CameraHelper = require("./src/camera-helper");
 const CameraHelperFactory = require("./src/camera-helper-factory");
-const UsbDeviceLister = require("./src/usb-device-lister");
+const UvcDeviceLister = require("./src/uvc-device-lister");
 const CommandHandlers = require("./src/command-handlers");
 const CommandManager = require("./src/command-manager");
 
@@ -44,8 +44,8 @@ const main = async() => {
         const cameraFactory = new CameraFactory(UVCControl);
         const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
         const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
-        const usbDeviceLister = new UsbDeviceLister();
-        const commandHandlers = new CommandHandlers(output, usbDeviceLister);
+        const uvcDeviceLister = new UvcDeviceLister(UVCControl);
+        const commandHandlers = new CommandHandlers(output, uvcDeviceLister);
         const commandManager = new CommandManager(output, cameraFactory, cameraHelperFactory, commandHandlers);
 
         await commandManager.execute(runtimeConfig);
