@@ -35,16 +35,6 @@ const getJSON = (path) => {
     }
 };
 
-const demandVendorProductOptions = (yargsToApplyTo) => {
-    return yargsToApplyTo.demandOption(
-        [
-            "vendor",
-            "product",
-        ],
-        "Please provide both vendor and product arguments for your webcam."
-    );
-};
-
 module.exports = () => {
     const applicationBinaryName = Object.keys(packageJson.bin)[0];
     const applicationDescription = packageJson.description;
@@ -78,16 +68,16 @@ module.exports = () => {
         })
         .env(applicationBinaryName.toUpperCase())
         .usage(applicationDescription)
-        .command("get <name>", "Get current control value from the webcam.", (yargsToApplyTo) => {
-            demandVendorProductOptions(yargsToApplyTo)
+        .command("get <name>", "Get current control value from the camera.", (yargsToApplyTo) => {
+            yargsToApplyTo
                 .positional("name", {
                     type: "string",
                     demandOption: true,
                     describe: "Name of the control.",
                 });
         })
-        .command("set <name> <value>", "Set control value on the webcam.", (yargsToApplyTo) => {
-            demandVendorProductOptions(yargsToApplyTo)
+        .command("set <name> <value>", "Set control value on the camera.", (yargsToApplyTo) => {
+            yargsToApplyTo
                 .positional("name", {
                     type: "string",
                     demandOption: true,
@@ -99,26 +89,28 @@ module.exports = () => {
                     describe: "Value to set.",
                 });
         })
-        .command("range <name>", "Get possible range (min and max) for a control from the webcam.", (yargsToApplyTo) => {
-            demandVendorProductOptions(yargsToApplyTo)
+        .command("range <name>", "Get possible range (min and max) for a control from the camera.", (yargsToApplyTo) => {
+            yargsToApplyTo
                 .positional("name", {
                     type: "string",
                     demandOption: true,
                     describe: "Name of the control.",
                 });
         })
-        .command("ranges", "Get all ranges (min and max) for all available controls from the webcam.", (yargsToApplyTo) => demandVendorProductOptions(yargsToApplyTo))
+        .command("ranges", "Get all ranges (min and max) for all available controls from the camera.")
         .command("devices", "List connected USB devices with vendor id (vId) and product id (pId).")
-        .command("controls", "List all supported controls.", (yargsToApplyTo) => demandVendorProductOptions(yargsToApplyTo))
-        .command("export", "Output configuration in JSON format, on stdout.", (yargsToApplyTo) => demandVendorProductOptions(yargsToApplyTo))
-        .command("import", "Input configuration in JSON format, from stdin.", (yargsToApplyTo) => demandVendorProductOptions(yargsToApplyTo))
+        .command("controls", "List all supported controls.")
+        .command("export", "Output configuration in JSON format, on stdout.")
+        .command("import", "Input configuration in JSON format, from stdin.")
         .option("vendor", {
             type: "number",
-            describe: "Webcam vendor id in hex (0x000) or decimal (0000) format.",
+            default: 0,
+            describe: "Camera vendor id in hex (0x000) or decimal (0000) format.",
         })
         .option("product", {
             type: "number",
-            describe: "Webcam product id in hex (0x000) or decimal (0000) format.",
+            default: 0,
+            describe: "Camera product id in hex (0x000) or decimal (0000) format.",
         })
         .option("verbose", {
             type: "boolean",
@@ -131,7 +123,7 @@ module.exports = () => {
                 "vendor",
                 "product",
             ],
-            "Webcam selection:"
+            "Camera selection:"
         )
         .help()
         .example("$0 --vendor 0x46d --product 0x82d get white_balance_temperature")

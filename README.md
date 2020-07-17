@@ -37,34 +37,34 @@ npm install --global uvcc
 
 ## Usage
 
+By default, the one of the detected UVC device will be used, usually the first. If more than one camera is present, or if swapping to a different camera, this might be problematic. Optionally target a specific device by vendor id and product id. See [configuration](#configuration) documentation.
+
 ```shell
-# Find your UVC device, note the vendor id (vId) and product id (pId).
-# The ids can be in hexadecimal (0x000) or decimal (0000) format.
-# For example Logitech (0x46d) C920 HD Pro Webcam (0x82d).
+# List detected UVC devices. By default one of them is used.
 uvcc devices
 
-# Use the vendor id and product id to export current configuration.
-uvcc --vendor 0x46d --product 0x82d export
+# Export current configuration.
+uvcc export
 
 # Set exposure to manual.
-uvcc --vendor 0x46d --product 0x82d set autoExposureMode 1
+uvcc set autoExposureMode 1
 
 # Turn off automatic white balance.
-uvcc --vendor 0x46d --product 0x82d set autoWhiteBalance 0
+uvcc set autoWhiteBalance 0
 
 # Set the white balance temperature to 2000.
 # NOTE: the white_balance_temperature range for Logitech C920 is 2000-6500.
-uvcc --vendor 0x46d --product 0x82d set white_balance_temperature 2000
+uvcc set white_balance_temperature 2000
 
 # Set the contrast to 192.
 # NOTE: the contrast range for Logitech C920 is 0-255, default value 128.
-uvcc --vendor 0x46d --product 0x82d set contrast 192
+uvcc set contrast 192
 
 # Export configuration to a JSON file.
-uvcc --vendor 0x46d --product 0x82d export > "uvcc-export.json"
+uvcc export > "uvcc-export.json"
 
 # Load configuration from a JSON file.
-cat "uvcc-export.json" | uvcc --vendor 0x46d --product 0x82d import
+cat "uvcc-export.json" | uvcc import
 ```
 
 
@@ -118,6 +118,20 @@ See also: https://joelpurra.com/projects/uvcc/
 ## Configuration
 
 The command line arguments can optionally be provided using environment variables, implicit per-user/per-directory configuration files, or explicitly loaded from JSON files.
+
+### Command line
+
+```shell
+# Find your UVC device, note the vendor id (vId) and product id (pId).
+# The ids can be in hexadecimal (0x000) or decimal (0000) format.
+# Example:
+# - The vendor is Logitech (hexadecimal 0x46d, or decimal 1133).
+# - The product is C920 HD Pro Webcam (hexadecimal 0x82d, or decimal 2093).
+uvcc devices
+
+# Use the vendor id and product id to export current configuration.
+uvcc --vendor 0x46d --product 0x82d export
+```
 
 
 ### Environment variables

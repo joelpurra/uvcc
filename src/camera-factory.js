@@ -29,14 +29,12 @@ module.exports = class CameraFactory {
     async get(vendor, product) {
         // TODO: support dynamic UVC camera lookup by either vendor id/product id/serial number/device address?
         assert.strictEqual(arguments.length, 2);
-        assert.strictEqual(typeof vendor, "number");
-        assert(vendor > 0);
-        assert.strictEqual(typeof product, "number");
-        assert(product > 0);
+        assert(vendor === null || (typeof vendor === "number" && vendor >= 0));
+        assert(product === null || (typeof product === "number" && product >= 0));
 
         const constructorOptions = {
-            vid: vendor,
-            pid: product,
+            vid: vendor || undefined,
+            pid: product || undefined,
             // TODO: support deviceAddress
             deviceAddress: undefined,
         };
