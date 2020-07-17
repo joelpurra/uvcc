@@ -43,6 +43,7 @@
     "usb video class",
     "uvc",
     "camera",
+    "webcam",
     "webcamera",
     "controls",
     "configuration",
