@@ -6,11 +6,11 @@ Configure [USB Video Class](https://en.wikipedia.org/wiki/USB_video_device_class
 
 ## Features
 
-Use `uvcc` to **fine-tune camera configuration**, such as brightness, contrast, saturation, gain, white balance temperature, zoom. **Export/import of JSON** makes it easy to reliably and repeatedly configure one or more cameras for various situations.
+Use `uvcc` to **fine-tune camera configuration**, such as brightness, contrast, saturation, gain, white balance/color temperature, zoom. **Export/import of JSON** makes it easy to reliably and repeatedly configure one or more cameras for various situations.
 
 - Get configuration directly from the camera.
 - Set configuration values directly on the camera.
-- List available USB devices, including cameras.
+- List available UVC cameras.
 - List available camera controls.
 - Export configuration to JSON.
 - Import configuration from JSON.
@@ -30,19 +30,13 @@ npm install --global uvcc
 
 ## Usage
 
-By default, the one of the detected UVC device will be used, usually the first. If more than one camera is present, or if swapping to a different camera, this might be problematic. Optionally target a specific device by vendor id and product id. See [configuration](#configuration) documentation.
+By default, one of the detected UVC devices will be used, usually the first. See [configuration](#configuration) to target a specific camera.
 
 ```shell
-# List detected UVC devices. By default one of them is used.
-uvcc devices
-
-# Export current configuration.
+# Export current configuration. You can save it to a file, modify, and import later.
 uvcc export
 
-# Set exposure to manual.
-uvcc set auto_exposure_mode 1
-
-# Turn off automatic white balance.
+# Turn off automatic white balance to manually set the white balance.
 uvcc set auto_white_balance_temperature 0
 
 # Set the white balance temperature to 2000.
@@ -52,12 +46,6 @@ uvcc set white_balance_temperature 2000
 # Set the contrast to 192.
 # NOTE: the contrast range for Logitech C920 is 0-255, default value 128.
 uvcc set contrast 192
-
-# Export configuration to a JSON file.
-uvcc export > "uvcc-export.json"
-
-# Load configuration from a JSON file.
-cat "uvcc-export.json" | uvcc import
 ```
 
 ### Help
@@ -121,6 +109,7 @@ The command line arguments can optionally be provided using environment variable
 # Example:
 # - The vendor is Logitech (hexadecimal 0x46d, or decimal 1133).
 # - The product is C920 HD Pro Webcam (hexadecimal 0x82d, or decimal 2093).
+# NOTE: listing USB devices might require root (sudo) on some systems.
 uvcc devices
 
 # Use the vendor id and product id to export current configuration.
@@ -160,54 +149,36 @@ uvcc --config <my-uvcc-config.json>
 
 ## Examples
 
+See additional output examples in [./examples/](./examples/).
+
 ### Exported configuration
 
+- Save the exported JSON data to a file as a snapshot of the current camera settings using `uvcc export > my-export.json`.
+- The export format is made to be imported again using `cat my-export.json | uvcc import`.
+- Note that some values are read-only, and are thus not exported.
+- Note that the order of the imported values matters, as for example automatic white balance needs to be turned off before setting a custom white balance.
+
 ```shell
 # Logitech (0x46d) C920 HD Pro Webcam (0x82d).
-uvcc --vendor 0x46d --product 0x82d export
+uvcc export
 ```
 
 ```json
 {
-  "absoluteExposureTime": 333,
-  "absoluteFocus": 0,
-  "absolutePanTilt": 0,
-  "absoluteZoom": 120,
-  "autoExposureMode": 1,
-  "autoExposurePriority": 0,
-  "autoFocus": 1,
-  "autoWhiteBalance": 0,
-  "backlightCompensation": 0,
+  "absolute_pan_tilt": 0,
+  "absolute_zoom": 100,
+  "auto_exposure_mode": 8,
+  "auto_exposure_priority": 1,
+  "auto_focus": 1,
+  "auto_white_balance_temperature": 1,
+  "backlight_compensation": 0,
   "brightness": 128,
   "contrast": 128,
-  "gain": 49,
+  "gain": 28,
+  "power_line_frequency": 2,
   "saturation": 128,
   "sharpness": 128,
-  "whiteBalanceTemperature": 2500
-}
-```
-
-### Available control ranges
-
-```shell
-# Logitech (0x46d) C920 HD Pro Webcam (0x82d).
-uvcc --vendor 0x46d --product 0x82d ranges
-```
-
-```json
-{
-  "absoluteExposureTime": [3, 2047],
-  "absoluteFocus": [0, 250],
-  "absolutePanTilt": [-154614527725568, 154618822692000],
-  "absoluteZoom": [100, 500],
-  "autoFocus": [0, 1],
-  "backlightCompensation": [0, 1],
-  "brightness": [0, 255],
-  "contrast": [0, 255],
-  "gain": [0, 255],
-  "saturation": [0, 255],
-  "sharpness": [0, 255],
-  "whiteBalanceTemperature": [2000, 6500]
+  "white_balance_temperature": 4675
 }
 ```
 
@@ -232,7 +203,6 @@ npm run --silent test
   - `v4l2-ctl --list-ctrls`
   - See for example the article [Manual USB camera settings in Linux
     ](http://kurokesu.com/main/2016/01/16/manual-usb-camera-settings-in-linux/).
-- Make available camera controls dynamic for the actual camera targeted/used, as there might be more/fewer/other controls on different cameras. Currently controls target [Logitech C920 HD Pro Webcam](https://www.logitech.com/en-us/product/hd-pro-webcam-c920), as per comments in [uvc-control](https://github.com/makenai/node-uvc-control), although most should also apply to other UVC cameras.
 
 ## See also
 
