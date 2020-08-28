@@ -24,7 +24,7 @@
     "sort-keys": "^4.0.0",
     "stream-to-promise": "^2.2.0",
     "uvc-control": "github:joelpurra/node-uvc-control#v2-control-transfer-target-device",
-    "yargs": "^11.0.0"
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
     "eslint": "^4.16.0",
