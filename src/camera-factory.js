@@ -37,8 +37,41 @@ module.exports = class CameraFactory {
 			pid: product || undefined,
 			vid: vendor || undefined,
 		};
-		const camera = new this._UVCControl(constructorOptions);
 
-		return camera;
+		try {
+			const camera = new this._UVCControl(constructorOptions);
+
+			return camera;
+		} catch (error) {
+			let errorMessage = null;
+
+			// NOTE: relies on uvc-control internals.
+			// NOTE: may rely on user locale.
+			const guessThatUVCDeviceWasNotFound = typeof error.name === "string"
+				&& error.name === "TypeError"
+				&& typeof error.message === "string"
+				&& error.message === "Cannot read property 'interfaces' of undefined";
+
+			if (guessThatUVCDeviceWasNotFound) {
+				// NOTE: assuming that there was no UVC device available for this configuration.
+				// NOTE: basically a duplicate of both the arguments to this function and to the uvc-control constructor.
+				const functionArguments = {
+					address,
+					product,
+					vendor,
+				};
+
+				errorMessage = `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(functionArguments)}`;
+			} else {
+				errorMessage = `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
+			}
+
+			errorMessage += ` (${JSON.stringify(String(error))})`;
+
+			const wrappedError = new Error(errorMessage);
+			wrappedError.innerError = error;
+
+			throw wrappedError;
+		}
 	}
 };
