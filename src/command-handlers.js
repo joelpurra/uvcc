@@ -33,14 +33,14 @@ module.exports = class CommandHandlers {
 	async getArguments() {
 		return [
 			"cameraHelper",
-			"name",
+			"control",
 		];
 	}
 
-	async get(cameraHelper, name) {
+	async get(cameraHelper, controlName) {
 		assert.strictEqual(arguments.length, 2);
 
-		const value = await cameraHelper.getValue(name);
+		const value = await cameraHelper.getValue(controlName);
 		const json = JSON.stringify(value, null, 2);
 
 		this._output.normal(json);
@@ -49,14 +49,14 @@ module.exports = class CommandHandlers {
 	async rangeArguments() {
 		return [
 			"cameraHelper",
-			"name",
+			"control",
 		];
 	}
 
-	async range(cameraHelper, name) {
+	async range(cameraHelper, controlName) {
 		assert.strictEqual(arguments.length, 2);
 
-		const range = await cameraHelper.getRange(name);
+		const range = await cameraHelper.getRange(controlName);
 		const json = JSON.stringify(range, null, 2);
 
 		this._output.normal(json);
@@ -80,15 +80,15 @@ module.exports = class CommandHandlers {
 	async setArguments() {
 		return [
 			"cameraHelper",
-			"name",
+			"control",
 			"value",
 		];
 	}
 
-	async set(cameraHelper, name, value) {
+	async set(cameraHelper, controlName, value) {
 		assert.strictEqual(arguments.length, 3);
 
-		return cameraHelper.setValue(name, value);
+		return cameraHelper.setValue(controlName, value);
 	}
 
 	async exportArguments() {

@@ -35,16 +35,16 @@ module.exports = class CommandManager {
 		this._injectCameraHelperArgumentName = "cameraHelper";
 	}
 
-	async _commandHandlerExists(name) {
-		return (typeof this._commandHandlers[name] === "function");
+	async _commandHandlerExists(commandName) {
+		return (typeof this._commandHandlers[commandName] === "function");
 	}
 
-	async _getCommandArguments(name) {
-		return this._commandHandlers[`${name}Arguments`]();
+	async _getCommandArguments(commandName) {
+		return this._commandHandlers[`${commandName}Arguments`]();
 	}
 
-	async _getCommandHandler(name) {
-		return this._commandHandlers[name].bind(this._commandHandlers);
+	async _getCommandHandler(commandName) {
+		return this._commandHandlers[commandName].bind(this._commandHandlers);
 	}
 
 	async execute(runtimeConfig) {

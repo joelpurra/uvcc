@@ -31,14 +31,14 @@ module.exports = class CameraHelper {
 		this._camera = camera;
 	}
 
-	async getValue(name) {
+	async getValue(controlName) {
 		const gettableControlNames = await this._cameraControlHelper.getGettableControlNames();
 
-		if (!gettableControlNames.includes(name)) {
-			throw new Error(`Could not find a gettable control named ${JSON.stringify(name)}.`);
+		if (!gettableControlNames.includes(controlName)) {
+			throw new Error(`Could not find a gettable control named ${JSON.stringify(controlName)}.`);
 		}
 
-		const valueObject = await this._camera.get(name);
+		const valueObject = await this._camera.get(controlName);
 		const values = Object.values(valueObject);
 		let value;
 
@@ -52,24 +52,24 @@ module.exports = class CameraHelper {
 		return value;
 	}
 
-	async getRange(name) {
+	async getRange(controlName) {
 		const rangedControlNames = await this._cameraControlHelper.getRangedControlNames();
 
-		if (!rangedControlNames.includes(name)) {
-			throw new Error(`Could not find a ranged control named ${JSON.stringify(name)}.`);
+		if (!rangedControlNames.includes(controlName)) {
+			throw new Error(`Could not find a ranged control named ${JSON.stringify(controlName)}.`);
 		}
 
-		return this._camera.range(name);
+		return this._camera.range(controlName);
 	}
 
-	async setValue(name, value) {
+	async setValue(controlName, value) {
 		const settableControlNames = await this._cameraControlHelper.getSettableControlNames();
 
-		if (!settableControlNames.includes(name)) {
-			throw new Error(`Could not find a settable control named ${JSON.stringify(name)}.`);
+		if (!settableControlNames.includes(controlName)) {
+			throw new Error(`Could not find a settable control named ${JSON.stringify(controlName)}.`);
 		}
 
-		return this._camera.set(name, value);
+		return this._camera.set(controlName, value);
 	}
 
 	async getControlNames() {
@@ -79,12 +79,12 @@ module.exports = class CameraHelper {
 	async getRanges() {
 		return Bluebird.reduce(
 			this._cameraControlHelper.getRangedControlNames(),
-			async (object, name) => {
+			async (object, controlName) => {
 				try {
-					object[name] = await this.getRange(name);
+					object[controlName] = await this.getRange(controlName);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose("Error getting range, ignoring.", name, error);
+					this._output.verbose("Error getting range, ignoring.", controlName, error);
 				}
 
 				return object;
@@ -96,12 +96,12 @@ module.exports = class CameraHelper {
 	async getValues() {
 		return Bluebird.reduce(
 			this._cameraControlHelper.getControlNames(),
-			async (object, name) => {
+			async (object, controlName) => {
 				try {
-					object[name] = await this.getValue(name);
+					object[controlName] = await this.getValue(controlName);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose("Error getting value, ignoring.", name, error);
+					this._output.verbose("Error getting value, ignoring.", controlName, error);
 				}
 
 				return object;
@@ -113,12 +113,12 @@ module.exports = class CameraHelper {
 	async getSettableValues() {
 		return Bluebird.reduce(
 			this._cameraControlHelper.getSettableControlNames(),
-			async (object, name) => {
+			async (object, controlName) => {
 				try {
-					object[name] = await this.getValue(name);
+					object[controlName] = await this.getValue(controlName);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose("Error getting settable value, ignoring.", name, error);
+					this._output.verbose("Error getting settable value, ignoring.", controlName, error);
 				}
 
 				return object;
@@ -128,11 +128,11 @@ module.exports = class CameraHelper {
 	}
 
 	async setValues(configuration) {
-		const names = Object.keys(configuration);
+		const controlNames = Object.keys(configuration);
 		const settableControlNames = await this._cameraControlHelper.getSettableControlNames();
 
-		// NOTE: checking all names before attempting to set any.
-		const nonSettableNames = names.filter((name) => !settableControlNames.includes(name));
+		// NOTE: checking all control names before attempting to set any.
+		const nonSettableNames = controlNames.filter((controlName) => !settableControlNames.includes(controlName));
 
 		if (nonSettableNames.length !== 0) {
 			throw new Error(`Could not find a settable controls, aborting setting values: ${JSON.stringify(nonSettableNames)}`);
@@ -140,15 +140,15 @@ module.exports = class CameraHelper {
 
 		await Bluebird.map(
 			// eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-			names,
-			async (name) => {
-				const value = configuration[name];
+			controlNames,
+			async (controlName) => {
+				const value = configuration[controlName];
 
 				try {
-					await this.setValue(name, value);
+					await this.setValue(controlName, value);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose("Error setting value, ignoring.", name, value, error);
+					this._output.verbose("Error setting value, ignoring.", controlName, value, error);
 				}
 			},
 		);
