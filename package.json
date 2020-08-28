@@ -1,7 +1,7 @@
 {
   "name": "uvcc",
   "version": "1.0.2",
-  "description": "USB Video Class (UVC) device configurator. Used for webcams, camcorders, etcetera.",
+  "description": "USB Video Class (UVC) device configurator for the command line (CLI). Used for webcams, camcorders, etcetera.",
   "homepage": "https://joelpurra.com/projects/uvcc/",
   "main": "index.js",
   "bin": {
@@ -9,11 +9,13 @@
   },
   "scripts": {
     "test": "npm run --silent lint",
-    "lint": "npm run --silent xo && npm run --silent lint:copyright",
-    "lint:fix": "npm run --silent xo:fix",
+    "lint": "npm run --silent lint:xo && npm run --silent lint:prettier && npm run --silent lint:copyright",
+    "lint:fix": "npm run --silent lint:xo:fix && npm run --silent lint:prettier:fix",
     "lint:copyright": "find . -not \\( -path './.git/*' -or -path './node_modules/*' -or -path './dist/*' \\) -type f \\( -iname '*.js' \\) -print0 | xargs -0 grep -L 'This file is part of uvcc' | sed 's/^/File is missing copyright notice: /'",
-    "xo": "xo",
-    "xo:fix": "xo --fix"
+    "lint:prettier": "prettier --list-different \"**/*.json\" \"**/*.md\" || { echo \"Prettier needs to format the above files. Try 'npm run --silent lint:fix'.\" && exit 1; }",
+    "lint:prettier:fix": "prettier --write \"**/*.json\" \"**/*.md\"",
+    "lint:xo": "xo",
+    "lint:xo:fix": "xo --fix"
   },
   "dependencies": {
     "array-non-uniq": "^1.0.0",
