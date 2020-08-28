@@ -19,38 +19,36 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 const assert = require("assert");
 
 module.exports = class Output {
-    constructor(verbose) {
-        assert.strictEqual(arguments.length, 1);
-        assert.strictEqual(typeof verbose, "boolean");
+	constructor(verbose) {
+		assert.strictEqual(arguments.length, 1);
+		assert.strictEqual(typeof verbose, "boolean");
 
-        this._verbose = verbose;
-    }
+		this._verbose = verbose;
+	}
 
-    _stdout(...args) {
-        /* eslint-disable no-console */
-        console.log(...args);
-        /* eslint-enable no-console */
-    }
+	_stdout(...args) {
+		// eslint-disable-next-line no-console
+		console.log(...args);
+	}
 
-    _stderr(...args) {
-        /* eslint-disable no-console */
-        console.error(...args);
-        /* eslint-enable no-console */
-    }
+	_stderr(...args) {
+		// eslint-disable-next-line no-console
+		console.error(...args);
+	}
 
-    normal(...args) {
-        return this._stdout(...args);
-    }
+	normal(...args) {
+		return this._stdout(...args);
+	}
 
-    error(...args) {
-        return this._stderr(...args);
-    }
+	error(...args) {
+		return this._stderr(...args);
+	}
 
-    verbose(...args) {
-        if (!this._verbose) {
-            return undefined;
-        }
+	verbose(...args) {
+		if (!this._verbose) {
+			return undefined;
+		}
 
-        return this._stderr(...args);
-    }
+		return this._stderr(...args);
+	}
 };

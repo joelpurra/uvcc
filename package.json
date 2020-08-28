@@ -8,33 +8,27 @@
     "uvcc": "index.js"
   },
   "scripts": {
-    "test": "npm run --silent lint:fast",
-    "lint": "npm run --silent lint:full",
-    "lint:fast": "npm run --silent eslint && npm run --silent lint:copyright",
-    "lint:full": "npm run --silent lint:fast",
+    "test": "npm run --silent lint",
+    "lint": "npm run --silent xo && npm run --silent lint:copyright",
+    "lint:fix": "npm run --silent xo:fix",
     "lint:copyright": "find . -not \\( -path './.git/*' -or -path './node_modules/*' -or -path './dist/*' \\) -type f \\( -iname '*.js' \\) -print0 | xargs -0 grep -L 'This file is part of uvcc' | sed 's/^/File is missing copyright notice: /'",
-    "eslint": "eslint --ext .js .",
-    "eslint:fix": "eslint --ext .js --fix ."
+    "xo": "xo",
+    "xo:fix": "xo --fix"
   },
   "dependencies": {
+    "array-non-uniq": "^1.0.0",
     "bluebird": "^3.5.1",
     "engine-check": "^1.0.1",
     "filter-obj": "^2.0.1",
     "find-up": "^5.0.0",
-    "map-obj": "^4.1.0",
     "sort-keys": "^4.0.0",
     "stream-to-promise": "^3.0.0",
     "uvc-control": "github:joelpurra/node-uvc-control#v2-control-transfer-target-device",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
-    "eslint": "^7.7.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-no-unsafe-innerhtml": "^1.0.16",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^1.0.0",
+    "xo": "^0.33.0"
   },
   "engines": {
     "node": ">=10.0.0"
