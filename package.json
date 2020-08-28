@@ -19,7 +19,7 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "filter-obj": "^2.0.1",
-    "find-up": "^2.1.0",
+    "find-up": "^5.0.0",
     "map-obj": "^4.1.0",
     "sort-keys": "^4.0.0",
     "stream-to-promise": "^2.2.0",
