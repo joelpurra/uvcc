@@ -74,7 +74,7 @@ module.exports = class CameraControlHelper {
 
                     return obj;
                 },
-                {}
+                {},
             );
         const mappedControls = mapObj(controls, (key, control) => {
             try {

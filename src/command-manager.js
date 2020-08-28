@@ -71,7 +71,7 @@ module.exports = class CommandManager {
 
                 return args.concat(runtimeConfig[arg]);
             },
-            []
+            [],
         );
 
         // TODO: create function to get/close camera, create camera helper.
