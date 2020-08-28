@@ -19,20 +19,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 require("engine-check")();
 
-const runtimeConfigurator = require("./src/runtime-configurator");
+const runtimeConfigurator = require("./runtime-configurator");
 
 // https://github.com/makenai/node-uvc-control
 const UVCControl = require("uvc-control");
 
-const CameraControlHelper = require("./src/camera-control-helper");
-const CameraControlHelperFactory = require("./src/camera-control-helper-factory");
-const CameraFactory = require("./src/camera-factory");
-const CameraHelper = require("./src/camera-helper");
-const CameraHelperFactory = require("./src/camera-helper-factory");
-const CommandHandlers = require("./src/command-handlers");
-const CommandManager = require("./src/command-manager");
-const Output = require("./src/output");
-const UvcDeviceLister = require("./src/uvc-device-lister");
+const CameraControlHelper = require("./camera-control-helper");
+const CameraControlHelperFactory = require("./camera-control-helper-factory");
+const CameraFactory = require("./camera-factory");
+const CameraHelper = require("./camera-helper");
+const CameraHelperFactory = require("./camera-helper-factory");
+const CommandHandlers = require("./command-handlers");
+const CommandManager = require("./command-manager");
+const Output = require("./output");
+const UvcDeviceLister = require("./uvc-device-lister");
 
 const mainAsync = async () => {
 	try {

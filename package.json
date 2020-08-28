@@ -3,19 +3,28 @@
   "version": "1.0.2",
   "description": "USB Video Class (UVC) device configurator for the command line (CLI). Used for webcams, camcorders, etcetera.",
   "homepage": "https://joelpurra.com/projects/uvcc/",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "uvcc": "index.js"
+    "uvcc": "./dist/index.js"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
+    "clean": "rimraf ./dist/",
+    "build": "tsc",
+    "rebuild": "npm run --silent clean && npm run --silent build",
+    "build:watch": "tsc --watch",
     "test": "npm run --silent lint",
     "lint": "npm run --silent lint:xo && npm run --silent lint:prettier && npm run --silent lint:copyright",
     "lint:fix": "npm run --silent lint:xo:fix && npm run --silent lint:prettier:fix",
-    "lint:copyright": "find . -not \\( -path './.git/*' -or -path './node_modules/*' -or -path './dist/*' \\) -type f \\( -iname '*.js' \\) -print0 | xargs -0 grep -L 'This file is part of uvcc' | sed 's/^/File is missing copyright notice: /'",
+    "lint:copyright": "find . -not \\( -path './.git/*' -or -path './node_modules/*' -or -path './dist/*' \\) -type f \\( -iname '*.js' -or -iname '*.ts' \\) -print0 | xargs -0 grep -L 'This file is part of uvcc' | sed 's/^/File is missing copyright notice: /'",
     "lint:prettier": "prettier --list-different \"**/*.json\" \"**/*.md\" || { echo \"Prettier needs to format the above files. Try 'npm run --silent lint:fix'.\" && exit 1; }",
     "lint:prettier:fix": "prettier --write \"**/*.json\" \"**/*.md\"",
     "lint:xo": "xo",
-    "lint:xo:fix": "xo --fix"
+    "lint:xo:fix": "xo --fix",
+    "prepublishOnly": "git diff-index --exit-code master && npm run --silent rebuild && npm run --silent test"
   },
   "dependencies": {
     "array-non-uniq": "^1.0.0",
@@ -29,8 +38,11 @@
     "yargs": "^15.4.1"
   },
   "devDependencies": {
+    "@sindresorhus/tsconfig": "^0.7.0",
     "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^1.0.0",
     "husky": "^4.2.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.0.2",
     "xo": "^0.33.0"
   },
   "engines": {

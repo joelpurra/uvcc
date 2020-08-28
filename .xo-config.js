@@ -18,6 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 module.exports = {
 	extends: [
-		"eslint-config-joelpurra/node",
+		"eslint-config-joelpurra/typescript",
 	],
 };
