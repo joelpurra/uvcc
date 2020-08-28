@@ -4,8 +4,6 @@ Configure [USB Video Class](https://en.wikipedia.org/wiki/USB_video_device_class
 
 [UVC-compliant devices](https://en.wikipedia.org/wiki/List_of_USB_video_class_devices) include webcams, digital camcorders, transcoders, analog video converters and still-image cameras.
 
-
-
 ## Features
 
 Use `uvcc` to **fine-tune camera configuration**, such as brightness, contrast, saturation, gain, white balance temperature, zoom. **Export/import of JSON** makes it easy to reliably and repeatedly configure one or more cameras for various situations.
@@ -19,8 +17,6 @@ Use `uvcc` to **fine-tune camera configuration**, such as brightness, contrast, 
 - Per-user or per-directory configuration files.
 - See details of [available controls](https://github.com/makenai/node-uvc-control#currently-supported-controls) from the upstream project [uvc-control](https://github.com/makenai/node-uvc-control#currently-supported-controls).
 
-
-
 ## Installation
 
 Requires [Node.js](https://nodejs.org/) (`node` and `npm` commands). Published on npm as [`uvcc`](https://www.npmjs.com/package/uvcc).
@@ -31,8 +27,6 @@ npm install --global uvcc
 
 - Optionally omit the `--global` flag and use `./node_modules/.bin/uvcc` from the install directory.
 - Uses [`libusb`](http://libusb.info/) through the [npm package `usb`](https://www.npmjs.com/package/usb).
-
-
 
 ## Usage
 
@@ -65,7 +59,6 @@ uvcc export > "uvcc-export.json"
 # Load configuration from a JSON file.
 cat "uvcc-export.json" | uvcc import
 ```
-
 
 ### Help
 
@@ -116,8 +109,6 @@ details.
 See also: https://joelpurra.com/projects/uvcc/
 ```
 
-
-
 ## Configuration
 
 The command line arguments can optionally be provided using environment variables, implicit per-user/per-directory configuration files, or explicitly loaded from JSON files.
@@ -136,7 +127,6 @@ uvcc devices
 uvcc --vendor 0x46d --product 0x82d export
 ```
 
-
 ### Environment variables
 
 Set `UVCC_<argument name>`.
@@ -144,7 +134,6 @@ Set `UVCC_<argument name>`.
 ```shell
 UVCC_VERBOSE=true uvcc controls
 ```
-
 
 ### Configuration file format
 
@@ -157,11 +146,9 @@ Configuration files for `uvcc` are in JSON format. If you configure the same cam
 }
 ```
 
-
 ### Implicit configuration file
 
 You can put any command line arguments as properties in a JSON file called either `.uvccrc` or `.uvccrc.json`. The file is loaded from the same directory as `uvcc` is executed in, or the nearest parent directory where it can be found. A convenient location might be your `$HOME` directory.
-
 
 ### Explicit configuration file
 
@@ -170,8 +157,6 @@ Instead of passing command line arguments one by one, an explicit configuration 
 ```shell
 uvcc --config <my-uvcc-config.json>
 ```
-
-
 
 ## Examples
 
@@ -202,7 +187,6 @@ uvcc --vendor 0x46d --product 0x82d export
 }
 ```
 
-
 ### Available control ranges
 
 ```shell
@@ -212,58 +196,20 @@ uvcc --vendor 0x46d --product 0x82d ranges
 
 ```json
 {
-  "absoluteExposureTime": [
-    3,
-    2047
-  ],
-  "absoluteFocus": [
-    0,
-    250
-  ],
-  "absolutePanTilt": [
-    -154614527725568,
-    154618822692000
-  ],
-  "absoluteZoom": [
-    100,
-    500
-  ],
-  "autoFocus": [
-    0,
-    1
-  ],
-  "backlightCompensation": [
-    0,
-    1
-  ],
-  "brightness": [
-    0,
-    255
-  ],
-  "contrast": [
-    0,
-    255
-  ],
-  "gain": [
-    0,
-    255
-  ],
-  "saturation": [
-    0,
-    255
-  ],
-  "sharpness": [
-    0,
-    255
-  ],
-  "whiteBalanceTemperature": [
-    2000,
-    6500
-  ]
+  "absoluteExposureTime": [3, 2047],
+  "absoluteFocus": [0, 250],
+  "absolutePanTilt": [-154614527725568, 154618822692000],
+  "absoluteZoom": [100, 500],
+  "autoFocus": [0, 1],
+  "backlightCompensation": [0, 1],
+  "brightness": [0, 255],
+  "contrast": [0, 255],
+  "gain": [0, 255],
+  "saturation": [0, 255],
+  "sharpness": [0, 255],
+  "whiteBalanceTemperature": [2000, 6500]
 }
 ```
-
-
 
 ## Development
 
@@ -278,8 +224,6 @@ git flow init -d
 npm run --silent test
 ```
 
-
-
 ## Todo
 
 - Add tests.
@@ -287,27 +231,21 @@ npm run --silent test
   - `v4l2-ctl --list-devices`
   - `v4l2-ctl --list-ctrls`
   - See for example the article [Manual USB camera settings in Linux
-](http://kurokesu.com/main/2016/01/16/manual-usb-camera-settings-in-linux/).
+    ](http://kurokesu.com/main/2016/01/16/manual-usb-camera-settings-in-linux/).
 - Make available camera controls dynamic for the actual camera targeted/used, as there might be more/fewer/other controls on different cameras. Currently controls target [Logitech C920 HD Pro Webcam](https://www.logitech.com/en-us/product/hd-pro-webcam-c920), as per comments in [uvc-control](https://github.com/makenai/node-uvc-control), although most should also apply to other UVC cameras.
-
-
 
 ## See also
 
 - [USB Video Class](https://en.wikipedia.org/wiki/USB_video_device_class) on Wikipedia.
 - [List of USB video class devices
-](https://en.wikipedia.org/wiki/List_of_USB_video_class_devices) on Wikipedia.
+  ](https://en.wikipedia.org/wiki/List_of_USB_video_class_devices) on Wikipedia.
 - The lower-level UVC Node.js library [uvc-control](https://github.com/makenai/node-uvc-control) used by `uvcc`.
 - The even lower level library [`libusb`](http://libusb.info/) ([Wikipedia](https://en.wikipedia.org/wiki/Libusb)) through the [npm package `usb`](https://www.npmjs.com/package/usb).
 - The [`v4l-utils`](https://linuxtv.org/wiki/index.php/V4l-utils) for [video4linux](https://www.linuxtv.org) ([Wikipedia](https://en.wikipedia.org/wiki/Video4Linux)), which includes [`v4l2-ctl`](https://www.mankier.com/1/v4l2-ctl).
 
-
-
 ## Acknowledgements
 
-- [Pawel Szymczykowski](http://twitter.com/makenai) for [uvc-control](https://github.com/makenai/node-uvc-control) for node.js. Without his code I would never have gotten close to automating — or perhaps even being *able* to — changing camera controls on macOS.
-
-
+- [Pawel Szymczykowski](http://twitter.com/makenai) for [uvc-control](https://github.com/makenai/node-uvc-control) for node.js. Without his code I would never have gotten close to automating — or perhaps even being _able_ to — changing camera controls on macOS.
 
 ---
 
