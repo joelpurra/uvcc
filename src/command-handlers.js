@@ -28,11 +28,14 @@ module.exports = class CommandHandlers {
 
 		this._output = output;
 		this._uvcDeviceLister = uvcDeviceLister;
+
+		// NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
+		this._injectCameraHelperArgumentName = "cameraHelper";
 	}
 
 	async getArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 			"control",
 		];
 	}
@@ -48,7 +51,7 @@ module.exports = class CommandHandlers {
 
 	async rangeArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 			"control",
 		];
 	}
@@ -64,7 +67,7 @@ module.exports = class CommandHandlers {
 
 	async rangesArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 
@@ -79,7 +82,7 @@ module.exports = class CommandHandlers {
 
 	async setArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 			"control",
 			"value",
 		];
@@ -93,7 +96,7 @@ module.exports = class CommandHandlers {
 
 	async exportArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 
@@ -110,7 +113,7 @@ module.exports = class CommandHandlers {
 
 	async importArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 
@@ -125,7 +128,7 @@ module.exports = class CommandHandlers {
 
 	async controlsArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 

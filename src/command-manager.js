@@ -32,6 +32,7 @@ module.exports = class CommandManager {
 		this._cameraHelperFactory = cameraHelperFactory;
 		this._commandHandlers = commandHandlers;
 
+		// NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
 		this._injectCameraHelperArgumentName = "cameraHelper";
 	}
 
