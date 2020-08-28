@@ -16,25 +16,25 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+const assert = require('assert');
 
 module.exports = class UvcDeviceLister {
-    constructor(UVCControl) {
-        assert.strictEqual(arguments.length, 1);
-        assert.strictEqual(typeof UVCControl, "function");
+	constructor(UVCControl) {
+		assert.strictEqual(arguments.length, 1);
+		assert.strictEqual(typeof UVCControl, 'function');
 
-        this._UVCControl = UVCControl;
-    }
+		this._UVCControl = UVCControl;
+	}
 
-    async get() {
-        const devices = await this._UVCControl.discover();
-        const output = devices.map(device => ({
-            name: device.name,
-            vendor: device.deviceDescriptor.idVendor,
-            product: device.deviceDescriptor.idProduct,
-            address: device.deviceAddress,
-        }));
+	async get() {
+		const devices = await this._UVCControl.discover();
+		const output = devices.map(device => ({
+			name: device.name,
+			vendor: device.deviceDescriptor.idVendor,
+			product: device.deviceDescriptor.idProduct,
+			address: device.deviceAddress
+		}));
 
-        return output;
-    }
+		return output;
+	}
 };

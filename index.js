@@ -17,47 +17,47 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-require("engine-check")();
+require('engine-check')();
 
-const runtimeConfigurator = require("./src/runtime-configurator");
+const runtimeConfigurator = require('./src/runtime-configurator');
 
 // https://github.com/makenai/node-uvc-control
-const UVCControl = require("uvc-control");
+const UVCControl = require('uvc-control');
 
-const Output = require("./src/output");
-const CameraFactory = require("./src/camera-factory");
-const CameraControlHelper = require("./src/camera-control-helper");
-const CameraControlHelperFactory = require("./src/camera-control-helper-factory");
-const CameraHelper = require("./src/camera-helper");
-const CameraHelperFactory = require("./src/camera-helper-factory");
-const UvcDeviceLister = require("./src/uvc-device-lister");
-const CommandHandlers = require("./src/command-handlers");
-const CommandManager = require("./src/command-manager");
+const Output = require('./src/output');
+const CameraFactory = require('./src/camera-factory');
+const CameraControlHelper = require('./src/camera-control-helper');
+const CameraControlHelperFactory = require('./src/camera-control-helper-factory');
+const CameraHelper = require('./src/camera-helper');
+const CameraHelperFactory = require('./src/camera-helper-factory');
+const UvcDeviceLister = require('./src/uvc-device-lister');
+const CommandHandlers = require('./src/command-handlers');
+const CommandManager = require('./src/command-manager');
 
-const main = async() => {
-    try {
-        // NOTE: ignoring unhandled rejections and exceptions, as there is (practically) nothing to gracefully shut down.
-        const runtimeConfig = runtimeConfigurator();
-        const output = new Output(runtimeConfig.verbose);
+const main = async () => {
+	try {
+		// NOTE: ignoring unhandled rejections and exceptions, as there is (practically) nothing to gracefully shut down.
+		const runtimeConfig = runtimeConfigurator();
+		const output = new Output(runtimeConfig.verbose);
 
-        process.on("unhandledRejection", (...args) => output.verbose(...args));
-        process.on("uncaughtException", (...args) => output.verbose(...args));
+		process.on('unhandledRejection', (...args) => output.verbose(...args));
+		process.on('uncaughtException', (...args) => output.verbose(...args));
 
-        const cameraFactory = new CameraFactory(UVCControl);
-        const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
-        const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
-        const uvcDeviceLister = new UvcDeviceLister(UVCControl);
-        const commandHandlers = new CommandHandlers(output, uvcDeviceLister);
-        const commandManager = new CommandManager(output, cameraFactory, cameraHelperFactory, commandHandlers);
+		const cameraFactory = new CameraFactory(UVCControl);
+		const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
+		const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
+		const uvcDeviceLister = new UvcDeviceLister(UVCControl);
+		const commandHandlers = new CommandHandlers(output, uvcDeviceLister);
+		const commandManager = new CommandManager(output, cameraFactory, cameraHelperFactory, commandHandlers);
 
-        await commandManager.execute(runtimeConfig);
-    } catch (error) {
-        /* eslint-disable no-console */
-        console.error(error);
-        /* eslint-enable no-console */
+		await commandManager.execute(runtimeConfig);
+	} catch (error) {
+		/* eslint-disable no-console */
+		console.error(error);
+		/* eslint-enable no-console */
 
-        throw error;
-    }
+		throw error;
+	}
 };
 
 main();
