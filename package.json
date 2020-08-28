@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^1.0.0",
+    "husky": "^4.2.5",
     "xo": "^0.33.0"
   },
   "engines": {
@@ -58,5 +59,11 @@
     "email": "mig@joelpurra.se",
     "url": "https://joelpurra.com/"
   },
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run --silent test",
+      "pre-push": "npm run --silent test"
+    }
+  }
 }
