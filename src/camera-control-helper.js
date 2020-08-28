@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const assert = require('assert');
 const filterObj = require('filter-obj');
-const mapObj = require('map-obj');
+const arrayNonUniq = require('array-non-uniq');
 const sortKeys = require('sort-keys');
 
 module.exports = class CameraControlHelper {
@@ -46,40 +46,33 @@ module.exports = class CameraControlHelper {
 	_isSettableControl(control) {
 		// NOTE: relies on uvc-control internals.
 		return control.requests.includes(this._UVCControl.REQUEST.SET_CUR) ||
-            // TODO: treat optionally settable controls separately?
-            (
-            	Array.isArray(control.optional_requests) &&
-                control.optional_requests.includes(this._UVCControl.REQUEST.SET_CUR)
-            );
+		(
+			// TODO: treat optionally settable controls separately?
+			Array.isArray(control.optional_requests) &&
+			control.optional_requests.includes(this._UVCControl.REQUEST.SET_CUR)
+		);
 	}
 
 	async _mapSupportedControls() {
-		const controls = this._camera.supportedControls
-			.map(controlKey => {
-				const control = this._UVCControl.controls[controlKey];
+		const supportedControls = this._camera.supportedControls
+			.map(supportedControlName => this._UVCControl.controls[supportedControlName]);
 
-				if (!control) {
-					throw new Error('Could not find control: ' + controlKey);
-				}
+		const missingControls = supportedControls.filter(control => !control);
 
-				return control;
-			})
-			.reduce(
-				(object, control) => {
-					if (object[control.name]) {
-						throw new Error('Control was already found: ' + control.name);
-					}
+		if (missingControls.length !== 0) {
+			throw new Error('Controls were not found: ' + missingControls);
+		}
 
-					object[control.name] = control;
+		const nonUniqueControls = arrayNonUniq(supportedControls);
 
-					return object;
-				},
-				{}
-			);
-		const mappedControls = mapObj(controls, (key, control) => {
+		if (nonUniqueControls.length !== 0) {
+			throw new Error('Controls were already found: ' + nonUniqueControls);
+		}
+
+		const mappedControls = supportedControls.map(control => {
 			try {
 				const uvccControl = [
-					key,
+					control.name,
 					{
 						// NOTE: minimal uvcc-specific mapping.
 						isGettable: this._isGettableControl(control),
@@ -90,13 +83,20 @@ module.exports = class CameraControlHelper {
 
 				return uvccControl;
 			} catch (error) {
-				const wrappedError = new Error('Could not map control: ' + key + ' (' + error + ')');
+				const wrappedError = new Error('Could not map control: ' + control.name + ' (' + error + ')');
 				wrappedError.innerError = error;
 
 				throw wrappedError;
 			}
 		});
-		const sortedControls = sortKeys(mappedControls);
+
+		const controlsObject = {};
+
+		for (const mappedControl of mappedControls) {
+			controlsObject[mappedControl[0]] = mappedControl[1];
+		}
+
+		const sortedControls = sortKeys(controlsObject);
 
 		return sortedControls;
 	}

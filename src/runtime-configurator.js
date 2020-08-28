@@ -25,9 +25,7 @@ const packageJson = require('../package.json');
 
 const getJSON = path => {
 	try {
-		/* eslint-disable no-sync */
 		const json = JSON.parse(fs.readFileSync(path));
-		/* eslint-enable no-sync */
 
 		return json;
 	} catch (error) {
@@ -46,7 +44,9 @@ module.exports = () => {
 
 	const hasConfigFlag = process.argv.includes('--config');
 
-	if (!hasConfigFlag) {
+	if (hasConfigFlag) {
+		fromImplicitConfigFile = {};
+	} else {
 		const nearestConfigPath = findUp.sync([
 			`.${appBinaryName}rc`,
 			`.${appBinaryName}rc.json`
@@ -54,8 +54,6 @@ module.exports = () => {
 		const configFromNearestConfigPath = nearestConfigPath ? getJSON(nearestConfigPath) : {};
 
 		fromImplicitConfigFile = configFromNearestConfigPath;
-	} else {
-		fromImplicitConfigFile = {};
 	}
 
 	yargs

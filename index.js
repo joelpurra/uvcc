@@ -52,9 +52,7 @@ const main = async () => {
 
 		await commandManager.execute(runtimeConfig);
 	} catch (error) {
-		/* eslint-disable no-console */
 		console.error(error);
-		/* eslint-enable no-console */
 
 		throw error;
 	}

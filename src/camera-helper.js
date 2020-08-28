@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 const assert = require('assert');
-const Promise = require('bluebird');
+const Bluebird = require('bluebird');
 
 module.exports = class CameraHelper {
 	constructor(output, cameraControlHelper, camera) {
@@ -77,58 +77,52 @@ module.exports = class CameraHelper {
 	}
 
 	async getRanges() {
-		return Promise.reduce(
-			await this._cameraControlHelper.getRangedControlNames(),
-			(object, name) => this.getRange(name)
-				.then(range => {
-					object[name] = range;
-
-					return object;
-				})
-				.catch(error => {
+		return Bluebird.reduce(
+			this._cameraControlHelper.getRangedControlNames(),
+			async (object, name) => {
+				try {
+					object[name] = await this.getRange(name);
+				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this._output.verbose('Error getting range, ignoring.', name, error);
+				}
 
-					return object;
-				}),
+				return object;
+			},
 			{}
 		);
 	}
 
 	async getValues() {
-		return Promise.reduce(
-			await this._cameraControlHelper.getControlNames(),
-			(object, name) => this.getValue(name)
-				.then(value => {
-					object[name] = value;
-
-					return object;
-				})
-				.catch(error => {
+		return Bluebird.reduce(
+			this._cameraControlHelper.getControlNames(),
+			async (object, name) => {
+				try {
+					object[name] = await this.getValue(name);
+				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this._output.verbose('Error getting value, ignoring.', name, error);
+				}
 
-					return object;
-				}),
+				return object;
+			},
 			{}
 		);
 	}
 
 	async getSettableValues() {
-		return Promise.reduce(
-			await this._cameraControlHelper.getSettableControlNames(),
-			(object, name) => this.getValue(name)
-				.then(value => {
-					object[name] = value;
-
-					return object;
-				})
-				.catch(error => {
+		return Bluebird.reduce(
+			this._cameraControlHelper.getSettableControlNames(),
+			async (object, name) => {
+				try {
+					object[name] = await this.getValue(name);
+				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this._output.verbose('Error getting settable value, ignoring.', name, error);
+				}
 
-					return object;
-				}),
+				return object;
+			},
 			{}
 		);
 	}
@@ -138,24 +132,24 @@ module.exports = class CameraHelper {
 		const settableControlNames = await this._cameraControlHelper.getSettableControlNames();
 
 		// NOTE: checking all names before attempting to set any.
-		names.forEach(name => {
-			if (!settableControlNames.includes(name)) {
-				throw new Error(`Could not find a settable control named ${JSON.stringify(name)}, aborting setting values.`);
-			}
-		});
+		const nonSettableNames = names.filter(name => !settableControlNames.includes(name));
 
-		return Promise.map(
+		if (nonSettableNames.length !== 0) {
+			throw new Error(`Could not find a settable controls, aborting setting values: ${JSON.stringify(nonSettableNames)}`);
+		}
+
+		await Bluebird.map(
+			// eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 			names,
-			name => {
+			async name => {
 				const value = configuration[name];
 
-				return this.setValue(name, value)
-					.catch(error => {
-						// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-						this._output.verbose('Error setting value, ignoring.', name, value, error);
-
-						return undefined;
-					});
+				try {
+					await this.setValue(name, value);
+				} catch (error) {
+					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
+					this._output.verbose('Error setting value, ignoring.', name, value, error);
+				}
 			}
 		);
 	}

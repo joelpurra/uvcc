@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 const assert = require('assert');
-const Promise = require('bluebird');
+const Bluebird = require('bluebird');
 
 module.exports = class CommandManager {
 	constructor(output, cameraFactory, cameraHelperFactory, commandHandlers) {
@@ -62,17 +62,10 @@ module.exports = class CommandManager {
 		const commandArguments = await this._getCommandArguments(commandName);
 		const commandHandler = await this._getCommandHandler(commandName);
 
-		const argumentValues = commandArguments.reduce(
-			(args, arg) => {
-				// NOTE HACK: don't mix "injection" with other arguments.
-				if (arg === this._injectCameraHelperArgumentName) {
-					return args;
-				}
-
-				return args.concat(runtimeConfig[arg]);
-			},
-			[]
-		);
+		// NOTE HACK: don't mix "injection" with other arguments.
+		const argumentValues = commandArguments
+			.filter(commandArgument => (commandArgument !== this._injectCameraHelperArgumentName))
+			.map(commandArgument => runtimeConfig[commandArgument]);
 
 		// TODO: create function to get/close camera, create camera helper.
 		let camera = null;
@@ -80,7 +73,7 @@ module.exports = class CommandManager {
 		const closeCamera = async () => {
 			if (camera) {
 				// TODO: avoid hard-coded delay.
-				await Promise.delay(1000);
+				await Bluebird.delay(1000);
 
 				await camera.close();
 			}

@@ -16,11 +16,11 @@
     "xo:fix": "xo --fix"
   },
   "dependencies": {
+    "array-non-uniq": "^1.0.0",
     "bluebird": "^3.5.1",
     "engine-check": "^1.0.1",
     "filter-obj": "^2.0.1",
     "find-up": "^5.0.0",
-    "map-obj": "^4.1.0",
     "sort-keys": "^4.0.0",
     "stream-to-promise": "^3.0.0",
     "uvc-control": "github:joelpurra/node-uvc-control#v2-control-transfer-target-device",

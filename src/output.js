@@ -27,15 +27,11 @@ module.exports = class Output {
 	}
 
 	_stdout(...args) {
-		/* eslint-disable no-console */
 		console.log(...args);
-		/* eslint-enable no-console */
 	}
 
 	_stderr(...args) {
-		/* eslint-disable no-console */
 		console.error(...args);
-		/* eslint-enable no-console */
 	}
 
 	normal(...args) {
