@@ -24,9 +24,11 @@ const UVCControl = require("uvc-control");
 
 const Output = require("./src/output");
 const CameraFactory = require("./src/camera-factory");
+const CameraControlHelper = require("./src/camera-control-helper");
+const CameraControlHelperFactory = require("./src/camera-control-helper-factory");
 const CameraHelper = require("./src/camera-helper");
 const CameraHelperFactory = require("./src/camera-helper-factory");
-const UsbDeviceLister = require("./src/usb-device-lister");
+const UvcDeviceLister = require("./src/uvc-device-lister");
 const CommandHandlers = require("./src/command-handlers");
 const CommandManager = require("./src/command-manager");
 
@@ -40,9 +42,10 @@ const main = async() => {
         process.on("uncaughtException", (...args) => output.verbose(...args));
 
         const cameraFactory = new CameraFactory(UVCControl);
-        const cameraHelperFactory = new CameraHelperFactory(output, CameraHelper, UVCControl);
-        const usbDeviceLister = new UsbDeviceLister();
-        const commandHandlers = new CommandHandlers(output, usbDeviceLister);
+        const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
+        const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
+        const uvcDeviceLister = new UvcDeviceLister(UVCControl);
+        const commandHandlers = new CommandHandlers(output, uvcDeviceLister);
         const commandManager = new CommandManager(output, cameraFactory, cameraHelperFactory, commandHandlers);
 
         await commandManager.execute(runtimeConfig);

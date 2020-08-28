@@ -18,21 +18,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const assert = require("assert");
 
-const {
-    fork,
-} = require("child_process");
+module.exports = class CameraControlHelperFactory {
+    constructor(UVCControl, CameraControlHelper) {
+        assert.strictEqual(arguments.length, 2);
+        assert.strictEqual(typeof UVCControl, "function");
+        assert.strictEqual(typeof CameraControlHelper, "function");
 
-// NOTE: using external code to avoid directly depending on the "usb" package.
-const usbDeviceListerPath = `${__dirname}/../node_modules/uvc-control/list-devices.js`;
-
-module.exports = class UsbDeviceLister {
-    constructor() {
-        assert.strictEqual(arguments.length, 0);
+        this._UVCControl = UVCControl;
+        this._CameraControlHelper = CameraControlHelper;
     }
 
-    async logToConsole() {
-        // TODO: await process.
-        // TODO: verify that the process dies.
-        fork(usbDeviceListerPath);
+    async get(camera) {
+        assert.strictEqual(arguments.length, 1);
+        assert.strictEqual(typeof camera, "object");
+
+        const cameraControlHelper = new this._CameraControlHelper(this._UVCControl, camera);
+
+        return cameraControlHelper;
     }
 };

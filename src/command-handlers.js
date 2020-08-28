@@ -19,16 +19,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 const assert = require("assert");
 
 const streamToPromise = require("stream-to-promise");
-const sortObjectKeys = require("sort-object-keys");
 
 module.exports = class CommandHandlers {
-    constructor(output, usbDeviceLister) {
+    constructor(output, uvcDeviceLister) {
         assert.strictEqual(arguments.length, 2);
         assert.strictEqual(typeof output, "object");
-        assert.strictEqual(typeof usbDeviceLister, "object");
+        assert.strictEqual(typeof uvcDeviceLister, "object");
 
         this._output = output;
-        this._usbDeviceLister = usbDeviceLister;
+        this._uvcDeviceLister = uvcDeviceLister;
     }
 
     async getArguments() {
@@ -73,8 +72,7 @@ module.exports = class CommandHandlers {
         assert.strictEqual(arguments.length, 1);
 
         const ranges = await cameraHelper.getRanges();
-        const sorted = sortObjectKeys(ranges);
-        const json = JSON.stringify(sorted, null, 2);
+        const json = JSON.stringify(ranges, null, 2);
 
         this._output.normal(json);
     }
@@ -102,10 +100,10 @@ module.exports = class CommandHandlers {
     async export(cameraHelper) {
         assert.strictEqual(arguments.length, 1);
 
-        // TODO: sort values by key.
-        const values = await cameraHelper.getValues();
-        const sorted = sortObjectKeys(values);
-        const json = JSON.stringify(sorted, null, 2);
+        // NOTE: exporting un-settable values breaks imports because of strict settable value checks.
+        // TODO: export also un-settable values with --all flag?
+        const values = await cameraHelper.getSettableValues();
+        const json = JSON.stringify(values, null, 2);
 
         this._output.normal(json);
     }
@@ -134,9 +132,8 @@ module.exports = class CommandHandlers {
     async controls(cameraHelper) {
         assert.strictEqual(arguments.length, 1);
 
-        const availableControls = await cameraHelper.availableControls();
-        availableControls.sort();
-        const json = JSON.stringify(availableControls, null, 2);
+        const controlNames = await cameraHelper.getControlNames();
+        const json = JSON.stringify(controlNames, null, 2);
 
         this._output.normal(json);
     }
@@ -148,7 +145,9 @@ module.exports = class CommandHandlers {
     async devices() {
         assert.strictEqual(arguments.length, 0);
 
-        // TODO: replace with a local function and fix formatting?
-        await this._usbDeviceLister.logToConsole();
+        const devices = await this._uvcDeviceLister.get();
+        const json = JSON.stringify(devices, null, 2);
+
+        this._output.normal(json);
     }
 };

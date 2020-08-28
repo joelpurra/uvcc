@@ -10,10 +10,10 @@ Configure [USB Video Class](https://en.wikipedia.org/wiki/USB_video_device_class
 
 Use `uvcc` to **fine-tune camera configuration**, such as brightness, contrast, saturation, gain, white balance temperature, zoom. **Export/import of JSON** makes it easy to reliably and repeatedly configure one or more cameras for various situations.
 
-- Get configuration directly from the webcam.
-- Set configuration values directly on the webcam.
-- List available USB devices, including webcams.
-- List available webcam controls.
+- Get configuration directly from the camera.
+- Set configuration values directly on the camera.
+- List available USB devices, including cameras.
+- List available camera controls.
 - Export configuration to JSON.
 - Import configuration from JSON.
 - Per-user or per-directory configuration files.
@@ -37,34 +37,34 @@ npm install --global uvcc
 
 ## Usage
 
+By default, the one of the detected UVC device will be used, usually the first. If more than one camera is present, or if swapping to a different camera, this might be problematic. Optionally target a specific device by vendor id and product id. See [configuration](#configuration) documentation.
+
 ```shell
-# Find your UVC device, note the vendor id (vId) and product id (pId).
-# The ids can be in hexadecimal (0x000) or decimal (0000) format.
-# For example Logitech (0x46d) C920 HD Pro Webcam (0x82d).
+# List detected UVC devices. By default one of them is used.
 uvcc devices
 
-# Use the vendor id and product id to export current configuration.
-uvcc --vendor 0x46d --product 0x82d export
+# Export current configuration.
+uvcc export
 
 # Set exposure to manual.
-uvcc --vendor 0x46d --product 0x82d set autoExposureMode 1
+uvcc set auto_exposure_mode 1
 
 # Turn off automatic white balance.
-uvcc --vendor 0x46d --product 0x82d set autoWhiteBalance 0
+uvcc set auto_white_balance_temperature 0
 
 # Set the white balance temperature to 2000.
-# NOTE: the whiteBalanceTemperature range for Logitech C920 is 2000-6500.
-uvcc --vendor 0x46d --product 0x82d set whiteBalanceTemperature 2000
+# NOTE: the white_balance_temperature range for Logitech C920 is 2000-6500.
+uvcc set white_balance_temperature 2000
 
 # Set the contrast to 192.
 # NOTE: the contrast range for Logitech C920 is 0-255, default value 128.
-uvcc --vendor 0x46d --product 0x82d set contrast 192
+uvcc set contrast 192
 
 # Export configuration to a JSON file.
-uvcc --vendor 0x46d --product 0x82d export > "uvcc-export.json"
+uvcc export > "uvcc-export.json"
 
 # Load configuration from a JSON file.
-cat "uvcc-export.json" | uvcc --vendor 0x46d --product 0x82d import
+cat "uvcc-export.json" | uvcc import
 ```
 
 
@@ -79,21 +79,25 @@ USB Video Class (UVC) device configurator. Used for webcams, camcorders,
 etcetera.
 
 Commands:
-  uvcc get <name>          Get current control value from the webcam.
-  uvcc set <name> <value>  Set control value on the webcam.
+  uvcc get <name>          Get current control value from the camera.
+  uvcc set <name> <value>  Set control value on the camera.
   uvcc range <name>        Get possible range (min and max) for a control from
-                           the webcam.
+                           the camera.
   uvcc ranges              Get all ranges (min and max) for all available
-                           controls from the webcam.
-  uvcc devices             List connected USB devices with vendor id (vId) and
-                           product id (pId).
+                           controls from the camera.
+  uvcc devices             List connected UVC devices with name, vendor id
+                           (vId), product id (pId), and device address.
   uvcc controls            List all supported controls.
   uvcc export              Output configuration in JSON format, on stdout.
   uvcc import              Input configuration in JSON format, from stdin.
 
-Webcam selection:
-  --vendor   Webcam vendor id in hex (0x000) or decimal (0000) format.  [number]
-  --product  Webcam product id in hex (0x000) or decimal (0000) format. [number]
+Camera selection:
+  --vendor   Camera vendor id in hex (0x000) or decimal (0000) format.
+                                                           [number] [default: 0]
+  --product  Camera product id in hex (0x000) or decimal (0000) format.
+                                                           [number] [default: 0]
+  --address  Camera device address in decimal (00) format. Only used for
+             multi-camera setups.                          [number] [default: 0]
 
 Options:
   --version  Show version number                                       [boolean]
@@ -102,7 +106,7 @@ Options:
   --help     Show help                                                 [boolean]
 
 Examples:
-  uvcc --vendor 0x46d --product 0x82d get whiteBalanceTemperature
+  uvcc --vendor 0x46d --product 0x82d get white_balance_temperature
 
 uvcc Copyright © 2018 Joel Purra <https://joelpurra.com/>
 
@@ -119,6 +123,20 @@ See also: https://joelpurra.com/projects/uvcc/
 
 The command line arguments can optionally be provided using environment variables, implicit per-user/per-directory configuration files, or explicitly loaded from JSON files.
 
+### Command line
+
+```shell
+# Find your UVC device, note the vendor id (vId) and product id (pId).
+# The ids can be in hexadecimal (0x000) or decimal (0000) format.
+# Example:
+# - The vendor is Logitech (hexadecimal 0x46d, or decimal 1133).
+# - The product is C920 HD Pro Webcam (hexadecimal 0x82d, or decimal 2093).
+uvcc devices
+
+# Use the vendor id and product id to export current configuration.
+uvcc --vendor 0x46d --product 0x82d export
+```
+
 
 ### Environment variables
 
@@ -131,7 +149,7 @@ UVCC_VERBOSE=true uvcc controls
 
 ### Configuration file format
 
-Configuration files for `uvcc` are in JSON format. If you configure the same webcam each time, it is convenient to put `vendor` and `product` in the configuration file.
+Configuration files for `uvcc` are in JSON format. If you configure the same camera each time, it is convenient to put `vendor` and `product` in the configuration file.
 
 ```json
 {
@@ -271,7 +289,7 @@ npm run --silent test
   - `v4l2-ctl --list-ctrls`
   - See for example the article [Manual USB camera settings in Linux
 ](http://kurokesu.com/main/2016/01/16/manual-usb-camera-settings-in-linux/).
-- Make available webcam controls dynamic for the actual webcam targeted/used, as there might be more/fewer/other controls on different cameras. Currently controls target [Logitech C920 HD Pro Webcam](https://www.logitech.com/en-us/product/hd-pro-webcam-c920), as per comments in [uvc-control](https://github.com/makenai/node-uvc-control), although most should also apply to other UVC cameras.
+- Make available camera controls dynamic for the actual camera targeted/used, as there might be more/fewer/other controls on different cameras. Currently controls target [Logitech C920 HD Pro Webcam](https://www.logitech.com/en-us/product/hd-pro-webcam-c920), as per comments in [uvc-control](https://github.com/makenai/node-uvc-control), although most should also apply to other UVC cameras.
 
 
 
@@ -288,7 +306,7 @@ npm run --silent test
 
 ## Acknowledgements
 
-- [Pawel Szymczykowski](http://twitter.com/makenai) for [uvc-control](https://github.com/makenai/node-uvc-control) for node.js. Without his code I would never have gotten close to automating — or perhaps even being *able* to — changing webcam controls on macOS.
+- [Pawel Szymczykowski](http://twitter.com/makenai) for [uvc-control](https://github.com/makenai/node-uvc-control) for node.js. Without his code I would never have gotten close to automating — or perhaps even being *able* to — changing camera controls on macOS.
 
 
 
