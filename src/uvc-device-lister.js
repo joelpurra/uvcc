@@ -28,12 +28,16 @@ module.exports = class UvcDeviceLister {
 
 	async get() {
 		const devices = await this._UVCControl.discover();
-		const output = devices.map((device) => ({
-			address: device.deviceAddress,
-			name: device.name,
-			product: device.deviceDescriptor.idProduct,
-			vendor: device.deviceDescriptor.idVendor,
-		}));
+		const output = devices.map((device) =>
+			({
+				// NOTE: outputting in human-readable "logical" non-alphabetical order.
+				name: device.name,
+				vendor: device.deviceDescriptor.idVendor,
+				// eslint-disable-next-line sort-keys
+				product: device.deviceDescriptor.idProduct,
+				// eslint-disable-next-line sort-keys
+				address: device.deviceAddress,
+			}));
 
 		return output;
 	}
