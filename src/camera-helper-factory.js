@@ -16,14 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require('assert');
+const assert = require("assert");
 
 module.exports = class CameraHelperFactory {
 	constructor(output, cameraControlHelperFactory, CameraHelper) {
 		assert.strictEqual(arguments.length, 3);
-		assert.strictEqual(typeof output, 'object');
-		assert.strictEqual(typeof cameraControlHelperFactory, 'object');
-		assert.strictEqual(typeof CameraHelper, 'function');
+		assert.strictEqual(typeof output, "object");
+		assert.strictEqual(typeof cameraControlHelperFactory, "object");
+		assert.strictEqual(typeof CameraHelper, "function");
 
 		this._output = output;
 		this._cameraControlHelperFactory = cameraControlHelperFactory;
@@ -32,7 +32,7 @@ module.exports = class CameraHelperFactory {
 
 	async get(camera) {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof camera, 'object');
+		assert.strictEqual(typeof camera, "object");
 
 		const cameraControlHelper = await this._cameraControlHelperFactory.get(camera);
 		const cameraHelper = new this._CameraHelper(this._output, cameraControlHelper, camera);

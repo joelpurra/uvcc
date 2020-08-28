@@ -27,6 +27,7 @@
     "yargs": "^15.4.1"
   },
   "devDependencies": {
+    "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^1.0.0",
     "xo": "^0.33.0"
   },
   "engines": {

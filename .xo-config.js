@@ -16,25 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
-
-module.exports = class UvcDeviceLister {
-	constructor(UVCControl) {
-		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof UVCControl, "function");
-
-		this._UVCControl = UVCControl;
-	}
-
-	async get() {
-		const devices = await this._UVCControl.discover();
-		const output = devices.map((device) => ({
-			address: device.deviceAddress,
-			name: device.name,
-			product: device.deviceDescriptor.idProduct,
-			vendor: device.deviceDescriptor.idVendor,
-		}));
-
-		return output;
-	}
+module.exports = {
+	extends: [
+		"eslint-config-joelpurra/node",
+	],
 };

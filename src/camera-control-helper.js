@@ -16,16 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require('assert');
-const filterObj = require('filter-obj');
-const arrayNonUniq = require('array-non-uniq');
-const sortKeys = require('sort-keys');
+const assert = require("assert");
+const filterObj = require("filter-obj");
+const arrayNonUniq = require("array-non-uniq");
+const sortKeys = require("sort-keys");
 
 module.exports = class CameraControlHelper {
 	constructor(UVCControl, camera) {
 		assert.strictEqual(arguments.length, 2);
-		assert.strictEqual(typeof UVCControl, 'function');
-		assert.strictEqual(typeof camera, 'object');
+		assert.strictEqual(typeof UVCControl, "function");
+		assert.strictEqual(typeof camera, "object");
 
 		this._UVCControl = UVCControl;
 		this._camera = camera;
@@ -45,31 +45,31 @@ module.exports = class CameraControlHelper {
 
 	_isSettableControl(control) {
 		// NOTE: relies on uvc-control internals.
-		return control.requests.includes(this._UVCControl.REQUEST.SET_CUR) ||
-		(
+		return control.requests.includes(this._UVCControl.REQUEST.SET_CUR)
+		|| (
 			// TODO: treat optionally settable controls separately?
-			Array.isArray(control.optional_requests) &&
-			control.optional_requests.includes(this._UVCControl.REQUEST.SET_CUR)
+			Array.isArray(control.optional_requests)
+			&& control.optional_requests.includes(this._UVCControl.REQUEST.SET_CUR)
 		);
 	}
 
 	async _mapSupportedControls() {
 		const supportedControls = this._camera.supportedControls
-			.map(supportedControlName => this._UVCControl.controls[supportedControlName]);
+			.map((supportedControlName) => this._UVCControl.controls[supportedControlName]);
 
-		const missingControls = supportedControls.filter(control => !control);
+		const missingControls = supportedControls.filter((control) => !control);
 
 		if (missingControls.length !== 0) {
-			throw new Error('Controls were not found: ' + missingControls);
+			throw new Error("Controls were not found: " + missingControls);
 		}
 
 		const nonUniqueControls = arrayNonUniq(supportedControls);
 
 		if (nonUniqueControls.length !== 0) {
-			throw new Error('Controls were already found: ' + nonUniqueControls);
+			throw new Error("Controls were already found: " + nonUniqueControls);
 		}
 
-		const mappedControls = supportedControls.map(control => {
+		const mappedControls = supportedControls.map((control) => {
 			try {
 				const uvccControl = [
 					control.name,
@@ -77,13 +77,13 @@ module.exports = class CameraControlHelper {
 						// NOTE: minimal uvcc-specific mapping.
 						isGettable: this._isGettableControl(control),
 						isRanged: this._isRangedControl(control),
-						isSettable: this._isSettableControl(control)
-					}
+						isSettable: this._isSettableControl(control),
+					},
 				];
 
 				return uvccControl;
 			} catch (error) {
-				const wrappedError = new Error('Could not map control: ' + control.name + ' (' + error + ')');
+				const wrappedError = new Error("Could not map control: " + control.name + " (" + error + ")");
 				wrappedError.innerError = error;
 
 				throw wrappedError;

@@ -16,15 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require('assert');
+const assert = require("assert");
 
-const streamToPromise = require('stream-to-promise');
+const streamToPromise = require("stream-to-promise");
 
 module.exports = class CommandHandlers {
 	constructor(output, uvcDeviceLister) {
 		assert.strictEqual(arguments.length, 2);
-		assert.strictEqual(typeof output, 'object');
-		assert.strictEqual(typeof uvcDeviceLister, 'object');
+		assert.strictEqual(typeof output, "object");
+		assert.strictEqual(typeof uvcDeviceLister, "object");
 
 		this._output = output;
 		this._uvcDeviceLister = uvcDeviceLister;
@@ -32,8 +32,8 @@ module.exports = class CommandHandlers {
 
 	async getArguments() {
 		return [
-			'cameraHelper',
-			'name'
+			"cameraHelper",
+			"name",
 		];
 	}
 
@@ -48,8 +48,8 @@ module.exports = class CommandHandlers {
 
 	async rangeArguments() {
 		return [
-			'cameraHelper',
-			'name'
+			"cameraHelper",
+			"name",
 		];
 	}
 
@@ -64,7 +64,7 @@ module.exports = class CommandHandlers {
 
 	async rangesArguments() {
 		return [
-			'cameraHelper'
+			"cameraHelper",
 		];
 	}
 
@@ -79,9 +79,9 @@ module.exports = class CommandHandlers {
 
 	async setArguments() {
 		return [
-			'cameraHelper',
-			'name',
-			'value'
+			"cameraHelper",
+			"name",
+			"value",
 		];
 	}
 
@@ -93,7 +93,7 @@ module.exports = class CommandHandlers {
 
 	async exportArguments() {
 		return [
-			'cameraHelper'
+			"cameraHelper",
 		];
 	}
 
@@ -110,7 +110,7 @@ module.exports = class CommandHandlers {
 
 	async importArguments() {
 		return [
-			'cameraHelper'
+			"cameraHelper",
 		];
 	}
 
@@ -118,14 +118,14 @@ module.exports = class CommandHandlers {
 		assert.strictEqual(arguments.length, 1);
 
 		const values = await streamToPromise(process.stdin)
-			.then(buffer => JSON.parse(buffer.toString()));
+			.then((buffer) => JSON.parse(buffer.toString()));
 
 		await cameraHelper.setValues(values);
 	}
 
 	async controlsArguments() {
 		return [
-			'cameraHelper'
+			"cameraHelper",
 		];
 	}
 

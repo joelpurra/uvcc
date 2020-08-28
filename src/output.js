@@ -16,21 +16,23 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require('assert');
+const assert = require("assert");
 
 module.exports = class Output {
 	constructor(verbose) {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof verbose, 'boolean');
+		assert.strictEqual(typeof verbose, "boolean");
 
 		this._verbose = verbose;
 	}
 
 	_stdout(...args) {
+		// eslint-disable-next-line no-console
 		console.log(...args);
 	}
 
 	_stderr(...args) {
+		// eslint-disable-next-line no-console
 		console.error(...args);
 	}
 

@@ -16,15 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require('assert');
-const Bluebird = require('bluebird');
+const assert = require("assert");
+const Bluebird = require("bluebird");
 
 module.exports = class CameraHelper {
 	constructor(output, cameraControlHelper, camera) {
 		assert.strictEqual(arguments.length, 3);
-		assert.strictEqual(typeof output, 'object');
-		assert.strictEqual(typeof cameraControlHelper, 'object');
-		assert.strictEqual(typeof camera, 'object');
+		assert.strictEqual(typeof output, "object");
+		assert.strictEqual(typeof cameraControlHelper, "object");
+		assert.strictEqual(typeof camera, "object");
 
 		this._output = output;
 		this._cameraControlHelper = cameraControlHelper;
@@ -84,12 +84,12 @@ module.exports = class CameraHelper {
 					object[name] = await this.getRange(name);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose('Error getting range, ignoring.', name, error);
+					this._output.verbose("Error getting range, ignoring.", name, error);
 				}
 
 				return object;
 			},
-			{}
+			{},
 		);
 	}
 
@@ -101,12 +101,12 @@ module.exports = class CameraHelper {
 					object[name] = await this.getValue(name);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose('Error getting value, ignoring.', name, error);
+					this._output.verbose("Error getting value, ignoring.", name, error);
 				}
 
 				return object;
 			},
-			{}
+			{},
 		);
 	}
 
@@ -118,12 +118,12 @@ module.exports = class CameraHelper {
 					object[name] = await this.getValue(name);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose('Error getting settable value, ignoring.', name, error);
+					this._output.verbose("Error getting settable value, ignoring.", name, error);
 				}
 
 				return object;
 			},
-			{}
+			{},
 		);
 	}
 
@@ -132,7 +132,7 @@ module.exports = class CameraHelper {
 		const settableControlNames = await this._cameraControlHelper.getSettableControlNames();
 
 		// NOTE: checking all names before attempting to set any.
-		const nonSettableNames = names.filter(name => !settableControlNames.includes(name));
+		const nonSettableNames = names.filter((name) => !settableControlNames.includes(name));
 
 		if (nonSettableNames.length !== 0) {
 			throw new Error(`Could not find a settable controls, aborting setting values: ${JSON.stringify(nonSettableNames)}`);
@@ -141,16 +141,16 @@ module.exports = class CameraHelper {
 		await Bluebird.map(
 			// eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 			names,
-			async name => {
+			async (name) => {
 				const value = configuration[name];
 
 				try {
 					await this.setValue(name, value);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this._output.verbose('Error setting value, ignoring.', name, value, error);
+					this._output.verbose("Error setting value, ignoring.", name, value, error);
 				}
-			}
+			},
 		);
 	}
 };

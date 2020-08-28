@@ -16,15 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const fs = require('fs');
+const fs = require("fs");
 
-const findUp = require('find-up');
-const yargs = require('yargs');
+const findUp = require("find-up");
+const yargs = require("yargs");
 
-const packageJson = require('../package.json');
+const packageJson = require("../package.json");
 
-const getJSON = path => {
+const getJSON = (path) => {
 	try {
+		// eslint-disable-next-line no-sync
 		const json = JSON.parse(fs.readFileSync(path));
 
 		return json;
@@ -36,20 +37,22 @@ const getJSON = path => {
 module.exports = () => {
 	const appBinaryName = Object.keys(packageJson.bin)[0];
 	const appDescription = packageJson.description;
-	const {homepage} = packageJson;
+	const {
+		homepage,
+	} = packageJson;
 
 	const epilogue = `uvcc Copyright © 2018 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
 	let fromImplicitConfigFile = null;
 
-	const hasConfigFlag = process.argv.includes('--config');
+	const hasConfigFlag = process.argv.includes("--config");
 
 	if (hasConfigFlag) {
 		fromImplicitConfigFile = {};
 	} else {
 		const nearestConfigPath = findUp.sync([
 			`.${appBinaryName}rc`,
-			`.${appBinaryName}rc.json`
+			`.${appBinaryName}rc.json`,
 		]);
 		const configFromNearestConfigPath = nearestConfigPath ? getJSON(nearestConfigPath) : {};
 
@@ -59,84 +62,86 @@ module.exports = () => {
 	yargs
 		.strict()
 		.config(fromImplicitConfigFile)
-		.config('config', 'Load command arguments from a JSON file.', argumentConfigPath => {
+		.config("config", "Load command arguments from a JSON file.", (argumentConfigPath) => {
 			const fromExplicitConfigFile = argumentConfigPath ? getJSON(argumentConfigPath) : {};
 
 			return fromExplicitConfigFile;
 		})
 		.env(appBinaryName.toUpperCase())
 		.usage(appDescription)
-		.command('get <name>', 'Get current control value from the camera.', yargsToApplyTo => {
+		.command("get <name>", "Get current control value from the camera.", (yargsToApplyTo) => {
 			yargsToApplyTo
-				.positional('name', {
-					type: 'string',
+				.positional("name", {
 					demandOption: true,
-					describe: 'Name of the control.'
+					describe: "Name of the control.",
+					type: "string",
 				});
 		})
-		.command('set <name> <value>', 'Set control value on the camera.', yargsToApplyTo => {
+		.command("set <name> <value>", "Set control value on the camera.", (yargsToApplyTo) => {
 			yargsToApplyTo
-				.positional('name', {
-					type: 'string',
+				.positional("name", {
 					demandOption: true,
-					describe: 'Name of the control.'
+					describe: "Name of the control.",
+					type: "string",
 				})
-				.positional('value', {
-					type: 'string',
+				.positional("value", {
 					demandOption: true,
-					describe: 'Value to set.'
+					describe: "Value to set.",
+					type: "string",
 				});
 		})
-		.command('range <name>', 'Get possible range (min and max) for a control from the camera.', yargsToApplyTo => {
+		.command("range <name>", "Get possible range (min and max) for a control from the camera.", (yargsToApplyTo) => {
 			yargsToApplyTo
-				.positional('name', {
-					type: 'string',
+				.positional("name", {
 					demandOption: true,
-					describe: 'Name of the control.'
+					describe: "Name of the control.",
+					type: "string",
 				});
 		})
-		.command('ranges', 'Get all ranges (min and max) for all available controls from the camera.')
-		.command('devices', 'List connected UVC devices with name, vendor id (vId), product id (pId), and device address.')
-		.command('controls', 'List all supported controls.')
-		.command('export', 'Output configuration in JSON format, on stdout.')
-		.command('import', 'Input configuration in JSON format, from stdin.')
-		.option('vendor', {
-			type: 'number',
-			default: 0,
-			describe: 'Camera vendor id in hex (0x000) or decimal (0000) format.'
+		.command("ranges", "Get all ranges (min and max) for all available controls from the camera.")
+		.command("devices", "List connected UVC devices with name, vendor id (vId), product id (pId), and device address.")
+		.command("controls", "List all supported controls.")
+		.command("export", "Output configuration in JSON format, on stdout.")
+		.command("import", "Input configuration in JSON format, from stdin.")
+		.option("vendor", {
+			"default": 0,
+			describe: "Camera vendor id in hex (0x000) or decimal (0000) format.",
+			type: "number",
 		})
-		.option('product', {
-			type: 'number',
-			default: 0,
-			describe: 'Camera product id in hex (0x000) or decimal (0000) format.'
+		.option("product", {
+			"default": 0,
+			describe: "Camera product id in hex (0x000) or decimal (0000) format.",
+			type: "number",
 		})
-		.option('address', {
-			type: 'number',
-			default: 0,
-			describe: 'Camera device address in decimal (00) format. Only used for multi-camera setups.'
+		.option("address", {
+			"default": 0,
+			describe: "Camera device address in decimal (00) format. Only used for multi-camera setups.",
+			type: "number",
 		})
-		.option('verbose', {
-			type: 'boolean',
-			default: false,
-			describe: 'Enable verbose output.'
+		.option("verbose", {
+			"default": false,
+			describe: "Enable verbose output.",
+			type: "boolean",
 		})
-		.demandCommand(1, 1, 'Please provide a single command.', 'Please provide a single command.')
+		.demandCommand(1, 1, "Please provide a single command.", "Please provide a single command.")
 		.group(
 			[
-				'vendor',
-				'product',
-				'address'
+				"vendor",
+				"product",
+				"address",
 			],
-			'Camera selection:'
+			"Camera selection:",
 		)
 		.help()
-		.example('$0 --vendor 0x46d --product 0x82d get white_balance_temperature')
+		.example("$0 --vendor 0x46d --product 0x82d get white_balance_temperature")
 		.epilogue(epilogue);
 
-	const {argv} = yargs;
+	const {
+		argv,
+	} = yargs;
 
 	// NOTE HACK: workaround yargs not being consistend with yargs.cmd versus yargs._ for defined/non-defined commands.
-	if (typeof argv.cmd !== 'string') {
+	if (typeof argv.cmd !== "string") {
 		argv.cmd = argv._.shift();
 	}
 

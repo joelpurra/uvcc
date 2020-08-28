@@ -16,27 +16,27 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require('assert');
-const Bluebird = require('bluebird');
+const assert = require("assert");
+const Bluebird = require("bluebird");
 
 module.exports = class CommandManager {
 	constructor(output, cameraFactory, cameraHelperFactory, commandHandlers) {
 		assert.strictEqual(arguments.length, 4);
-		assert.strictEqual(typeof output, 'object');
-		assert.strictEqual(typeof cameraFactory, 'object');
-		assert.strictEqual(typeof cameraHelperFactory, 'object');
-		assert.strictEqual(typeof commandHandlers, 'object');
+		assert.strictEqual(typeof output, "object");
+		assert.strictEqual(typeof cameraFactory, "object");
+		assert.strictEqual(typeof cameraHelperFactory, "object");
+		assert.strictEqual(typeof commandHandlers, "object");
 
 		this._output = output;
 		this._cameraFactory = cameraFactory;
 		this._cameraHelperFactory = cameraHelperFactory;
 		this._commandHandlers = commandHandlers;
 
-		this._injectCameraHelperArgumentName = 'cameraHelper';
+		this._injectCameraHelperArgumentName = "cameraHelper";
 	}
 
 	async _commandHandlerExists(name) {
-		return (typeof this._commandHandlers[name] === 'function');
+		return (typeof this._commandHandlers[name] === "function");
 	}
 
 	async _getCommandArguments(name) {
@@ -48,14 +48,14 @@ module.exports = class CommandManager {
 	}
 
 	async execute(runtimeConfig) {
-		this._output.verbose('Parsed arguments:', JSON.stringify(runtimeConfig, null, 2));
+		this._output.verbose("Parsed arguments:", JSON.stringify(runtimeConfig, null, 2));
 
 		const commandName = runtimeConfig.cmd;
 
 		const commandHandlerExists = await this._commandHandlerExists(commandName);
 
 		if (!commandHandlerExists) {
-			this._output.error('Unknown command:', commandName);
+			this._output.error("Unknown command:", commandName);
 			return;
 		}
 
@@ -64,8 +64,8 @@ module.exports = class CommandManager {
 
 		// NOTE HACK: don't mix "injection" with other arguments.
 		const argumentValues = commandArguments
-			.filter(commandArgument => (commandArgument !== this._injectCameraHelperArgumentName))
-			.map(commandArgument => runtimeConfig[commandArgument]);
+			.filter((commandArgument) => (commandArgument !== this._injectCameraHelperArgumentName))
+			.map((commandArgument) => runtimeConfig[commandArgument]);
 
 		// TODO: create function to get/close camera, create camera helper.
 		let camera = null;

@@ -16,26 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require('assert');
+const assert = require("assert");
 
 module.exports = class CameraFactory {
 	constructor(UVCControl) {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof UVCControl, 'function');
+		assert.strictEqual(typeof UVCControl, "function");
 
 		this._UVCControl = UVCControl;
 	}
 
 	async get(vendor, product, address) {
 		assert.strictEqual(arguments.length, 3);
-		assert(vendor === null || (typeof vendor === 'number' && vendor >= 0));
-		assert(product === null || (typeof product === 'number' && product >= 0));
-		assert(address === null || (typeof address === 'number' && address >= 0));
+		assert(vendor === null || (typeof vendor === "number" && vendor >= 0));
+		assert(product === null || (typeof product === "number" && product >= 0));
+		assert(address === null || (typeof address === "number" && address >= 0));
 
 		const constructorOptions = {
-			vid: vendor || undefined,
+			deviceAddress: address || undefined,
 			pid: product || undefined,
-			deviceAddress: address || undefined
+			vid: vendor || undefined,
 		};
 		const camera = new this._UVCControl(constructorOptions);
 
