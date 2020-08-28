@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+require("engine-check")();
+
 const runtimeConfigurator = require("./src/runtime-configurator");
 
 // https://github.com/makenai/node-uvc-control

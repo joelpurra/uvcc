@@ -31,7 +31,6 @@ npm install --global uvcc
 
 - Optionally omit the `--global` flag and use `./node_modules/.bin/uvcc` from the install directory.
 - Uses [`libusb`](http://libusb.info/) through the [npm package `usb`](https://www.npmjs.com/package/usb).
-- Tested using Node.js v8.9.4 on macOS 10.13 High Sierra.
 
 
 
