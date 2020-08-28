@@ -60,13 +60,13 @@ module.exports = class CameraControlHelper {
 		const missingControls = supportedControls.filter((control) => !control);
 
 		if (missingControls.length !== 0) {
-			throw new Error("Controls were not found: " + missingControls);
+			throw new Error(`Controls were not found: ${JSON.stringify(missingControls)}`);
 		}
 
 		const nonUniqueControls = arrayNonUniq(supportedControls);
 
 		if (nonUniqueControls.length !== 0) {
-			throw new Error("Controls were already found: " + nonUniqueControls);
+			throw new Error(`Controls were already found: ${JSON.stringify(nonUniqueControls)}`);
 		}
 
 		const mappedControls = supportedControls.map((control) => {
@@ -83,7 +83,7 @@ module.exports = class CameraControlHelper {
 
 				return uvccControl;
 			} catch (error) {
-				const wrappedError = new Error("Could not map control: " + control.name + " (" + error + ")");
+				const wrappedError = new Error(`Could not map control: ${JSON.stringify(control.name)} (${JSON.stringify(String(error))})`);
 				wrappedError.innerError = error;
 
 				throw wrappedError;

@@ -32,19 +32,20 @@ module.exports = class CommandManager {
 		this._cameraHelperFactory = cameraHelperFactory;
 		this._commandHandlers = commandHandlers;
 
+		// NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
 		this._injectCameraHelperArgumentName = "cameraHelper";
 	}
 
-	async _commandHandlerExists(name) {
-		return (typeof this._commandHandlers[name] === "function");
+	async _commandHandlerExists(commandName) {
+		return (typeof this._commandHandlers[commandName] === "function");
 	}
 
-	async _getCommandArguments(name) {
-		return this._commandHandlers[`${name}Arguments`]();
+	async _getCommandArguments(commandName) {
+		return this._commandHandlers[`${commandName}Arguments`]();
 	}
 
-	async _getCommandHandler(name) {
-		return this._commandHandlers[name].bind(this._commandHandlers);
+	async _getCommandHandler(commandName) {
+		return this._commandHandlers[commandName].bind(this._commandHandlers);
 	}
 
 	async execute(runtimeConfig) {
@@ -67,13 +68,12 @@ module.exports = class CommandManager {
 			.filter((commandArgument) => (commandArgument !== this._injectCameraHelperArgumentName))
 			.map((commandArgument) => runtimeConfig[commandArgument]);
 
-		// TODO: create function to get/close camera, create camera helper.
 		let camera = null;
 
 		const closeCamera = async () => {
 			if (camera) {
 				// TODO: avoid hard-coded delay.
-				await Bluebird.delay(1000);
+				await Bluebird.delay(50);
 
 				await camera.close();
 			}
@@ -99,7 +99,7 @@ module.exports = class CommandManager {
 			try {
 				await closeCamera();
 			} catch {
-				// NOTE: ignore errors when closing the camera connection.
+				// NOTE: if there were previous errors, ignore errors when closing the camera connection.
 			}
 
 			throw error;

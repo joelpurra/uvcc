@@ -69,17 +69,17 @@ module.exports = () => {
 		})
 		.env(appBinaryName.toUpperCase())
 		.usage(appDescription)
-		.command("get <name>", "Get current control value from the camera.", (yargsToApplyTo) => {
+		.command("get <control>", "Get current control value from the camera.", (yargsToApplyTo) => {
 			yargsToApplyTo
-				.positional("name", {
+				.positional("control", {
 					demandOption: true,
 					describe: "Name of the control.",
 					type: "string",
 				});
 		})
-		.command("set <name> <value>", "Set control value on the camera.", (yargsToApplyTo) => {
+		.command("set <control> <value>", "Set control value on the camera.", (yargsToApplyTo) => {
 			yargsToApplyTo
-				.positional("name", {
+				.positional("control", {
 					demandOption: true,
 					describe: "Name of the control.",
 					type: "string",
@@ -90,9 +90,9 @@ module.exports = () => {
 					type: "string",
 				});
 		})
-		.command("range <name>", "Get possible range (min and max) for a control from the camera.", (yargsToApplyTo) => {
+		.command("range <control>", "Get possible range (min and max) for a control from the camera.", (yargsToApplyTo) => {
 			yargsToApplyTo
-				.positional("name", {
+				.positional("control", {
 					demandOption: true,
 					describe: "Name of the control.",
 					type: "string",

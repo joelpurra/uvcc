@@ -28,19 +28,22 @@ module.exports = class CommandHandlers {
 
 		this._output = output;
 		this._uvcDeviceLister = uvcDeviceLister;
+
+		// NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
+		this._injectCameraHelperArgumentName = "cameraHelper";
 	}
 
 	async getArguments() {
 		return [
-			"cameraHelper",
-			"name",
+			this._injectCameraHelperArgumentName,
+			"control",
 		];
 	}
 
-	async get(cameraHelper, name) {
+	async get(cameraHelper, controlName) {
 		assert.strictEqual(arguments.length, 2);
 
-		const value = await cameraHelper.getValue(name);
+		const value = await cameraHelper.getValue(controlName);
 		const json = JSON.stringify(value, null, 2);
 
 		this._output.normal(json);
@@ -48,15 +51,15 @@ module.exports = class CommandHandlers {
 
 	async rangeArguments() {
 		return [
-			"cameraHelper",
-			"name",
+			this._injectCameraHelperArgumentName,
+			"control",
 		];
 	}
 
-	async range(cameraHelper, name) {
+	async range(cameraHelper, controlName) {
 		assert.strictEqual(arguments.length, 2);
 
-		const range = await cameraHelper.getRange(name);
+		const range = await cameraHelper.getRange(controlName);
 		const json = JSON.stringify(range, null, 2);
 
 		this._output.normal(json);
@@ -64,7 +67,7 @@ module.exports = class CommandHandlers {
 
 	async rangesArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 
@@ -79,21 +82,21 @@ module.exports = class CommandHandlers {
 
 	async setArguments() {
 		return [
-			"cameraHelper",
-			"name",
+			this._injectCameraHelperArgumentName,
+			"control",
 			"value",
 		];
 	}
 
-	async set(cameraHelper, name, value) {
+	async set(cameraHelper, controlName, value) {
 		assert.strictEqual(arguments.length, 3);
 
-		return cameraHelper.setValue(name, value);
+		return cameraHelper.setValue(controlName, value);
 	}
 
 	async exportArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 
@@ -110,7 +113,7 @@ module.exports = class CommandHandlers {
 
 	async importArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 
@@ -125,7 +128,7 @@ module.exports = class CommandHandlers {
 
 	async controlsArguments() {
 		return [
-			"cameraHelper",
+			this._injectCameraHelperArgumentName,
 		];
 	}
 

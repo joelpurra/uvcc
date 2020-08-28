@@ -1,8 +1,8 @@
 [
   {
-    "address": 13,
     "name": "HD Pro Webcam C920",
+    "vendor": 1133,
     "product": 2093,
-    "vendor": 1133
+    "address": 14
   }
 ]
