@@ -22,7 +22,7 @@
     "find-up": "^5.0.0",
     "map-obj": "^4.1.0",
     "sort-keys": "^4.0.0",
-    "stream-to-promise": "^2.2.0",
+    "stream-to-promise": "^3.0.0",
     "uvc-control": "github:joelpurra/node-uvc-control#v2-control-transfer-target-device",
     "yargs": "^15.4.1"
   },
