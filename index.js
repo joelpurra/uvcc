@@ -34,14 +34,14 @@ const CommandManager = require("./src/command-manager");
 const Output = require("./src/output");
 const UvcDeviceLister = require("./src/uvc-device-lister");
 
-const main = async () => {
+const mainAsync = async () => {
 	try {
 		// NOTE: ignoring unhandled rejections and exceptions, as there is (practically) nothing to gracefully shut down.
 		const runtimeConfig = runtimeConfigurator();
 		const output = new Output(runtimeConfig.verbose);
 
-		process.on("unhandledRejection", (...args) => output.verbose(...args));
-		process.on("uncaughtException", (...args) => output.verbose(...args));
+		process.on("unhandledRejection", (...args) => output.error(...args));
+		process.on("uncaughtException", (...args) => output.error(...args));
 
 		const cameraFactory = new CameraFactory(UVCControl);
 		const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
@@ -53,6 +53,18 @@ const main = async () => {
 		await commandManager.execute(runtimeConfig);
 	} catch (error) {
 		// NOTE: root error handler for asynchronous errors.
+		// eslint-disable-next-line no-console
+		console.error(error);
+
+		process.exitCode = 1;
+	}
+};
+
+const main = () => {
+	try {
+		mainAsync();
+	} catch (error) {
+		// NOTE: root error handler for synchronous errors.
 		// eslint-disable-next-line no-console
 		console.error(error);
 
