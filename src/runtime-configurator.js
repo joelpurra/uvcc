@@ -129,7 +129,7 @@ module.exports = () => {
                 "product",
                 "address",
             ],
-            "Camera selection:"
+            "Camera selection:",
         )
         .help()
         .example("$0 --vendor 0x46d --product 0x82d get white_balance_temperature")

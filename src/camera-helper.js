@@ -91,7 +91,7 @@ module.exports = class CameraHelper {
 
                     return obj;
                 }),
-            {}
+            {},
         );
     }
 
@@ -110,7 +110,7 @@ module.exports = class CameraHelper {
 
                     return obj;
                 }),
-            {}
+            {},
         );
     }
 
@@ -129,7 +129,7 @@ module.exports = class CameraHelper {
 
                     return obj;
                 }),
-            {}
+            {},
         );
     }
 
@@ -156,7 +156,7 @@ module.exports = class CameraHelper {
 
                         return undefined;
                     });
-            }
+            },
         );
     }
 };
