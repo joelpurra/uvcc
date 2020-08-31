@@ -16,12 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const fs = require("fs");
+import fs = require("fs");
 
-const findUp = require("find-up");
-const yargs = require("yargs");
+import findUp = require("find-up");
+import yargs = require("yargs");
 
-const packageJson = require("../package.json");
+import packageJson = require("../package.json");
 
 const getJSON = (path) => {
 	try {
@@ -34,7 +34,7 @@ const getJSON = (path) => {
 	}
 };
 
-module.exports = () => {
+export default function runtimeConfigurator() {
 	const appBinaryName = Object.keys(packageJson.bin)[0];
 	const appDescription = packageJson.description;
 	const {
@@ -146,4 +146,4 @@ module.exports = () => {
 	}
 
 	return argv;
-};
+}

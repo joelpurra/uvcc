@@ -16,12 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
-const filterObj = require("filter-obj");
-const arrayNonUniq = require("array-non-uniq");
-const sortKeys = require("sort-keys");
+import assert = require("assert");
+import filterObject = require("filter-obj");
+import arrayNonUniq = require("array-non-uniq");
+import sortKeys = require("sort-keys");
 
-module.exports = class CameraControlHelper {
+export default class CameraControlHelper {
 	constructor(UVCControl, camera) {
 		assert.strictEqual(arguments.length, 2);
 		assert.strictEqual(typeof UVCControl, "function");
@@ -112,19 +112,19 @@ module.exports = class CameraControlHelper {
 	async _getGettableControls() {
 		const controls = await this._getSupportedControls();
 
-		return filterObj(controls, (_key, control) => control.isGettable);
+		return filterObject(controls, (_key, control) => control.isGettable);
 	}
 
 	async _getRangedControls() {
 		const controls = await this._getSupportedControls();
 
-		return filterObj(controls, (_key, control) => control.isRanged);
+		return filterObject(controls, (_key, control) => control.isRanged);
 	}
 
 	async _getSettableControls() {
 		const controls = await this._getSupportedControls();
 
-		return filterObj(controls, (_key, control) => control.isSettable);
+		return filterObject(controls, (_key, control) => control.isSettable);
 	}
 
 	async getControlNames() {
@@ -150,4 +150,4 @@ module.exports = class CameraControlHelper {
 
 		return Object.keys(settableControls);
 	}
-};
+}

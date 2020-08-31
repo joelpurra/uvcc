@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
-const Bluebird = require("bluebird");
+import assert = require("assert");
+import Bluebird = require("bluebird");
 
-module.exports = class CommandManager {
+export default class CommandManager {
 	constructor(output, cameraFactory, cameraHelperFactory, commandHandlers) {
 		assert.strictEqual(arguments.length, 4);
 		assert.strictEqual(typeof output, "object");
@@ -105,4 +105,4 @@ module.exports = class CommandManager {
 			throw error;
 		}
 	}
-};
+}

@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert = require("assert");
 
-module.exports = class UvcDeviceLister {
+export default class UvcDeviceLister {
 	constructor(UVCControl) {
 		assert.strictEqual(arguments.length, 1);
 		assert.strictEqual(typeof UVCControl, "function");
@@ -41,4 +41,4 @@ module.exports = class UvcDeviceLister {
 
 		return output;
 	}
-};
+}

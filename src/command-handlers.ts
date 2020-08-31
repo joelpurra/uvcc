@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert = require("assert");
 
-const streamToPromise = require("stream-to-promise");
+import streamToPromise = require("stream-to-promise");
 
-module.exports = class CommandHandlers {
+export default class CommandHandlers {
 	constructor(output, uvcDeviceLister) {
 		assert.strictEqual(arguments.length, 2);
 		assert.strictEqual(typeof output, "object");
@@ -153,4 +153,4 @@ module.exports = class CommandHandlers {
 
 		this._output.normal(json);
 	}
-};
+}

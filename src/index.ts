@@ -17,22 +17,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-require("engine-check")();
+import engineCheck = require("engine-check");
 
-const runtimeConfigurator = require("./runtime-configurator");
+import runtimeConfigurator = require("./runtime-configurator");
 
 // https://github.com/makenai/node-uvc-control
-const UVCControl = require("uvc-control");
+import UVCControl = require("uvc-control");
 
-const CameraControlHelper = require("./camera-control-helper");
-const CameraControlHelperFactory = require("./camera-control-helper-factory");
-const CameraFactory = require("./camera-factory");
-const CameraHelper = require("./camera-helper");
-const CameraHelperFactory = require("./camera-helper-factory");
-const CommandHandlers = require("./command-handlers");
-const CommandManager = require("./command-manager");
-const Output = require("./output");
-const UvcDeviceLister = require("./uvc-device-lister");
+import CameraControlHelper = require("./camera-control-helper");
+import CameraControlHelperFactory = require("./camera-control-helper-factory");
+import CameraFactory = require("./camera-factory");
+import CameraHelper = require("./camera-helper");
+import CameraHelperFactory = require("./camera-helper-factory");
+import CommandHandlers = require("./command-handlers");
+import CommandManager = require("./command-manager");
+import Output = require("./output");
+import UvcDeviceLister = require("./uvc-device-lister");
 
 const mainAsync = async () => {
 	try {
@@ -62,7 +62,9 @@ const mainAsync = async () => {
 
 const main = () => {
 	try {
-		mainAsync();
+		engineCheck();
+
+		void mainAsync();
 	} catch (error) {
 		// NOTE: root error handler for synchronous errors.
 		// eslint-disable-next-line no-console

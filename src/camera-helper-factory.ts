@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert = require("assert");
 
-module.exports = class CameraHelperFactory {
+export default class CameraHelperFactory {
 	constructor(output, cameraControlHelperFactory, CameraHelper) {
 		assert.strictEqual(arguments.length, 3);
 		assert.strictEqual(typeof output, "object");
@@ -39,4 +39,4 @@ module.exports = class CameraHelperFactory {
 
 		return cameraHelper;
 	}
-};
+}

@@ -39,6 +39,10 @@
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^0.7.0",
+    "@types/bluebird": "^3.5.32",
+    "@types/engine-check": "^1.1.0",
+    "@types/stream-to-promise": "^2.2.1",
+    "@types/yargs": "^15.0.5",
     "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^1.0.0",
     "husky": "^4.2.5",
     "rimraf": "^3.0.2",

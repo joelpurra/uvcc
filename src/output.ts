@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert = require("assert");
 
-module.exports = class Output {
+export default class Output {
 	constructor(verbose) {
 		assert.strictEqual(arguments.length, 1);
 		assert.strictEqual(typeof verbose, "boolean");
@@ -51,4 +51,4 @@ module.exports = class Output {
 
 		return this._stderr(...args);
 	}
-};
+}
