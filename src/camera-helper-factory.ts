@@ -16,26 +16,27 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert = require("assert");
+import assert from "assert";
+import Camera from "uvc-control";
+
+import CameraControlHelperFactory from "./camera-control-helper-factory";
+import CameraHelperClass from "./camera-helper";
+import Output from "./output";
 
 export default class CameraHelperFactory {
-	constructor(output, cameraControlHelperFactory, CameraHelper) {
+	constructor(private readonly output: Readonly<Output>, private readonly cameraControlHelperFactory: Readonly<CameraControlHelperFactory>, private readonly CameraHelper: typeof CameraHelperClass) {
 		assert.strictEqual(arguments.length, 3);
-		assert.strictEqual(typeof output, "object");
-		assert.strictEqual(typeof cameraControlHelperFactory, "object");
-		assert.strictEqual(typeof CameraHelper, "function");
-
-		this._output = output;
-		this._cameraControlHelperFactory = cameraControlHelperFactory;
-		this._CameraHelper = CameraHelper;
+		assert(typeof this.output === "object");
+		assert(typeof this.cameraControlHelperFactory === "object");
+		assert(typeof this.CameraHelper === "function");
 	}
 
-	async get(camera) {
+	async get(camera: Readonly<Camera>): Promise<CameraHelperClass> {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof camera, "object");
+		assert(typeof camera === "object");
 
-		const cameraControlHelper = await this._cameraControlHelperFactory.get(camera);
-		const cameraHelper = new this._CameraHelper(this._output, cameraControlHelper, camera);
+		const cameraControlHelper = await this.cameraControlHelperFactory.get(camera);
+		const cameraHelper = new this.CameraHelper(this.output, cameraControlHelper, camera);
 
 		return cameraHelper;
 	}

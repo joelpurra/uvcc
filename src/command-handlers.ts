@@ -16,91 +16,99 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert = require("assert");
-
-import streamToPromise = require("stream-to-promise");
+import assert from "assert";
+import streamToPromise from "stream-to-promise";
+import {
+	ControlName,
+	ControlValue,
+} from "uvc-control";
+import CameraHelper from "./camera-helper";
+import Output from "./output";
+import {
+	CommandHandlerArgumentCameraHelper,
+	CommandHandlerArgumentNames,
+} from "./runtime-configurator";
+import UvcDeviceLister from "./uvc-device-lister";
 
 export default class CommandHandlers {
-	constructor(output, uvcDeviceLister) {
+	// NOTE: the command manager does dynamic command handler mapping.
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	[x: string]: Function | unknown;
+
+	constructor(private readonly output: Output, private readonly uvcDeviceLister: UvcDeviceLister) {
 		assert.strictEqual(arguments.length, 2);
-		assert.strictEqual(typeof output, "object");
-		assert.strictEqual(typeof uvcDeviceLister, "object");
-
-		this._output = output;
-		this._uvcDeviceLister = uvcDeviceLister;
-
-		// NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
-		this._injectCameraHelperArgumentName = "cameraHelper";
+		assert(typeof this.output === "object");
+		assert(typeof this.uvcDeviceLister === "object");
 	}
 
-	async getArguments() {
+	async getArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [
-			this._injectCameraHelperArgumentName,
+			CommandHandlerArgumentCameraHelper,
 			"control",
 		];
 	}
 
-	async get(cameraHelper, controlName) {
+	async get(cameraHelper: Readonly<CameraHelper>, controlName: ControlName): Promise<void> {
 		assert.strictEqual(arguments.length, 2);
 
 		const value = await cameraHelper.getValue(controlName);
 		const json = JSON.stringify(value, null, 2);
 
-		this._output.normal(json);
+		this.output.normal(json);
 	}
 
-	async rangeArguments() {
+	async rangeArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [
-			this._injectCameraHelperArgumentName,
+			CommandHandlerArgumentCameraHelper,
 			"control",
 		];
 	}
 
-	async range(cameraHelper, controlName) {
+	async range(cameraHelper: Readonly<CameraHelper>, controlName: ControlName): Promise<void> {
 		assert.strictEqual(arguments.length, 2);
 
 		const range = await cameraHelper.getRange(controlName);
 		const json = JSON.stringify(range, null, 2);
 
-		this._output.normal(json);
+		this.output.normal(json);
 	}
 
-	async rangesArguments() {
+	async rangesArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [
-			this._injectCameraHelperArgumentName,
+			CommandHandlerArgumentCameraHelper,
 		];
 	}
 
-	async ranges(cameraHelper) {
+	async ranges(cameraHelper: Readonly<CameraHelper>): Promise<void> {
 		assert.strictEqual(arguments.length, 1);
 
 		const ranges = await cameraHelper.getRanges();
 		const json = JSON.stringify(ranges, null, 2);
 
-		this._output.normal(json);
+		this.output.normal(json);
 	}
 
-	async setArguments() {
+	async setArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [
-			this._injectCameraHelperArgumentName,
+			CommandHandlerArgumentCameraHelper,
 			"control",
 			"value",
 		];
 	}
 
-	async set(cameraHelper, controlName, value) {
+	async set(cameraHelper: Readonly<CameraHelper>, controlName: ControlName, value: ControlValue): Promise<void> {
 		assert.strictEqual(arguments.length, 3);
 
 		return cameraHelper.setValue(controlName, value);
 	}
 
-	async exportArguments() {
+	async exportArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [
-			this._injectCameraHelperArgumentName,
+			CommandHandlerArgumentCameraHelper,
 		];
 	}
 
-	async export(cameraHelper) {
+	async export(cameraHelper: Readonly<CameraHelper>): Promise<void> {
 		assert.strictEqual(arguments.length, 1);
 
 		// NOTE: exporting un-settable values breaks imports because of strict settable value checks.
@@ -108,16 +116,16 @@ export default class CommandHandlers {
 		const values = await cameraHelper.getSettableValues();
 		const json = JSON.stringify(values, null, 2);
 
-		this._output.normal(json);
+		this.output.normal(json);
 	}
 
-	async importArguments() {
+	async importArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [
-			this._injectCameraHelperArgumentName,
+			CommandHandlerArgumentCameraHelper,
 		];
 	}
 
-	async import(cameraHelper) {
+	async import(cameraHelper: Readonly<CameraHelper>): Promise<void> {
 		assert.strictEqual(arguments.length, 1);
 
 		const values = await streamToPromise(process.stdin)
@@ -126,31 +134,31 @@ export default class CommandHandlers {
 		await cameraHelper.setValues(values);
 	}
 
-	async controlsArguments() {
+	async controlsArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [
-			this._injectCameraHelperArgumentName,
+			CommandHandlerArgumentCameraHelper,
 		];
 	}
 
-	async controls(cameraHelper) {
+	async controls(cameraHelper: Readonly<CameraHelper>): Promise<void> {
 		assert.strictEqual(arguments.length, 1);
 
 		const controlNames = await cameraHelper.getControlNames();
 		const json = JSON.stringify(controlNames, null, 2);
 
-		this._output.normal(json);
+		this.output.normal(json);
 	}
 
-	async devicesArguments() {
+	async devicesArguments(): Promise<CommandHandlerArgumentNames[]> {
 		return [];
 	}
 
-	async devices() {
+	async devices(): Promise<void> {
 		assert.strictEqual(arguments.length, 0);
 
-		const devices = await this._uvcDeviceLister.get();
+		const devices = await this.uvcDeviceLister.get();
 		const json = JSON.stringify(devices, null, 2);
 
-		this._output.normal(json);
+		this.output.normal(json);
 	}
 }

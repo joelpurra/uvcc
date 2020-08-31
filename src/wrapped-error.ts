@@ -18,35 +18,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import assert from "assert";
 
-export default class Output {
-	constructor(public enableVerboseOutput: boolean) {
-		assert.strictEqual(arguments.length, 1);
-		assert(typeof this.enableVerboseOutput === "boolean");
+export default class WrappedError extends Error {
+	constructor(public readonly innerError: Readonly<Error>,
+		message: string,
+	) {
+		super(message);
+
+		assert(this.innerError instanceof Error);
 	}
 
-	normal(...args: readonly unknown[]): void {
-		return this.stdout(...args);
-	}
-
-	error(...args: readonly unknown[]): void {
-		return this.stderr(...args);
-	}
-
-	verbose(...args: readonly unknown[]): void {
-		if (!this.enableVerboseOutput) {
-			return undefined;
-		}
-
-		return this.stderr(...args);
-	}
-
-	private stdout(...args: readonly unknown[]) {
-		// eslint-disable-next-line no-console
-		console.log(...args);
-	}
-
-	private stderr(...args: readonly unknown[]) {
-		// eslint-disable-next-line no-console
-		console.error(...args);
+	toString(): string {
+		// eslint-disable-next-line @typescript-eslint/no-base-to-string
+		return `${super.toString()} (${JSON.stringify(String(this.innerError))})`;
 	}
 }

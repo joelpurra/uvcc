@@ -16,30 +16,36 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert = require("assert");
+import assert from "assert";
+import Camera, {
+	UvcControl,
+} from "uvc-control";
+
+import WrappedError from "./wrapped-error";
 
 export default class CameraFactory {
-	constructor(UVCControl) {
+	constructor(private readonly UVCControl: UvcControl) {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof UVCControl, "function");
-
-		this._UVCControl = UVCControl;
+		assert(typeof this.UVCControl === "function");
 	}
 
-	async get(vendor, product, address) {
+	async get(vendor: number | null, product: number | null, address: number | null): Promise<Camera> {
 		assert.strictEqual(arguments.length, 3);
 		assert(vendor === null || (typeof vendor === "number" && vendor >= 0));
 		assert(product === null || (typeof product === "number" && product >= 0));
 		assert(address === null || (typeof address === "number" && address >= 0));
 
 		const constructorOptions = {
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 			deviceAddress: address || undefined,
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 			pid: product || undefined,
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 			vid: vendor || undefined,
 		};
 
 		try {
-			const camera = new this._UVCControl(constructorOptions);
+			const camera = new this.UVCControl(constructorOptions);
 
 			return camera;
 		} catch (error) {
@@ -68,8 +74,7 @@ export default class CameraFactory {
 
 			errorMessage += ` (${JSON.stringify(String(error))})`;
 
-			const wrappedError = new Error(errorMessage);
-			wrappedError.innerError = error;
+			const wrappedError = new WrappedError(error, errorMessage);
 
 			throw wrappedError;
 		}

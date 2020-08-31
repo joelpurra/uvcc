@@ -16,18 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert = require("assert");
+import assert from "assert";
+import {
+	UvcControl,
+} from "uvc-control";
+
+export interface MappedUvcDevice {
+	readonly name: string;
+	readonly vendor: number;
+	readonly product: number;
+	readonly address: number;
+}
 
 export default class UvcDeviceLister {
-	constructor(UVCControl) {
+	constructor(private readonly UVCControl: Readonly<UvcControl>) {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof UVCControl, "function");
-
-		this._UVCControl = UVCControl;
+		assert(typeof this.UVCControl === "function");
 	}
 
-	async get() {
-		const devices = await this._UVCControl.discover();
+	async get(): Promise<readonly MappedUvcDevice[]> {
+		const devices = await this.UVCControl.discover();
 		const output = devices.map((device) =>
 			({
 				// NOTE: outputting in human-readable "logical" non-alphabetical order.

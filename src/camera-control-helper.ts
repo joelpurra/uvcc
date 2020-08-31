@@ -16,46 +16,83 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert = require("assert");
-import filterObject = require("filter-obj");
-import arrayNonUniq = require("array-non-uniq");
-import sortKeys = require("sort-keys");
+import arrayNonUniq from "array-non-uniq";
+import assert from "assert";
+import filterObject from "filter-obj";
+import sortKeys from "sort-keys";
+import Camera,
+{
+	CameraControl,
+	UvcControl,
+} from "uvc-control";
+
+import WrappedError from "./wrapped-error";
+
+interface ControlFlags {
+	readonly isGettable: boolean;
+	readonly isRanged: boolean;
+	readonly isSettable: boolean;
+}
+
+type ControlsFlags = Record<string, ControlFlags>;
 
 export default class CameraControlHelper {
-	constructor(UVCControl, camera) {
+	private cachedMappedSupportedControls: Readonly<ControlsFlags> | null = null;
+
+	constructor(private readonly UVCControl: Readonly<UvcControl>, private readonly camera: Readonly<Camera>) {
 		assert.strictEqual(arguments.length, 2);
-		assert.strictEqual(typeof UVCControl, "function");
-		assert.strictEqual(typeof camera, "object");
-
-		this._UVCControl = UVCControl;
-		this._camera = camera;
-
-		this._cachedMappedSupportedControls = null;
+		assert(typeof this.UVCControl === "function");
+		assert(typeof this.camera === "object");
 	}
 
-	_isGettableControl(control) {
+	async getControlNames(): Promise<readonly string[]> {
+		const controls = await this.getSupportedControls();
+
+		return Object.keys(controls);
+	}
+
+	async getGettableControlNames(): Promise<readonly string[]> {
+		const gettableControls = await this.getGettableControls();
+
+		return Object.keys(gettableControls);
+	}
+
+	async getRangedControlNames(): Promise<readonly string[]> {
+		const rangedControls = await this.getRangedControls();
+
+		return Object.keys(rangedControls);
+	}
+
+	async getSettableControlNames(): Promise<readonly string[]> {
+		const settableControls = await this.getSettableControls();
+
+		return Object.keys(settableControls);
+	}
+
+	private isGettableControl(control: Readonly<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
-		return control.requests.includes(this._UVCControl.REQUEST.GET_CUR);
+		return control.requests.includes(this.UVCControl.REQUEST.GET_CUR);
 	}
 
-	_isRangedControl(control) {
+	private isRangedControl(control: Readonly<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
-		return control.requests.includes(this._UVCControl.REQUEST.GET_MIN) && control.requests.includes(this._UVCControl.REQUEST.GET_MAX);
+		return control.requests.includes(this.UVCControl.REQUEST.GET_MIN)
+			&& control.requests.includes(this.UVCControl.REQUEST.GET_MAX);
 	}
 
-	_isSettableControl(control) {
+	private isSettableControl(control: Readonly<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
-		return control.requests.includes(this._UVCControl.REQUEST.SET_CUR)
-		|| (
-			// TODO: treat optionally settable controls separately?
-			Array.isArray(control.optional_requests)
-			&& control.optional_requests.includes(this._UVCControl.REQUEST.SET_CUR)
-		);
+		return control.requests.includes(this.UVCControl.REQUEST.SET_CUR)
+			|| (
+				// TODO: treat optionally settable controls separately?
+				Array.isArray(control.optional_requests)
+					&& control.optional_requests.includes(this.UVCControl.REQUEST.SET_CUR)
+			);
 	}
 
-	async _mapSupportedControls() {
-		const supportedControls = this._camera.supportedControls
-			.map((supportedControlName) => this._UVCControl.controls[supportedControlName]);
+	private async mapSupportedControls() {
+		const supportedControls = this.camera.supportedControls
+			.map((supportedControlName) => this.UVCControl.controls[supportedControlName]);
 
 		const missingControls = supportedControls.filter((control) => !control);
 
@@ -71,26 +108,25 @@ export default class CameraControlHelper {
 
 		const mappedControls = supportedControls.map((control) => {
 			try {
-				const uvccControl = [
+				const uvccControl: [string, ControlFlags] = [
 					control.name,
 					{
 						// NOTE: minimal uvcc-specific mapping.
-						isGettable: this._isGettableControl(control),
-						isRanged: this._isRangedControl(control),
-						isSettable: this._isSettableControl(control),
+						isGettable: this.isGettableControl(control),
+						isRanged: this.isRangedControl(control),
+						isSettable: this.isSettableControl(control),
 					},
 				];
 
 				return uvccControl;
 			} catch (error) {
-				const wrappedError = new Error(`Could not map control: ${JSON.stringify(control.name)} (${JSON.stringify(String(error))})`);
-				wrappedError.innerError = error;
+				const wrappedError = new WrappedError(error, `Could not map control: ${JSON.stringify(control.name)}`);
 
 				throw wrappedError;
 			}
 		});
 
-		const controlsObject = {};
+		const controlsObject: ControlsFlags = {};
 
 		for (const mappedControl of mappedControls) {
 			controlsObject[mappedControl[0]] = mappedControl[1];
@@ -101,53 +137,29 @@ export default class CameraControlHelper {
 		return sortedControls;
 	}
 
-	async _getSupportedControls() {
-		if (this._cachedMappedSupportedControls === null) {
-			this._cachedMappedSupportedControls = await this._mapSupportedControls();
+	private async getSupportedControls() {
+		if (this.cachedMappedSupportedControls === null) {
+			this.cachedMappedSupportedControls = await this.mapSupportedControls();
 		}
 
-		return this._cachedMappedSupportedControls;
+		return this.cachedMappedSupportedControls;
 	}
 
-	async _getGettableControls() {
-		const controls = await this._getSupportedControls();
+	private async getGettableControls() {
+		const controls = await this.getSupportedControls();
 
 		return filterObject(controls, (_key, control) => control.isGettable);
 	}
 
-	async _getRangedControls() {
-		const controls = await this._getSupportedControls();
+	private async getRangedControls() {
+		const controls = await this.getSupportedControls();
 
 		return filterObject(controls, (_key, control) => control.isRanged);
 	}
 
-	async _getSettableControls() {
-		const controls = await this._getSupportedControls();
+	private async getSettableControls() {
+		const controls = await this.getSupportedControls();
 
 		return filterObject(controls, (_key, control) => control.isSettable);
-	}
-
-	async getControlNames() {
-		const controls = await this._getSupportedControls();
-
-		return Object.keys(controls);
-	}
-
-	async getGettableControlNames() {
-		const gettableControls = await this._getGettableControls();
-
-		return Object.keys(gettableControls);
-	}
-
-	async getRangedControlNames() {
-		const rangedControls = await this._getRangedControls();
-
-		return Object.keys(rangedControls);
-	}
-
-	async getSettableControlNames() {
-		const settableControls = await this._getSettableControls();
-
-		return Object.keys(settableControls);
 	}
 }

@@ -17,22 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import engineCheck = require("engine-check");
+import engineCheck from "engine-check";
+import UVCControl from "uvc-control";
 
-import runtimeConfigurator = require("./runtime-configurator");
-
-// https://github.com/makenai/node-uvc-control
-import UVCControl = require("uvc-control");
-
-import CameraControlHelper = require("./camera-control-helper");
-import CameraControlHelperFactory = require("./camera-control-helper-factory");
-import CameraFactory = require("./camera-factory");
-import CameraHelper = require("./camera-helper");
-import CameraHelperFactory = require("./camera-helper-factory");
-import CommandHandlers = require("./command-handlers");
-import CommandManager = require("./command-manager");
-import Output = require("./output");
-import UvcDeviceLister = require("./uvc-device-lister");
+import CameraControlHelper from "./camera-control-helper";
+import CameraControlHelperFactory from "./camera-control-helper-factory";
+import CameraFactory from "./camera-factory";
+import CameraHelper from "./camera-helper";
+import CameraHelperFactory from "./camera-helper-factory";
+import CommandHandlers from "./command-handlers";
+import CommandManager from "./command-manager";
+import Output from "./output";
+import runtimeConfigurator from "./runtime-configurator";
+import UvcDeviceLister from "./uvc-device-lister";
 
 const mainAsync = async () => {
 	try {
@@ -40,8 +37,16 @@ const mainAsync = async () => {
 		const runtimeConfig = runtimeConfigurator();
 		const output = new Output(runtimeConfig.verbose);
 
-		process.on("unhandledRejection", (...args) => output.error(...args));
-		process.on("uncaughtException", (...args) => output.error(...args));
+		process.on("unhandledRejection", (...args: readonly unknown[]) => {
+			output.error(...args);
+
+			process.exitCode = 1;
+		});
+		process.on("uncaughtException", (...args: readonly unknown[]) => {
+			output.error(...args);
+
+			process.exitCode = 1;
+		});
 
 		const cameraFactory = new CameraFactory(UVCControl);
 		const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
