@@ -17,11 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
+import Bluebird from "bluebird";
 import streamToPromise from "stream-to-promise";
 import {
 	ControlName,
 	ControlValue,
 } from "uvc-control";
+
 import CameraHelper from "./camera-helper";
 import Output from "./output";
 import {
@@ -128,8 +130,17 @@ export default class CommandHandlers {
 	async import(cameraHelper: Readonly<CameraHelper>): Promise<void> {
 		assert.strictEqual(arguments.length, 1);
 
-		const values = await streamToPromise(process.stdin)
-			.then((buffer) => JSON.parse(buffer.toString()));
+		const stdinTimeout = 1000;
+
+		const values = await Bluebird
+			.try(async () => {
+				const buffer = await streamToPromise(process.stdin);
+				const json = JSON.parse(buffer.toString());
+
+				return json;
+			})
+			.timeout(stdinTimeout, `Could not read uvcc configuration from stdin within the ${stdinTimeout} millisecond timeout. Was any data piped in?`)
+			.tapCatch((error) => process.stdin.destroy(error));
 
 		await cameraHelper.setValues(values);
 	}
