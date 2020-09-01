@@ -17,159 +17,50 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
-import Bluebird from "bluebird";
-import streamToPromise from "stream-to-promise";
-import {
-	ControlName,
-	ControlValue,
-} from "uvc-control";
 
-import CameraHelper from "./camera-helper";
 import Output from "./output";
 import {
-	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentNames,
-} from "./runtime-configurator";
-import UvcDeviceLister from "./uvc-device-lister";
+	CommandName, Commands,
+} from "./types/command";
 
 export default class CommandHandlers {
-	// NOTE: the command manager does dynamic command handler mapping.
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	[x: string]: Function | unknown;
-
-	constructor(private readonly output: Output, private readonly uvcDeviceLister: UvcDeviceLister) {
+	constructor(private readonly output: Output, private readonly commands: Readonly<Commands>) {
 		assert.strictEqual(arguments.length, 2);
 		assert(typeof this.output === "object");
-		assert(typeof this.uvcDeviceLister === "object");
+		assert(typeof this.commands === "object");
 	}
 
-	async getArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-			"control",
-		];
-	}
-
-	async get(cameraHelper: Readonly<CameraHelper>, controlName: ControlName): Promise<void> {
-		assert.strictEqual(arguments.length, 2);
-
-		const value = await cameraHelper.getValue(controlName);
-		const json = JSON.stringify(value, null, 2);
-
-		this.output.normal(json);
-	}
-
-	async rangeArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-			"control",
-		];
-	}
-
-	async range(cameraHelper: Readonly<CameraHelper>, controlName: ControlName): Promise<void> {
-		assert.strictEqual(arguments.length, 2);
-
-		const range = await cameraHelper.getRange(controlName);
-		const json = JSON.stringify(range, null, 2);
-
-		this.output.normal(json);
-	}
-
-	async rangesArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-		];
-	}
-
-	async ranges(cameraHelper: Readonly<CameraHelper>): Promise<void> {
+	async has(commandName: CommandName): Promise<boolean> {
 		assert.strictEqual(arguments.length, 1);
+		assert(typeof commandName === "string");
 
-		const ranges = await cameraHelper.getRanges();
-		const json = JSON.stringify(ranges, null, 2);
+		const command = this.commands[commandName];
 
-		this.output.normal(json);
+		return Boolean(command);
 	}
 
-	async setArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-			"control",
-			"value",
-		];
+	async execute(commandName: CommandName, ...args: readonly unknown[]): Promise<unknown> {
+		assert(typeof commandName === "string");
+		assert(Array.isArray(args));
+
+		const command = this.commands[commandName];
+
+		assert(typeof command === "object");
+
+		const output = await command.execute(...args);
+
+		return output;
 	}
 
-	async set(cameraHelper: Readonly<CameraHelper>, controlName: ControlName, value: ControlValue): Promise<void> {
-		assert.strictEqual(arguments.length, 3);
-
-		return cameraHelper.setValue(controlName, value);
-	}
-
-	async exportArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-		];
-	}
-
-	async export(cameraHelper: Readonly<CameraHelper>): Promise<void> {
+	async getArguments(commandName: CommandName): Promise<CommandHandlerArgumentNames[]> {
 		assert.strictEqual(arguments.length, 1);
+		assert(typeof commandName === "string");
 
-		// NOTE: exporting un-settable values breaks imports because of strict settable value checks.
-		// TODO: export also un-settable values with --all flag?
-		const values = await cameraHelper.getSettableValues();
-		const json = JSON.stringify(values, null, 2);
+		const command = this.commands[commandName];
 
-		this.output.normal(json);
-	}
+		assert(typeof command === "object");
 
-	async importArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-		];
-	}
-
-	async import(cameraHelper: Readonly<CameraHelper>): Promise<void> {
-		assert.strictEqual(arguments.length, 1);
-
-		const stdinTimeout = 1000;
-
-		const values = await Bluebird
-			.try(async () => {
-				const buffer = await streamToPromise(process.stdin);
-				const json = JSON.parse(buffer.toString());
-
-				return json;
-			})
-			.timeout(stdinTimeout, `Could not read uvcc configuration from stdin within the ${stdinTimeout} millisecond timeout. Was any data piped in?`)
-			.tapCatch((error) => process.stdin.destroy(error));
-
-		await cameraHelper.setValues(values);
-	}
-
-	async controlsArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-		];
-	}
-
-	async controls(cameraHelper: Readonly<CameraHelper>): Promise<void> {
-		assert.strictEqual(arguments.length, 1);
-
-		const controlNames = await cameraHelper.getControlNames();
-		const json = JSON.stringify(controlNames, null, 2);
-
-		this.output.normal(json);
-	}
-
-	async devicesArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [];
-	}
-
-	async devices(): Promise<void> {
-		assert.strictEqual(arguments.length, 0);
-
-		const devices = await this.uvcDeviceLister.get();
-		const json = JSON.stringify(devices, null, 2);
-
-		this.output.normal(json);
+		return command.getArguments();
 	}
 }

@@ -25,14 +25,13 @@ import CameraHelperFactory from "./camera-helper-factory";
 import CommandHandlers from "./command-handlers";
 import Output from "./output";
 import {
-	CommandHandlerArgumentCameraHelper,
-	CommandHandlerArgumentNames,
-	CommandHandlerArgumentTypes,
-	CommandHandlerLookup,
 	RuntimeConfiguration,
 } from "./runtime-configurator";
-
-export type CommandName = string;
+import {
+	CommandHandlerArgumentCameraHelper,
+	CommandHandlerArgumentTypes,
+	CommandHandlerLookup,
+} from "./types/command";
 
 export default class CommandManager {
 	constructor(private readonly output: Output, private readonly cameraFactory: CameraFactory, private readonly cameraHelperFactory: CameraHelperFactory, private readonly commandHandlers: CommandHandlers) {
@@ -47,7 +46,7 @@ export default class CommandManager {
 		this.output.verbose("Parsed arguments:", JSON.stringify(runtimeConfig, null, 2));
 
 		const commandName = runtimeConfig.cmd;
-		const commandHandlerExists = await this.commandHandlerExists(commandName);
+		const commandHandlerExists = await this.commandHandlers.has(commandName);
 
 		if (!commandHandlerExists) {
 			this.output.error("Unknown command:", commandName);
@@ -65,7 +64,7 @@ export default class CommandManager {
 			}
 		};
 
-		const commandArguments = await this.getCommandArguments(commandName);
+		const commandArguments = await this.commandHandlers.getArguments(commandName);
 
 		// TODO: smarter solution.
 		if (commandArguments.includes(CommandHandlerArgumentCameraHelper)) {
@@ -97,9 +96,14 @@ export default class CommandManager {
 				argumentValues.unshift(cameraHelper);
 			}
 
-			const commandHandler = await this.getCommandHandler(commandName);
+			const output = await this.commandHandlers.execute(commandName, ...argumentValues);
 
-			await commandHandler(...argumentValues);
+			// NOTE: could separate of types of commands -- those with output, and those without.
+			if (typeof output !== "undefined") {
+				const json = JSON.stringify(output, null, 2);
+
+				this.output.normal(json);
+			}
 
 			await closeCamera();
 		} catch (error) {
@@ -111,26 +115,5 @@ export default class CommandManager {
 
 			throw error;
 		}
-	}
-
-	private async commandHandlerExists(commandName: CommandName) {
-		return (typeof this.commandHandlers[commandName] === "function");
-	}
-
-	private async getCommandArguments(commandName: CommandName): Promise<CommandHandlerArgumentNames[]> {
-		const commandArguments = this.commandHandlers[`${commandName}Arguments`];
-
-		assert(typeof commandArguments === "function");
-
-		return commandArguments();
-	}
-
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	private async getCommandHandler(commandName: CommandName): Promise<Function> {
-		const commandHandler = this.commandHandlers[commandName];
-
-		assert(typeof commandHandler === "function");
-
-		return commandHandler.bind(this.commandHandlers);
 	}
 }

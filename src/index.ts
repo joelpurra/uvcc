@@ -26,9 +26,20 @@ import CameraFactory from "./camera-factory";
 import CameraHelper from "./camera-helper";
 import CameraHelperFactory from "./camera-helper-factory";
 import CommandHandlers from "./command-handlers";
+import ControlsCommand from "./command-handlers/controls";
+import DevicesCommand from "./command-handlers/devices";
+import ExportCommand from "./command-handlers/export";
+import GetCommand from "./command-handlers/get";
+import ImportCommand from "./command-handlers/import";
+import RangeCommand from "./command-handlers/range";
+import RangesCommand from "./command-handlers/ranges";
+import SetCommand from "./command-handlers/set";
 import CommandManager from "./command-manager";
 import Output from "./output";
 import runtimeConfigurator from "./runtime-configurator";
+import {
+	Commands,
+} from "./types/command";
 import UvcDeviceLister from "./uvc-device-lister";
 
 const mainAsync = async () => {
@@ -52,7 +63,17 @@ const mainAsync = async () => {
 		const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
 		const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
 		const uvcDeviceLister = new UvcDeviceLister(UVCControl);
-		const commandHandlers = new CommandHandlers(output, uvcDeviceLister);
+		const commands: Commands = {
+			controls: new ControlsCommand(),
+			devices: new DevicesCommand(uvcDeviceLister),
+			"export": new ExportCommand(),
+			get: new GetCommand(),
+			"import": new ImportCommand(),
+			range: new RangeCommand(),
+			ranges: new RangesCommand(),
+			set: new SetCommand(),
+		};
+		const commandHandlers = new CommandHandlers(output, commands);
 		const commandManager = new CommandManager(output, cameraFactory, cameraHelperFactory, commandHandlers);
 
 		await commandManager.execute(runtimeConfig);

@@ -76,7 +76,9 @@ export default class CameraHelper {
 			throw new Error(`Could not find a settable control named ${JSON.stringify(controlName)}.`);
 		}
 
-		return this.camera.set(controlName, value);
+		await this.camera.set(controlName, value);
+
+		return undefined;
 	}
 
 	async getControlNames(): Promise<readonly ControlName[]> {

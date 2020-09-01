@@ -28,8 +28,8 @@ declare module "uvc-control" {
 		public readonly supportedControls: readonly ControlName[];
 
 		get: (name: ControlName) => Promise<ControlValue>;
-		range: (name: ControlName) => Promise<ControlRange>;
-		set: (name: ControlName, value: ControlValue) => Promise<void>;
+		range: (name: ControlName) => Promise<Readonly<ControlRange>>;
+		set: (name: ControlName, value: ControlValue) => Promise<readonly number[]>;
 		close: () => Promise<void>;
 
 		constructor(options: ConstructorOptions);

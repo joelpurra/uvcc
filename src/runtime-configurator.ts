@@ -26,8 +26,6 @@ import yargs, {
 	Argv,
 } from "yargs";
 
-import CameraHelper from "./camera-helper";
-
 const getJsonSync = (fileRelativePath: string) => {
 	const resolvedPath = join(__dirname, fileRelativePath);
 
@@ -52,12 +50,6 @@ export type RuntimeConfiguration = {
 };
 export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = number | string | boolean | undefined;
-
-// NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
-export const CommandHandlerArgumentCameraHelper = "cameraHelper";
-export type CommandHandlerArgumentNames = RuntimeConfigurationKeys | typeof CommandHandlerArgumentCameraHelper;
-export type CommandHandlerArgumentTypes = RuntimeConfigurationTypes | CameraHelper;
-export type CommandHandlerLookup = Record<CommandHandlerArgumentNames, CommandHandlerArgumentTypes>;
 
 const getYargsArgv = (): Readonly<Argv["argv"]> => {
 	const packageJson = getJsonSync("../package.json");
