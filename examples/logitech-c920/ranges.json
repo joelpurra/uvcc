@@ -1,7 +1,21 @@
 {
+  "absolute_exposure_time": {
+    "min": 3,
+    "max": 2047
+  },
   "absolute_focus": {
     "min": 0,
     "max": 250
+  },
+  "absolute_pan_tilt": {
+    "min": [
+      -36000,
+      -36000
+    ],
+    "max": [
+      36000,
+      36000
+    ]
   },
   "absolute_zoom": {
     "min": 100,

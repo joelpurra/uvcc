@@ -1,5 +1,8 @@
 {
-  "absolute_pan_tilt": 0,
+  "absolute_pan_tilt": [
+    0,
+    0
+  ],
   "absolute_zoom": 100,
   "auto_exposure_mode": 8,
   "auto_exposure_priority": 1,
@@ -8,9 +11,9 @@
   "backlight_compensation": 0,
   "brightness": 128,
   "contrast": 128,
-  "gain": 28,
+  "gain": 13,
   "power_line_frequency": 2,
   "saturation": 128,
   "sharpness": 128,
-  "white_balance_temperature": 4675
+  "white_balance_temperature": 4572
 }
