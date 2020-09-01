@@ -17,22 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-require("engine-check")();
+import engineCheck from "engine-check";
+import UVCControl from "uvc-control";
 
-const runtimeConfigurator = require("./src/runtime-configurator");
-
-// https://github.com/makenai/node-uvc-control
-const UVCControl = require("uvc-control");
-
-const CameraControlHelper = require("./src/camera-control-helper");
-const CameraControlHelperFactory = require("./src/camera-control-helper-factory");
-const CameraFactory = require("./src/camera-factory");
-const CameraHelper = require("./src/camera-helper");
-const CameraHelperFactory = require("./src/camera-helper-factory");
-const CommandHandlers = require("./src/command-handlers");
-const CommandManager = require("./src/command-manager");
-const Output = require("./src/output");
-const UvcDeviceLister = require("./src/uvc-device-lister");
+import CameraControlHelper from "./camera-control-helper";
+import CameraControlHelperFactory from "./camera-control-helper-factory";
+import CameraFactory from "./camera-factory";
+import CameraHelper from "./camera-helper";
+import CameraHelperFactory from "./camera-helper-factory";
+import CommandHandlers from "./command-handlers";
+import CommandManager from "./command-manager";
+import Output from "./output";
+import runtimeConfigurator from "./runtime-configurator";
+import UvcDeviceLister from "./uvc-device-lister";
 
 const mainAsync = async () => {
 	try {
@@ -40,8 +37,16 @@ const mainAsync = async () => {
 		const runtimeConfig = runtimeConfigurator();
 		const output = new Output(runtimeConfig.verbose);
 
-		process.on("unhandledRejection", (...args) => output.error(...args));
-		process.on("uncaughtException", (...args) => output.error(...args));
+		process.on("unhandledRejection", (...args: readonly unknown[]) => {
+			output.error(...args);
+
+			process.exitCode = 1;
+		});
+		process.on("uncaughtException", (...args: readonly unknown[]) => {
+			output.error(...args);
+
+			process.exitCode = 1;
+		});
 
 		const cameraFactory = new CameraFactory(UVCControl);
 		const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
@@ -62,7 +67,9 @@ const mainAsync = async () => {
 
 const main = () => {
 	try {
-		mainAsync();
+		engineCheck();
+
+		void mainAsync();
 	} catch (error) {
 		// NOTE: root error handler for synchronous errors.
 		// eslint-disable-next-line no-console

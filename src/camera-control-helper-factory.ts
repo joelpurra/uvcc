@@ -16,27 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert from "assert";
+import Camera, {
+	UvcControl,
+} from "uvc-control";
 
-module.exports = class CameraHelperFactory {
-	constructor(output, cameraControlHelperFactory, CameraHelper) {
-		assert.strictEqual(arguments.length, 3);
-		assert.strictEqual(typeof output, "object");
-		assert.strictEqual(typeof cameraControlHelperFactory, "object");
-		assert.strictEqual(typeof CameraHelper, "function");
+import CameraControlHelperClass from "./camera-control-helper";
 
-		this._output = output;
-		this._cameraControlHelperFactory = cameraControlHelperFactory;
-		this._CameraHelper = CameraHelper;
+export default class CameraControlHelperFactory {
+	constructor(private readonly UVCControl: Readonly<UvcControl>, private readonly CameraControlHelper: typeof CameraControlHelperClass) {
+		assert.strictEqual(arguments.length, 2);
+		assert(typeof this.UVCControl === "function");
+		assert(typeof this.CameraControlHelper === "function");
 	}
 
-	async get(camera) {
+	async get(camera: Readonly<Camera>): Promise<CameraControlHelperClass> {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof camera, "object");
+		assert(typeof camera === "object");
 
-		const cameraControlHelper = await this._cameraControlHelperFactory.get(camera);
-		const cameraHelper = new this._CameraHelper(this._output, cameraControlHelper, camera);
+		const cameraControlHelper = new this.CameraControlHelper(this.UVCControl, camera);
 
-		return cameraHelper;
+		return cameraControlHelper;
 	}
-};
+}

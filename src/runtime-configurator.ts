@@ -16,30 +16,58 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const fs = require("fs");
+import assert from "assert";
+import findUp from "find-up";
+import fs from "fs";
+import {
+	join,
+} from "path";
+import yargs, {
+	Argv,
+} from "yargs";
 
-const findUp = require("find-up");
-const yargs = require("yargs");
+import CameraHelper from "./camera-helper";
 
-const packageJson = require("../package.json");
+const getJsonSync = (fileRelativePath: string) => {
+	const resolvedPath = join(__dirname, fileRelativePath);
 
-const getJSON = (path) => {
 	try {
 		// eslint-disable-next-line no-sync
-		const json = JSON.parse(fs.readFileSync(path));
+		const json = JSON.parse(fs.readFileSync(resolvedPath).toString());
 
 		return json;
 	} catch (error) {
-		throw new Error(`Could not read JSON file '${path}': ${error}`);
+		throw new Error(`Could not read JSON file ${JSON.stringify(resolvedPath)}: ${JSON.stringify(String(error))}`);
 	}
 };
 
-module.exports = () => {
+export type RuntimeConfiguration = {
+	address: number;
+	cmd: string;
+	control?: string;
+	product: number;
+	value?: string;
+	vendor: number;
+	verbose: boolean;
+};
+export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
+export type RuntimeConfigurationTypes = number | string | boolean | undefined;
+
+// NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
+export const CommandHandlerArgumentCameraHelper = "cameraHelper";
+export type CommandHandlerArgumentNames = RuntimeConfigurationKeys | typeof CommandHandlerArgumentCameraHelper;
+export type CommandHandlerArgumentTypes = RuntimeConfigurationTypes | CameraHelper;
+export type CommandHandlerLookup = Record<CommandHandlerArgumentNames, CommandHandlerArgumentTypes>;
+
+const getYargsArgv = (): Readonly<Argv["argv"]> => {
+	const packageJson = getJsonSync("../package.json");
 	const appBinaryName = Object.keys(packageJson.bin)[0];
 	const appDescription = packageJson.description;
 	const {
 		homepage,
 	} = packageJson;
+
+	assert(typeof homepage === "string");
 
 	const epilogue = `uvcc Copyright © 2018 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
@@ -54,16 +82,17 @@ module.exports = () => {
 			`.${appBinaryName}rc`,
 			`.${appBinaryName}rc.json`,
 		]);
-		const configFromNearestConfigPath = nearestConfigPath ? getJSON(nearestConfigPath) : {};
+		const configFromNearestConfigPath = nearestConfigPath ? getJsonSync(nearestConfigPath) : {};
 
 		fromImplicitConfigFile = configFromNearestConfigPath;
 	}
 
+	/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
 	yargs
 		.strict()
 		.config(fromImplicitConfigFile)
 		.config("config", "Load command arguments from a JSON file.", (argumentConfigPath) => {
-			const fromExplicitConfigFile = argumentConfigPath ? getJSON(argumentConfigPath) : {};
+			const fromExplicitConfigFile = argumentConfigPath ? getJsonSync(argumentConfigPath) : {};
 
 			return fromExplicitConfigFile;
 		})
@@ -130,20 +159,50 @@ module.exports = () => {
 				"product",
 				"address",
 			],
-			"Camera selection:",
-		)
+			"Camera selection:")
 		.help()
-		.example("$0 --vendor 0x46d --product 0x82d get white_balance_temperature")
+		.example("$0", "vendor 0x46d --product 0x82d get white_balance_temperature")
 		.epilogue(epilogue);
+	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
+	return yargs.argv;
+};
+
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
+	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
+	const cmd = typeof argv.cmd === "string" ? argv.cmd : (typeof argv._[0] === "string" ? argv._.shift() : null);
 	const {
-		argv,
-	} = yargs;
+		address,
+		control,
+		product,
+		value,
+		vendor,
+		verbose,
+	} = argv;
 
-	// NOTE HACK: workaround yargs not being consistend with yargs.cmd versus yargs._ for defined/non-defined commands.
-	if (typeof argv.cmd !== "string") {
-		argv.cmd = argv._.shift();
-	}
+	assert(typeof address === "number");
+	assert(typeof cmd === "string");
+	assert(typeof product === "number");
+	assert(typeof vendor === "number");
+	assert(typeof verbose === "boolean");
+
+	const mappedArgv: RuntimeConfiguration = {
+		address,
+		cmd,
+		control: typeof control === "string" ? control : undefined,
+		product,
+		value: typeof value === "string" ? value : undefined,
+		vendor,
+		verbose,
+	};
+
+	return mappedArgv;
+};
+
+export default function runtimeConfigurator(): RuntimeConfiguration {
+	const rawArgv = getYargsArgv();
+	const argv = mapArgv(rawArgv);
 
 	return argv;
-};
+}

@@ -16,24 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert from "assert";
 
-module.exports = class CameraControlHelperFactory {
-	constructor(UVCControl, CameraControlHelper) {
-		assert.strictEqual(arguments.length, 2);
-		assert.strictEqual(typeof UVCControl, "function");
-		assert.strictEqual(typeof CameraControlHelper, "function");
+export default class WrappedError extends Error {
+	constructor(public readonly innerError: Readonly<Error>,
+		message: string,
+	) {
+		super(message);
 
-		this._UVCControl = UVCControl;
-		this._CameraControlHelper = CameraControlHelper;
+		assert(this.innerError instanceof Error);
 	}
 
-	async get(camera) {
-		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof camera, "object");
-
-		const cameraControlHelper = new this._CameraControlHelper(this._UVCControl, camera);
-
-		return cameraControlHelper;
+	toString(): string {
+		// eslint-disable-next-line @typescript-eslint/no-base-to-string
+		return `${super.toString()} (${JSON.stringify(String(this.innerError))})`;
 	}
-};
+}

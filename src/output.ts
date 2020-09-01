@@ -16,39 +16,37 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert from "assert";
 
-module.exports = class Output {
-	constructor(verbose) {
+export default class Output {
+	constructor(public enableVerboseOutput: boolean) {
 		assert.strictEqual(arguments.length, 1);
-		assert.strictEqual(typeof verbose, "boolean");
-
-		this._verbose = verbose;
+		assert(typeof this.enableVerboseOutput === "boolean");
 	}
 
-	_stdout(...args) {
+	normal(...args: readonly unknown[]): void {
+		return this.stdout(...args);
+	}
+
+	error(...args: readonly unknown[]): void {
+		return this.stderr(...args);
+	}
+
+	verbose(...args: readonly unknown[]): void {
+		if (!this.enableVerboseOutput) {
+			return undefined;
+		}
+
+		return this.stderr(...args);
+	}
+
+	private stdout(...args: readonly unknown[]) {
 		// eslint-disable-next-line no-console
 		console.log(...args);
 	}
 
-	_stderr(...args) {
+	private stderr(...args: readonly unknown[]) {
 		// eslint-disable-next-line no-console
 		console.error(...args);
 	}
-
-	normal(...args) {
-		return this._stdout(...args);
-	}
-
-	error(...args) {
-		return this._stderr(...args);
-	}
-
-	verbose(...args) {
-		if (!this._verbose) {
-			return undefined;
-		}
-
-		return this._stderr(...args);
-	}
-};
+}
