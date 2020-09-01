@@ -17,7 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
-import Bluebird from "bluebird";
 import Camera from "uvc-control";
 
 import CameraFactory from "./camera-factory";
@@ -57,9 +56,6 @@ export default class CommandManager {
 
 		const closeCamera = async () => {
 			if (camera) {
-				// TODO: avoid hard-coded delay.
-				await Bluebird.delay(50);
-
 				await camera.close();
 			}
 		};
