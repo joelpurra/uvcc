@@ -1,4 +1,8 @@
 {
+  "absolute_pan_tilt": [
+    0,
+    0
+  ],
   "absolute_zoom": 100,
   "auto_exposure_mode": 8,
   "auto_exposure_priority": 1,
