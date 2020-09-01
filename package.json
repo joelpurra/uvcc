@@ -1,6 +1,6 @@
 {
   "name": "uvcc",
-  "version": "1.0.2",
+  "version": "v2.0.0-alpha.20200901",
   "description": "USB Video Class (UVC) device configurator for the command line (CLI). Used for webcams, camcorders, etcetera.",
   "homepage": "https://joelpurra.com/projects/uvcc/",
   "main": "./dist/index.js",
