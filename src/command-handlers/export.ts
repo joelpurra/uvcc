@@ -17,15 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
-
-import CameraHelper, {
+import mapObj from "map-obj";
+import {
 	ControlValues,
-} from "../camera-helper";
+} from "uvc-control";
+
+import CameraHelper from "../camera-helper";
 import {
 	Command,
 	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentNames,
 } from "../types/command";
+import flattenControlValues from "../utilities/flatten-control-values";
+
+export type ControlExport = Record<string, number | readonly number[]>;
 
 export default class ExportCommand implements Command {
 	constructor() {
@@ -38,14 +43,24 @@ export default class ExportCommand implements Command {
 		];
 	}
 
-	async execute(...args: readonly unknown[]): Promise<Readonly<ControlValues>> {
+	async execute(...args: readonly unknown[]): Promise<Readonly<ControlExport>> {
 		assert.strictEqual(arguments.length, 1);
 
 		const cameraHelper = args[0] as Readonly<CameraHelper>;
 
 		// NOTE: exporting un-settable values breaks imports because of strict settable value checks.
 		// TODO: export also un-settable values with --all flag?
-		const values = await cameraHelper.getSettableValues();
+		const settableControls = await cameraHelper.getSettableControls() as Record<string, Readonly<ControlValues>>;
+		const values = mapObj(
+			settableControls,
+			(
+				settableControlName,
+				settableControlValue,
+			) => [
+				settableControlName,
+				flattenControlValues(settableControlValue),
+			],
+		);
 
 		return values;
 	}

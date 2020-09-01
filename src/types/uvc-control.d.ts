@@ -27,9 +27,9 @@ declare module "uvc-control" {
 
 		public readonly supportedControls: readonly ControlName[];
 
-		get: (name: ControlName) => Promise<ControlValue>;
+		get: (name: ControlName) => Promise<Readonly<ControlValues>>;
 		range: (name: ControlName) => Promise<Readonly<ControlRange>>;
-		set: (name: ControlName, value: ControlValue) => Promise<readonly number[]>;
+		set: (name: ControlName, ...values: readonly ControlValue[]) => Promise<readonly number[]>;
 		close: () => Promise<void>;
 
 		constructor(options: ConstructorOptions);
@@ -69,8 +69,9 @@ declare module "uvc-control" {
 
 	export type CameraControls = Record<string, CameraControl>;
 
-	export type ControlName= string;
+	export type ControlName = string;
 	export type ControlValue = number;
+	export type ControlValues = Record<string, ControlValue>;
 	export interface ControlRange {
 		readonly max: number;
 		readonly min: number;

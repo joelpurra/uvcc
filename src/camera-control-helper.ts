@@ -26,7 +26,7 @@ import Camera,
 	UvcControl,
 } from "uvc-control";
 
-import WrappedError from "./wrapped-error";
+import WrappedError from "./utilities/wrapped-error";
 
 interface ControlFlags {
 	readonly isGettable: boolean;

@@ -21,7 +21,7 @@ import Camera, {
 	UvcControl,
 } from "uvc-control";
 
-import WrappedError from "./wrapped-error";
+import WrappedError from "./utilities/wrapped-error";
 
 export default class CameraFactory {
 	constructor(private readonly UVCControl: UvcControl) {

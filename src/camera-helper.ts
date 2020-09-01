@@ -22,12 +22,13 @@ import Camera, {
 	ControlName,
 	ControlRange,
 	ControlValue,
+	ControlValues,
 } from "uvc-control";
 
 import CameraControlHelper from "./camera-control-helper";
 import Output from "./output";
 
-export type ControlValues = Record<string, ControlValue>;
+export type ControlsValues = Record<string, ControlValues>;
 export type ControlRanges = Record<string, ControlRange>;
 
 export default class CameraHelper {
@@ -38,7 +39,7 @@ export default class CameraHelper {
 		assert(typeof this.camera === "object");
 	}
 
-	async getValue(controlName: ControlName): Promise<ControlValue> {
+	async getValues(controlName: ControlName): Promise<Readonly<ControlValues>> {
 		const gettableControlNames = await this.cameraControlHelper.getGettableControlNames();
 
 		if (!gettableControlNames.includes(controlName)) {
@@ -46,17 +47,8 @@ export default class CameraHelper {
 		}
 
 		const valueObject = await this.camera.get(controlName);
-		const values = Object.values(valueObject);
-		let value;
 
-		if (values.length === 1) {
-			value = values[0];
-		} else {
-			// NOTE: presumably the same order has to be used when setting values later.
-			value = values;
-		}
-
-		return value;
+		return valueObject;
 	}
 
 	async getRange(controlName: ControlName): Promise<Readonly<ControlRange>> {
@@ -66,17 +58,19 @@ export default class CameraHelper {
 			throw new Error(`Could not find a ranged control named ${JSON.stringify(controlName)}.`);
 		}
 
-		return this.camera.range(controlName);
+		const range = this.camera.range(controlName);
+
+		return range;
 	}
 
-	async setValue(controlName: ControlName, value: ControlValue): Promise<void> {
+	async setValues(controlName: ControlName, ...values: readonly ControlValue[]): Promise<void> {
 		const settableControlNames = await this.cameraControlHelper.getSettableControlNames();
 
 		if (!settableControlNames.includes(controlName)) {
 			throw new Error(`Could not find a settable control named ${JSON.stringify(controlName)}.`);
 		}
 
-		await this.camera.set(controlName, value);
+		await this.camera.set(controlName, ...values);
 
 		return undefined;
 	}
@@ -86,6 +80,7 @@ export default class CameraHelper {
 	}
 
 	async getRanges(): Promise<Readonly<ControlRanges>> {
+		// TODO: replace with Object.fromEntries(...);
 		return Bluebird.reduce(
 			this.cameraControlHelper.getRangedControlNames(),
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -103,31 +98,14 @@ export default class CameraHelper {
 		);
 	}
 
-	async getValues(): Promise<Readonly<ControlValues>> {
-		return Bluebird.reduce(
-			this.cameraControlHelper.getControlNames(),
-			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			async (object, controlName) => {
-				try {
-					object[controlName] = await this.getValue(controlName);
-				} catch (error) {
-					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this.output.verbose("Error getting value, ignoring.", controlName, error);
-				}
-
-				return object;
-			},
-			{} as ControlValues,
-		);
-	}
-
-	async getSettableValues(): Promise<Readonly<ControlValues>> {
+	async getSettableControls(): Promise<Readonly<ControlsValues>> {
+		// TODO: replace with Object.fromEntries(...);
 		return Bluebird.reduce(
 			this.cameraControlHelper.getSettableControlNames(),
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			async (object, controlName) => {
 				try {
-					object[controlName] = await this.getValue(controlName);
+					object[controlName] = await this.getValues(controlName);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this.output.verbose("Error getting settable value, ignoring.", controlName, error);
@@ -135,11 +113,11 @@ export default class CameraHelper {
 
 				return object;
 			},
-			{} as ControlValues,
+			{} as ControlsValues,
 		);
 	}
 
-	async setValues(configuration: Readonly<ControlValues>): Promise<void> {
+	async setControls(configuration: Readonly<ControlValues>): Promise<void> {
 		const controlNames = Object.keys(configuration);
 		const settableControlNames = await this.cameraControlHelper.getSettableControlNames();
 
@@ -157,7 +135,7 @@ export default class CameraHelper {
 				const value = configuration[controlName];
 
 				try {
-					await this.setValue(controlName, value);
+					await this.setValues(controlName, value);
 				} catch (error) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this.output.verbose("Error setting value, ignoring.", controlName, value, error);

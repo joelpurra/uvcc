@@ -16,39 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
 import {
-	ControlName,
-	ControlValue,
+	ControlValues,
 } from "uvc-control";
 
-import CameraHelper from "../camera-helper";
-import {
-	Command,
-	CommandHandlerArgumentCameraHelper,
-	CommandHandlerArgumentNames,
-} from "../types/command";
+export default function flattenControlValues(valueObject: Readonly<ControlValues>): number | readonly number[] {
+	const values = Object.values(valueObject);
 
-export default class SetCommand implements Command {
-	constructor() {
-		assert.strictEqual(arguments.length, 0);
+	let value;
+
+	if (values.length === 1) {
+		value = values[0];
+	} else {
+		// NOTE: presumably the same order has to be used when setting values later.
+		value = values;
 	}
 
-	async getArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-			"control",
-			"values",
-		];
-	}
-
-	async execute(...args: readonly unknown[]): Promise<void> {
-		assert(args.length >= 2);
-
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
-		const controlName = args[1] as ControlName;
-		const values = args[2] as readonly ControlValue[];
-
-		return cameraHelper.setValues(controlName, ...values);
-	}
+	return value;
 }

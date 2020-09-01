@@ -19,6 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import assert from "assert";
 import Bluebird from "bluebird";
 import streamToPromise from "stream-to-promise";
+import {
+	ControlValues,
+} from "uvc-control";
 
 import CameraHelper from "../camera-helper";
 import {
@@ -45,16 +48,37 @@ export default class ImportCommand implements Command {
 
 		const stdinTimeout = 1000;
 
-		const values = await Bluebird
-			.try(async () => {
-				const buffer = await streamToPromise(process.stdin);
-				const json = JSON.parse(buffer.toString());
+		const parsedControlValues = await Bluebird.try(async () => {
+			const buffer = await streamToPromise(process.stdin);
+			const json = JSON.parse(buffer.toString()) as unknown;
 
-				return json;
-			})
+			assert(typeof json === "object");
+			assert(json !== null);
+
+			return json;
+		})
 			.timeout(stdinTimeout, `Could not read uvcc configuration from stdin within the ${stdinTimeout} millisecond timeout. Was any data piped in?`)
 			.tapCatch((error) => process.stdin.destroy(error));
 
-		return cameraHelper.setValues(values);
+		const parsedControlsAreValid = Object
+			.entries(parsedControlValues)
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			.every(([
+				controlName,
+				controlValues,
+			]) => (typeof controlName === "string"
+				&& (
+					typeof controlValues === "number"
+						|| (
+							Array.isArray(controlValues)
+								&& controlValues.every((controlValue) => typeof controlValue === "number")
+						)
+				)
+			));
+
+		assert(parsedControlsAreValid);
+		const controlValues = parsedControlValues as ControlValues;
+
+		return cameraHelper.setControls(controlValues);
 	}
 }

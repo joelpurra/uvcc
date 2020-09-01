@@ -44,12 +44,12 @@ export type RuntimeConfiguration = {
 	cmd: string;
 	control?: string;
 	product: number;
-	value?: string;
+	values: readonly number[];
 	vendor: number;
 	verbose: boolean;
 };
 export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
-export type RuntimeConfigurationTypes = number | string | boolean | undefined;
+export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
 const getYargsArgv = (): Readonly<Argv["argv"]> => {
 	const packageJson = getJsonSync("../package.json");
@@ -98,17 +98,22 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 					type: "string",
 				});
 		})
-		.command("set <control> <value>", "Set control value on the camera.", (yargsToApplyTo) => {
+		.command("set <control> <value1> [value2]", "Set control value(s) on the camera.", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
 					demandOption: true,
 					describe: "Name of the control.",
 					type: "string",
 				})
-				.positional("value", {
+				.positional("value1", {
 					demandOption: true,
 					describe: "Value to set.",
-					type: "string",
+					type: "number",
+				})
+				.positional("value2", {
+					demandOption: false,
+					describe: "Second value to set, if supported by the control.",
+					type: "number",
 				});
 		})
 		.command("range <control>", "Get possible range (min and max) for a control from the camera.", (yargsToApplyTo) => {
@@ -153,7 +158,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 			],
 			"Camera selection:")
 		.help()
-		.example("$0", "vendor 0x46d --product 0x82d get white_balance_temperature")
+		.example("$0", "--vendor 0x46d --product 0x82d get white_balance_temperature")
 		.epilogue(epilogue);
 	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
@@ -168,7 +173,8 @@ const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
 		address,
 		control,
 		product,
-		value,
+		value1,
+		value2,
 		vendor,
 		verbose,
 	} = argv;
@@ -179,12 +185,28 @@ const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
 	assert(typeof vendor === "number");
 	assert(typeof verbose === "boolean");
 
+	// NOTE: accept one value if the first is a number, two if both are numbers.
+	let values: readonly number[] = [];
+
+	if (typeof value1 === "number") {
+		if (typeof value2 === "number") {
+			values = [
+				value1,
+				value2,
+			];
+		} else {
+			values = [
+				value1,
+			];
+		}
+	}
+
 	const mappedArgv: RuntimeConfiguration = {
 		address,
 		cmd,
 		control: typeof control === "string" ? control : undefined,
 		product,
-		value: typeof value === "string" ? value : undefined,
+		values,
 		vendor,
 		verbose,
 	};

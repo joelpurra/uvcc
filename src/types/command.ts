@@ -18,7 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import CameraHelper from "../camera-helper";
 import {
-	RuntimeConfigurationKeys, RuntimeConfigurationTypes,
+	RuntimeConfigurationKeys,
+	RuntimeConfigurationTypes,
 } from "../runtime-configurator";
 
 export type CommandName = string;

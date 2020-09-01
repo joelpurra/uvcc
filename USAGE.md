@@ -11,17 +11,21 @@ USB Video Class (UVC) device configurator for the command line (CLI). Used for
 webcams, camcorders, etcetera.
 
 Commands:
-  uvcc get <control>          Get current control value from the camera.
-  uvcc set <control> <value>  Set control value on the camera.
-  uvcc range <control>        Get possible range (min and max) for a control
-                              from the camera.
-  uvcc ranges                 Get all ranges (min and max) for all available
-                              controls from the camera.
-  uvcc devices                List connected UVC devices with name, vendor id
-                              (vId), product id (pId), and device address.
-  uvcc controls               List all supported controls.
-  uvcc export                 Output configuration in JSON format, on stdout.
-  uvcc import                 Input configuration in JSON format, from stdin.
+  uvcc get <control>                    Get current control value from the
+                                        camera.
+  uvcc set <control> <value1> [value2]  Set control value(s) on the camera.
+  uvcc range <control>                  Get possible range (min and max) for a
+                                        control from the camera.
+  uvcc ranges                           Get all ranges (min and max) for all
+                                        available controls from the camera.
+  uvcc devices                          List connected UVC devices with name,
+                                        vendor id (vId), product id (pId), and
+                                        device address.
+  uvcc controls                         List all supported controls.
+  uvcc export                           Output configuration in JSON format, on
+                                        stdout.
+  uvcc import                           Input configuration in JSON format, from
+                                        stdin.
 
 Camera selection:
   --vendor   Camera vendor id in hex (0x000) or decimal (0000) format.
@@ -38,7 +42,7 @@ Options:
   --help     Show help                                                 [boolean]
 
 Examples:
-  uvcc --vendor 0x46d --product 0x82d get white_balance_temperature
+  uvcc  vendor 0x46d --product 0x82d get white_balance_temperature
 
 uvcc Copyright © 2018 Joel Purra <https://joelpurra.com/>
 

@@ -27,6 +27,7 @@ import {
 	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentNames,
 } from "../types/command";
+import flattenControlValues from "../utilities/flatten-control-values";
 
 export default class GetCommand implements Command {
 	constructor() {
@@ -40,14 +41,16 @@ export default class GetCommand implements Command {
 		];
 	}
 
-	async execute(...args: readonly unknown[]): Promise<number> {
+	async execute(...args: readonly unknown[]): Promise<number | readonly number[]> {
 		assert.strictEqual(arguments.length, 2);
 
 		const cameraHelper = args[0] as Readonly<CameraHelper>;
 		const controlName = args[1] as ControlName;
 
-		const value = await cameraHelper.getValue(controlName);
+		const valueObject = await cameraHelper.getValues(controlName);
+		const value = flattenControlValues(valueObject);
 
 		return value;
 	}
 }
+
