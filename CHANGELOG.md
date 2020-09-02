@@ -2,6 +2,10 @@
 
 See full list of commits for details.
 
+## v2.0.1
+
+- ff28515 Fix broken anchor tag in README.md
+
 ## v2.0.0
 
 ### ⚠ Breaking changes
