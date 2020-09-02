@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

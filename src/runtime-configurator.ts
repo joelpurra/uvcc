@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 
 	assert(typeof homepage === "string");
 
-	const epilogue = `uvcc Copyright © 2018 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
+	const epilogue = `uvcc Copyright © 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
 	let fromImplicitConfigFile = null;
 
