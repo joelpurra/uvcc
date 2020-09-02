@@ -2,7 +2,7 @@
   <a href="https://files.joelpurra.com/projects/uvcc/demo/2020-09-02/uvcc-demo.2020-09-02.mp4"><img src="https://files.joelpurra.com/projects/uvcc/demo/2020-09-02/uvcc-demo.2020-09-02.gif" alt="uvcc demo video showing rubber ducks and a candle with varying camera settings" width="480" height="270" border="0" /></a>
 </p>
 <h1 align="center">
-  <a href=https://joelpurra.com/projects/uvcc/">uvcc</a>
+  <a href="https://joelpurra.com/projects/uvcc/">uvcc</a>
 </h1>
 <p align="center">
   USB Video Class (UVC) device configurator
