@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,25 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert from "assert";
 
-module.exports = class CameraFactory {
-    constructor(UVCControl) {
-        assert.strictEqual(arguments.length, 1);
-        assert.strictEqual(typeof UVCControl, "function");
+export default class WrappedError extends Error {
+	constructor(public readonly innerError: Readonly<Error>,
+		message: string,
+	) {
+		super(message);
 
-        this._UVCControl = UVCControl;
-    }
+		assert(this.innerError instanceof Error);
+	}
 
-    async get(vendor, product) {
-        assert.strictEqual(arguments.length, 2);
-        assert.strictEqual(typeof vendor, "number");
-        assert(vendor > 0);
-        assert.strictEqual(typeof product, "number");
-        assert(product > 0);
-
-        const camera = new this._UVCControl(vendor, product);
-
-        return camera;
-    }
-};
+	toString(): string {
+		// eslint-disable-next-line @typescript-eslint/no-base-to-string
+		return `${super.toString()} (${JSON.stringify(String(this.innerError))})`;
+	}
+}

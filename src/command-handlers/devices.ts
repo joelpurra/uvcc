@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,23 +16,29 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const assert = require("assert");
+import assert from "assert";
 
-const {
-    fork,
-} = require("child_process");
+import {
+	Command,
+	CommandHandlerArgumentNames,
+} from "../types/command";
+import UvcDeviceLister from "../uvc-device-lister";
 
-// NOTE: using external code to avoid directly depending on the "usb" package.
-const usbDeviceListerPath = `${__dirname}/../node_modules/uvc-control/list-devices.js`;
+export default class DevicesCommand implements Command {
+	constructor(private readonly uvcDeviceLister: UvcDeviceLister) {
+		assert.strictEqual(arguments.length, 1);
+		assert(typeof this.uvcDeviceLister === "object");
+	}
 
-module.exports = class UsbDeviceLister {
-    constructor() {
-        assert.strictEqual(arguments.length, 0);
-    }
+	async getArguments(): Promise<CommandHandlerArgumentNames[]> {
+		return [];
+	}
 
-    async logToConsole() {
-        // TODO: await process.
-        // TODO: verify that the process dies.
-        fork(usbDeviceListerPath);
-    }
-};
+	async execute(): Promise<unknown> {
+		assert.strictEqual(arguments.length, 0);
+
+		const devices = await this.uvcDeviceLister.get();
+
+		return devices;
+	}
+}
