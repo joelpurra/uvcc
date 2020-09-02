@@ -8,8 +8,27 @@ Follow [git-flow](https://danielkummer.github.io/git-flow-cheatsheet/) and use [
 # Make sure git-flow is initialized.
 git flow init -d
 
+# Fetch dependencies.
+npm install
+
+# Get a fresh local build.
+npm run --silent rebuild
+
 # Make sure tests pass.
 npm run --silent test
+
+# Try some commands on your local build.
+node ./dist/index.js
+
+node ./dist/index.js controls
+
+node ./dist/index.js ranges
+
+node ./dist/index.js export
+
+node ./dist/index.js get absolute_zoom
+
+node ./dist/index.js set absolute_zoom 120
 ```
 
 ## Todo
