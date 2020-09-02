@@ -1,7 +1,16 @@
-# [USB Video Class (UVC) device configurator](https://joelpurra.com/projects/uvcc/) (`uvcc`)
+<p align="center">
+  <a href="https://files.joelpurra.com/projects/uvcc/demo/2020-09-02/uvcc-demo.2020-09-02.mp4"><img src="https://files.joelpurra.com/projects/uvcc/demo/2020-09-02/uvcc-demo.2020-09-02.gif" alt="uvcc demo video showing rubber ducks and a candle with varying camera settings" width="480" height="270" border="0" /></a>
+</p>
+<h1 align="center">
+  <a href=https://joelpurra.com/projects/uvcc/">uvcc</a>
+</h1>
+<p align="center">
+  USB Video Class (UVC) device configurator
+</p>
 
 ## Overview
 
+- Command line interface (CLI) with JSON input/output for automation and repeatability.
 - Fine-tune camera controls on the fly, such as brightness, contrast, saturation, gain, white balance/color temperature, zoom.
 - Export/import of settings makes it easy to reliably configure one or more cameras for various situations.
 - Works with [USB Video Class](https://en.wikipedia.org/wiki/USB_video_device_class) (UVC) [compliant webcams and digital camcorders](https://en.wikipedia.org/wiki/List_of_USB_video_class_devices).
@@ -18,7 +27,6 @@ Or use [`npx`](https://www.npmjs.com/package/npx) to execute with `npx uvcc`.
 
 ## Features
 
-- Command line interface (CLI) with JSON input/output for automation and repeatability.
 - List available UVC cameras and camera controls.
 - Get/set individual camera controls.
 - Export/import full JSON control snapshots using `stdout`/`stdin`.
