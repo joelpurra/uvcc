@@ -36,6 +36,11 @@ node ./dist/index.js set absolute_zoom 120
 - Check [open issues and pull requests](https://github.com/joelpurra/uvcc/issues?q=is%3Aopen) and see what can be done.
 - Add tests.
 - Add output examples from additional camera models.
+  - Perhaps create and record a demo video/gif for that model.
+- Add workarounds for cameras with known issues.
+  - Some cameras are known to have issues in other implementations.
+  - Avoid camera- or system-specific workarounds, try to be generic in their detection and prevention.
+  - See [Linux UVC device drivers](https://www.ideasonboard.org/uvc/)'s supported devices list for examples.
 - Compare UVC controls/values with the output from [`v4l2-ctl`](https://www.mankier.com/1/v4l2-ctl).
   - `v4l2-ctl --list-devices`
   - `v4l2-ctl --list-ctrls`

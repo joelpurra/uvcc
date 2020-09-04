@@ -5,15 +5,26 @@
   <a href="https://joelpurra.com/projects/uvcc/">uvcc</a>
 </h1>
 <p align="center">
-  USB Video Class (UVC) device configurator
+  <a href="https://en.wikipedia.org/wiki/USB_video_device_class">USB Video Class</a> (UVC) device configurator
 </p>
 
 ## Overview
 
-- Command line interface (CLI) with JSON input/output for automation and repeatability.
 - Fine-tune camera controls on the fly, such as brightness, contrast, saturation, gain, white balance/color temperature, zoom.
 - Export/import of settings makes it easy to reliably configure one or more cameras for various situations.
-- Works with [USB Video Class](https://en.wikipedia.org/wiki/USB_video_device_class) (UVC) [compliant webcams and digital camcorders](https://en.wikipedia.org/wiki/List_of_USB_video_class_devices).
+- Command line interface (CLI) with JSON input/output for automation and repeatability.
+
+## Compatible cameras
+
+- [Logitech C920 HD Pro Webcam](https://www.logitech.com/en-us/product/hd-pro-webcam-c920).
+- Hopefully other [UVC-compatible webcams and digital camcorders](https://en.wikipedia.org/wiki/List_of_USB_video_class_devices).
+
+### Do you have another UVC-compatible camera?
+
+- Add it to the [`./examples/`](./examples/).
+- Is it not working?
+  - [Report an issue.](https://github.com/joelpurra/uvcc/issues?q=is%3Aopen)
+  - [Help fix the source code!](./DEVELOP.md)
 
 ## Installation
 
