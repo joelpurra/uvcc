@@ -16,6 +16,13 @@ See individual subdirectories for specific cameras.
 - Verify that the `*.json` files were updated.
 - Commit your changes and [submit a pull request](https://github.com/joelpurra/uvcc/compare).
 
+## Is it not working?
+
+Not all cameras are [UVC-compatible](https://en.wikipedia.org/wiki/List_of_USB_video_class_devices). If you can confirm that your camera model supports UVC, perhaps `uvcc` needs some fixes to support it.
+
+- [Report the issue](https://github.com/joelpurra/uvcc/issues?q=is%3Aopen) with as much detail as you can.
+- [Fix the source code](../DEVELOP.md) directly, since it is much easier debugging with access to the camera itself.
+
 ---
 
 [`uvcc`](https://joelpurra.com/projects/uvcc/) Copyright &copy; 2018, 2019, 2020 [Joel Purra](https://joelpurra.com/). Released under [GNU General Public License version 3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl.html). [Your donations are appreciated!](https://joelpurra.com/donate/)

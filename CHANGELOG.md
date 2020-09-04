@@ -2,6 +2,10 @@
 
 See full list of commits for details.
 
+## v2.0.2
+
+- 8c24f19 Add compatible cameras and help wanted notes
+
 ## v2.0.1
 
 - ff28515 Fix broken anchor tag in README.md
