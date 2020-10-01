@@ -2,6 +2,11 @@
 
 See full list of commits for details.
 
+## v2.0.3
+
+- d34da77 Upgrade forked uvc-control v2
+  - Fixes [#6](https://github.com/joelpurra/uvcc/issues/6), setting `absolute_exposure_time`.
+
 ## v2.0.2
 
 - 8c24f19 Add compatible cameras and help wanted notes
