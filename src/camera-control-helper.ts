@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import arrayNonUniq from "array-non-uniq";
 import assert from "assert";
+import arrayNonUniq from "array-non-uniq";
 import filterObject from "filter-obj";
 import sortKeys from "sort-keys";
 import Camera,
@@ -96,13 +96,13 @@ export default class CameraControlHelper {
 
 		const missingControls = supportedControls.filter((control) => !control);
 
-		if (missingControls.length !== 0) {
+		if (missingControls.length > 0) {
 			throw new Error(`Controls were not found: ${JSON.stringify(missingControls)}`);
 		}
 
 		const nonUniqueControls = arrayNonUniq(supportedControls);
 
-		if (nonUniqueControls.length !== 0) {
+		if (nonUniqueControls.length > 0) {
 			throw new Error(`Controls were already found: ${JSON.stringify(nonUniqueControls)}`);
 		}
 
@@ -119,10 +119,14 @@ export default class CameraControlHelper {
 				];
 
 				return uvccControl;
-			} catch (error) {
-				const wrappedError = new WrappedError(error, `Could not map control: ${JSON.stringify(control.name)}`);
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					const wrappedError = new WrappedError(error, `Could not map control: ${JSON.stringify(control.name)}`);
 
-				throw wrappedError;
+					throw wrappedError;
+				}
+
+				throw error;
 			}
 		});
 

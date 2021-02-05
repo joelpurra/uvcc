@@ -77,7 +77,7 @@ const mainAsync = async () => {
 		const commandManager = new CommandManager(output, cameraFactory, cameraHelperFactory, commandHandlers);
 
 		await commandManager.execute(runtimeConfig);
-	} catch (error) {
+	} catch (error: unknown) {
 		// NOTE: root error handler for asynchronous errors.
 		// eslint-disable-next-line no-console
 		console.error(error);
@@ -91,7 +91,7 @@ const main = () => {
 		engineCheck();
 
 		void mainAsync();
-	} catch (error) {
+	} catch (error: unknown) {
 		// NOTE: root error handler for synchronous errors.
 		// eslint-disable-next-line no-console
 		console.error(error);

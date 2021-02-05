@@ -23,14 +23,10 @@ import {
 export default function flattenControlValues(valueObject: Readonly<ControlValues>): number | readonly number[] {
 	const values = Object.values(valueObject);
 
-	let value;
-
-	if (values.length === 1) {
-		value = values[0];
-	} else {
+	const value = values.length === 1
+		? values[0]
 		// NOTE: presumably the same order has to be used when setting values later.
-		value = values;
-	}
+		: values;
 
 	return value;
 }

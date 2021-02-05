@@ -102,7 +102,7 @@ export default class CommandManager {
 			}
 
 			await closeCamera();
-		} catch (error) {
+		} catch (error: unknown) {
 			try {
 				await closeCamera();
 			} catch {

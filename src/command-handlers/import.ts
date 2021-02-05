@@ -58,7 +58,9 @@ export default class ImportCommand implements Command {
 			return json;
 		})
 			.timeout(stdinTimeout, `Could not read uvcc configuration from stdin within the ${stdinTimeout} millisecond timeout. Was any data piped in?`)
-			.tapCatch((error) => process.stdin.destroy(error));
+			.tapCatch((error) => {
+				process.stdin.destroy(error);
+			});
 
 		const parsedControlsAreValid = Object
 			.entries(parsedControlValues)

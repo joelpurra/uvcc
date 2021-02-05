@@ -87,7 +87,7 @@ export default class CameraHelper {
 			async (object, controlName) => {
 				try {
 					object[controlName] = await this.getRange(controlName);
-				} catch (error) {
+				} catch (error: unknown) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this.output.verbose("Error getting range, ignoring.", controlName, error);
 				}
@@ -106,7 +106,7 @@ export default class CameraHelper {
 			async (object, controlName) => {
 				try {
 					object[controlName] = await this.getValues(controlName);
-				} catch (error) {
+				} catch (error: unknown) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this.output.verbose("Error getting settable value, ignoring.", controlName, error);
 				}
@@ -124,19 +124,18 @@ export default class CameraHelper {
 		// NOTE: checking all control names before attempting to set any.
 		const nonSettableNames = controlNames.filter((controlName) => !settableControlNames.includes(controlName));
 
-		if (nonSettableNames.length !== 0) {
+		if (nonSettableNames.length > 0) {
 			throw new Error(`Could not find a settable controls, aborting setting values: ${JSON.stringify(nonSettableNames)}`);
 		}
 
 		await Bluebird.map(
-			// eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 			controlNames,
 			async (controlName) => {
 				const value = configuration[controlName];
 
 				try {
 					await this.setValues(controlName, value);
-				} catch (error) {
+				} catch (error: unknown) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this.output.verbose("Error setting value, ignoring.", controlName, value, error);
 				}

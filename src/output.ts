@@ -25,11 +25,11 @@ export default class Output {
 	}
 
 	normal(...args: readonly unknown[]): void {
-		return this.stdout(...args);
+		this.stdout(...args);
 	}
 
 	error(...args: readonly unknown[]): void {
-		return this.stderr(...args);
+		this.stderr(...args);
 	}
 
 	verbose(...args: readonly unknown[]): void {
@@ -37,7 +37,7 @@ export default class Output {
 			return undefined;
 		}
 
-		return this.stderr(...args);
+		this.stderr(...args);
 	}
 
 	private stdout(...args: readonly unknown[]) {
