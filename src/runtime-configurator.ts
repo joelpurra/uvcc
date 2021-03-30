@@ -21,6 +21,9 @@ import fs from "fs";
 import {
 	join,
 } from "path";
+import {
+	bold, dim, red,
+} from "chalk";
 import findUp from "find-up";
 import yargs, {
 	Argv,
@@ -54,7 +57,7 @@ export type RuntimeConfigurationTypes = readonly number[] | number | string | bo
 const getYargsArgv = (): Readonly<Argv["argv"]> => {
 	const packageJson = getJsonSync("../package.json");
 	const appBinaryName = Object.keys(packageJson.bin)[0];
-	const appDescription = packageJson.description;
+	const appDescription: string = packageJson.description;
 	const {
 		homepage,
 	} = packageJson;
@@ -62,7 +65,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 	assert(typeof appBinaryName === "string");
 	assert(typeof homepage === "string");
 
-	const epilogue = `uvcc Copyright © 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
+	const epilogue = dim`uvcc Copyright © 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
 	let fromImplicitConfigFile = null;
 
@@ -91,7 +94,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 			return fromExplicitConfigFile;
 		})
 		.env(appBinaryName.toUpperCase())
-		.usage(appDescription)
+		.usage(`${bold("$0")}: ${appDescription}`)
 		.command("get <control>", "Get current control value.", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
@@ -151,37 +154,36 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 			describe: "Enable verbose output.",
 			type: "boolean",
 		})
-		.demandCommand(1, 1, "Please provide a single command.", "Please provide a single command.")
+		.demandCommand(1, 1, red("Please provide a single command."), red("Please provide a single command."))
 		.group(
 			[
 				"vendor",
 				"product",
 				"address",
 			],
-			"Device selection for multi-camera setups.\n  (Numbers in hex (0x000) or decimal (0000) format.)")
+			bold("Device selection for multi-camera setups.") + "\n  " + dim("Numbers in hex (0x000) or decimal (0000) format."))
 		.help()
-		.example([
-			[""],
-			["Basic usage:"],
-			["$0 set auto_white_balance_temperature 0", "Turn off automatic color correction."],
-			["$0 set saturation 0", "Low color saturation (grayscale)."],
-			["$0 ranges", "List possible control ranges."],
-			["$0 set absolute_zoom 200", "Zoom in."],
-			[""],
-			["Automate config:"],
-			["- Not all controls can be imported."],
-			["- Control order matters."],
-			["$0 export > my-uvcc-export.json", "Save to file."],
-			["cat my-uvcc-export.json | $0 import", "Load from file."],
-			[""],
-			["Target a specific device:"],
-			["- Only useful for multi-camera setups."],
-			["- For same-model cameras, also specify address."],
-			["- Alt. use system USB settings to find devices."],
-			["$0 devices", "List available cameras."],
-			["sudo $0 devices", "Avoid LIBUSB_ERROR_ACCESS."],
-			["$0 --vendor 0x46d --product 0x82d export"],
-		])
+		.example("", "")
+		.example(bold("Basic usage:"), "")
+		.example("$0 controls", "Available controls for the camera.")
+		.example("$0 set auto_white_balance_temperature 0", "Turn off automatic color correction.")
+		.example("$0 set saturation 64", "Low color saturation (near grayscale).")
+		.example("$0 ranges", "List possible control ranges.")
+		.example("$0 set absolute_zoom 200", "Zoom in.")
+		.example("", "")
+		.example(bold("Automate config:"), "")
+		.example(dim("- Not all controls can be imported."), "")
+		.example(dim("- Control order matters."), "")
+		.example("$0 export > my-uvcc-export.json", "Save to file.")
+		.example("cat my-uvcc-export.json | $0 import", "Load from file.")
+		.example("", "")
+		.example(bold("Target a specific device:"), "")
+		.example(dim("- Only useful for multi-camera setups."), "")
+		.example(dim("- For same-model cameras, also specify address."), "")
+		.example(dim("- Alt. use system USB settings to find devices."), "")
+		.example("$0 devices", "List available cameras.")
+		.example("sudo $0 devices", "Avoid LIBUSB_ERROR_ACCESS.")
+		.example("$0 --vendor 0x46d --product 0x82d export", "")
 		.epilogue(epilogue);
 	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 

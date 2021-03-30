@@ -7,7 +7,7 @@ uvcc --help
 ```
 
 ```text
-USB Video Class (UVC) device configurator for the command line (CLI). Used for webcams, camcorders, etcetera.
+uvcc: USB Video Class (UVC) device configurator for the command line (CLI). Used for webcams, camcorders, etcetera.
 
 Commands:
   uvcc get <control>                    Get current control value.
@@ -20,7 +20,7 @@ Commands:
   uvcc import                           Input configuration in JSON format, from stdin.
 
 Device selection for multi-camera setups.
-  (Numbers in hex (0x000) or decimal (0000) format.)
+  Numbers in hex (0x000) or decimal (0000) format.
   --vendor   Camera vendor id (vId).  [number] [default: 0]
   --product  Camera product id (pId).  [number] [default: 0]
   --address  Camera device address.  [number] [default: 0]
@@ -34,8 +34,9 @@ Options:
 Examples:
 
   Basic usage:
+  uvcc controls                                    Available controls for the camera.
   uvcc set auto_white_balance_temperature 0        Turn off automatic color correction.
-  uvcc set saturation 0                            Low color saturation (grayscale).
+  uvcc set saturation 64                           Low color saturation (near grayscale).
   uvcc ranges                                      List possible control ranges.
   uvcc set absolute_zoom 200                       Zoom in.
 
