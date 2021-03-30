@@ -44,7 +44,7 @@ Options:
 Examples:
   uvcc  vendor 0x46d --product 0x82d get white_balance_temperature
 
-uvcc Copyright © 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+uvcc Copyright © 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you
 are welcome to redistribute it under certain conditions. See GPL-3.0 license for
@@ -140,4 +140,4 @@ uvcc export
 
 ---
 
-[`uvcc`](https://joelpurra.com/projects/uvcc/) Copyright &copy; 2018, 2019, 2020 [Joel Purra](https://joelpurra.com/). Released under [GNU General Public License version 3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl.html). [Your donations are appreciated!](https://joelpurra.com/donate/)
+[`uvcc`](https://joelpurra.com/projects/uvcc/) Copyright &copy; 2018, 2019, 2020, 2021 [Joel Purra](https://joelpurra.com/). Released under [GNU General Public License version 3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl.html). [Your donations are appreciated!](https://joelpurra.com/donate/)
