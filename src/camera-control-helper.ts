@@ -92,7 +92,9 @@ export default class CameraControlHelper {
 
 	private async mapSupportedControls() {
 		const supportedControls = this.camera.supportedControls
-			.map((supportedControlName) => this.UVCControl.controls[supportedControlName]);
+			.map((supportedControlName) => this.UVCControl.controls[supportedControlName])
+			// TODO: proper ducktyping function.
+			.filter((t): t is CameraControl => Boolean(t));
 
 		const missingControls = supportedControls.filter((control) => !control);
 

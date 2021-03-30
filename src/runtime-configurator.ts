@@ -169,7 +169,8 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
 	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
-	const cmd = typeof argv.cmd === "string" ? argv.cmd : (typeof argv._[0] === "string" ? argv._.shift() : null);
+	// eslint-disable-next-line @typescript-eslint/dot-notation
+	const cmd = typeof argv["cmd"] === "string" ? argv["cmd"] : (typeof argv._[0] === "string" ? argv._.shift() : null);
 	const {
 		address,
 		control,

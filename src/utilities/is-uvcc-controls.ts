@@ -17,17 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
-	ControlValues,
-} from "uvc-control";
+	UvccControls,
+} from "../types/controls";
+import isUvccControlValue from "./is-uvcc-control-value";
 
-export default function flattenControlValues(valueObject: Readonly<ControlValues>): number | readonly number[] {
-	const values = Object.values(valueObject);
-	const firstValue = values[0];
-
-	const value = values.length === 1 && typeof firstValue === "number"
-		? firstValue
-		// NOTE: presumably the same order has to be used when setting values later.
-		: values;
-
-	return value;
+export default function isUvccControls(controlValues: unknown): controlValues is UvccControls {
+	return typeof controlValues === "object"
+		&& controlValues !== null
+		&& Object
+			.entries(controlValues)
+			.every(
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				([
+					controlName,
+					controlValues,
+				]) => typeof controlName === "string" && isUvccControlValue(controlValues),
+			);
 }
