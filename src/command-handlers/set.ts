@@ -49,6 +49,6 @@ export default class SetCommand implements Command {
 		const controlName = args[1] as ControlName;
 		const values = args[2] as readonly ControlValue[];
 
-		return cameraHelper.setValues(controlName, ...values);
+		return cameraHelper.setValues(controlName, values);
 	}
 }

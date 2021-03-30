@@ -16,37 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import {
+	UvccControlValue,
+} from "../types/controls";
 
-export default class Output {
-	constructor(public enableVerboseOutput: boolean) {
-		assert.strictEqual(arguments.length, 1);
-		assert(typeof this.enableVerboseOutput === "boolean");
-	}
-
-	normal(...args: readonly unknown[]): void {
-		this.stdout(...args);
-	}
-
-	error(...args: readonly unknown[]): void {
-		this.stderr(...args);
-	}
-
-	verbose(...args: readonly unknown[]): void {
-		if (!this.enableVerboseOutput) {
-			return undefined;
-		}
-
-		this.stderr(...args);
-	}
-
-	private stdout(...args: readonly unknown[]) {
-		// eslint-disable-next-line no-console
-		console.log(...args);
-	}
-
-	private stderr(...args: readonly unknown[]) {
-		// eslint-disable-next-line no-console
-		console.error(...args);
-	}
+export default function isUvccControlValue(controlValues: unknown): controlValues is UvccControlValue {
+	return typeof controlValues === "number"
+		|| (
+			Array.isArray(controlValues)
+				&& controlValues.every((controlValue) => typeof controlValue === "number")
+		);
 }

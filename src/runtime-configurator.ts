@@ -17,11 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
-import findUp from "find-up";
 import fs from "fs";
 import {
 	join,
 } from "path";
+import findUp from "find-up";
 import yargs, {
 	Argv,
 } from "yargs";
@@ -34,7 +34,7 @@ const getJsonSync = (fileRelativePath: string) => {
 		const json = JSON.parse(fs.readFileSync(resolvedPath).toString());
 
 		return json;
-	} catch (error) {
+	} catch (error: unknown) {
 		throw new Error(`Could not read JSON file ${JSON.stringify(resolvedPath)}: ${JSON.stringify(String(error))}`);
 	}
 };
@@ -59,6 +59,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 		homepage,
 	} = packageJson;
 
+	assert(typeof appBinaryName === "string");
 	assert(typeof homepage === "string");
 
 	const epilogue = `uvcc Copyright © 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
@@ -168,7 +169,8 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
 	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
-	const cmd = typeof argv.cmd === "string" ? argv.cmd : (typeof argv._[0] === "string" ? argv._.shift() : null);
+	// eslint-disable-next-line @typescript-eslint/dot-notation
+	const cmd = typeof argv["cmd"] === "string" ? argv["cmd"] : (typeof argv._[0] === "string" ? argv._.shift() : null);
 	const {
 		address,
 		control,
@@ -189,16 +191,12 @@ const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
 	let values: readonly number[] = [];
 
 	if (typeof value1 === "number") {
-		if (typeof value2 === "number") {
-			values = [
-				value1,
-				value2,
-			];
-		} else {
-			values = [
-				value1,
-			];
-		}
+		values = typeof value2 === "number" ? [
+			value1,
+			value2,
+		] : [
+			value1,
+		];
 	}
 
 	const mappedArgv: RuntimeConfiguration = {

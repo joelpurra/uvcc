@@ -16,37 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import {
+	UvccControls,
+} from "../types/controls";
+import isUvccControlValue from "./is-uvcc-control-value";
 
-export default class Output {
-	constructor(public enableVerboseOutput: boolean) {
-		assert.strictEqual(arguments.length, 1);
-		assert(typeof this.enableVerboseOutput === "boolean");
-	}
-
-	normal(...args: readonly unknown[]): void {
-		this.stdout(...args);
-	}
-
-	error(...args: readonly unknown[]): void {
-		this.stderr(...args);
-	}
-
-	verbose(...args: readonly unknown[]): void {
-		if (!this.enableVerboseOutput) {
-			return undefined;
-		}
-
-		this.stderr(...args);
-	}
-
-	private stdout(...args: readonly unknown[]) {
-		// eslint-disable-next-line no-console
-		console.log(...args);
-	}
-
-	private stderr(...args: readonly unknown[]) {
-		// eslint-disable-next-line no-console
-		console.error(...args);
-	}
+export default function isUvccControls(controlValues: unknown): controlValues is UvccControls {
+	return typeof controlValues === "object"
+		&& controlValues !== null
+		&& Object
+			.entries(controlValues)
+			.every(
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				([
+					controlName,
+					controlValues,
+				]) => typeof controlName === "string" && isUvccControlValue(controlValues),
+			);
 }

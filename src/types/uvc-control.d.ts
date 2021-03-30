@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 declare module "uvc-control" {
+	// TODO: move type declarations to uvc-control.
 	import UvcControlModule from "uvc-control";
 
 	export default class Camera {

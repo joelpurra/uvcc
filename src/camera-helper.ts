@@ -27,6 +27,10 @@ import Camera, {
 
 import CameraControlHelper from "./camera-control-helper";
 import Output from "./output";
+import {
+	UvccControls,
+} from "./types/controls";
+import isUvccControlValue from "./utilities/is-uvcc-control-value";
 
 export type ControlsValues = Record<string, ControlValues>;
 export type ControlRanges = Record<string, ControlRange>;
@@ -63,7 +67,7 @@ export default class CameraHelper {
 		return range;
 	}
 
-	async setValues(controlName: ControlName, ...values: readonly ControlValue[]): Promise<void> {
+	async setValues(controlName: ControlName, values: readonly ControlValue[]): Promise<void> {
 		const settableControlNames = await this.cameraControlHelper.getSettableControlNames();
 
 		if (!settableControlNames.includes(controlName)) {
@@ -87,7 +91,7 @@ export default class CameraHelper {
 			async (object, controlName) => {
 				try {
 					object[controlName] = await this.getRange(controlName);
-				} catch (error) {
+				} catch (error: unknown) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this.output.verbose("Error getting range, ignoring.", controlName, error);
 				}
@@ -106,7 +110,7 @@ export default class CameraHelper {
 			async (object, controlName) => {
 				try {
 					object[controlName] = await this.getValues(controlName);
-				} catch (error) {
+				} catch (error: unknown) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
 					this.output.verbose("Error getting settable value, ignoring.", controlName, error);
 				}
@@ -117,28 +121,34 @@ export default class CameraHelper {
 		);
 	}
 
-	async setControls(configuration: Readonly<ControlValues>): Promise<void> {
+	async setControls(configuration: Readonly<UvccControls>): Promise<void> {
 		const controlNames = Object.keys(configuration);
 		const settableControlNames = await this.cameraControlHelper.getSettableControlNames();
 
 		// NOTE: checking all control names before attempting to set any.
 		const nonSettableNames = controlNames.filter((controlName) => !settableControlNames.includes(controlName));
 
-		if (nonSettableNames.length !== 0) {
+		if (nonSettableNames.length > 0) {
 			throw new Error(`Could not find a settable controls, aborting setting values: ${JSON.stringify(nonSettableNames)}`);
 		}
 
 		await Bluebird.map(
-			// eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 			controlNames,
 			async (controlName) => {
-				const value = configuration[controlName];
+				const controlValues = configuration[controlName];
+
+				if (!isUvccControlValue(controlValues)) {
+					throw new TypeError(`Expected number value for configuration ${controlName}, got ${typeof controlValues} ${JSON.stringify(controlValues)}.`);
+				}
+
+				// eslint-disable-next-line unicorn/prefer-spread
+				const controlValuesArray = new Array<number>().concat(controlValues);
 
 				try {
-					await this.setValues(controlName, value);
-				} catch (error) {
+					await this.setValues(controlName, controlValuesArray);
+				} catch (error: unknown) {
 					// TODO: ignore only specific errors, such as usb.LIBUSB_TRANSFER_STALL?
-					this.output.verbose("Error setting value, ignoring.", controlName, value, error);
+					this.output.verbose("Error setting value, ignoring.", controlName, controlValues, error);
 				}
 			},
 		);
