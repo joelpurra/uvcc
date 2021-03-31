@@ -20,12 +20,14 @@ import assert from "assert";
 import Camera, {
 	UvcControl,
 } from "uvc-control";
+import Output from "./output";
+import toFormattedHex from "./utilities/to-formatted-hex";
 
 import WrappedError from "./utilities/wrapped-error";
 
 export default class CameraFactory {
-	constructor(private readonly UVCControl: UvcControl) {
-		assert.strictEqual(arguments.length, 1);
+	constructor(private readonly output: Output, private readonly UVCControl: UvcControl) {
+		assert.strictEqual(arguments.length, 2);
 		assert(typeof this.UVCControl === "function");
 	}
 
@@ -46,6 +48,18 @@ export default class CameraFactory {
 
 		try {
 			const camera = new this.UVCControl(constructorOptions);
+
+			if(vendor && vendor !== camera.device.deviceDescriptor.idVendor) {
+				this.output.warning("Camera vendor id mismatch.", "Input", vendor, `(${toFormattedHex(vendor, 4)})`, "Actual", camera.device.deviceDescriptor.idVendor, `(${toFormattedHex(camera.device.deviceDescriptor.idVendor, 4)})`);
+			}
+
+			if(product && product !== camera.device.deviceDescriptor.idProduct) {
+				this.output.warning("Camera product id mismatch.", "Input", product, `(${toFormattedHex(product, 4)})`, "Actual", camera.device.deviceDescriptor.idProduct, `(${toFormattedHex(camera.device.deviceDescriptor.idProduct, 4)})`);
+			}
+
+			if(address && address !== camera.device.deviceAddress) {
+				this.output.warning("Camera device address mismatch.", "Input", address, `(${toFormattedHex(address, 1)})`, "Actual", camera.device.deviceAddress, `(${toFormattedHex(camera.device.deviceAddress, 1)})`);
+			}
 
 			return camera;
 		} catch (error: unknown) {
