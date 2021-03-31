@@ -29,6 +29,7 @@
   "dependencies": {
     "array-non-uniq": "^1.0.0",
     "bluebird": "^3.7.2",
+    "chalk": "^4.1.0",
     "engine-check": "^1.0.1",
     "filter-obj": "^2.0.1",
     "find-up": "^5.0.0",

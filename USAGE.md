@@ -7,48 +7,57 @@ uvcc --help
 ```
 
 ```text
-USB Video Class (UVC) device configurator for the command line (CLI). Used for
-webcams, camcorders, etcetera.
+uvcc: USB Video Class (UVC) device configurator for the command line (CLI). Used for webcams, camcorders, etcetera.
 
 Commands:
-  uvcc get <control>                    Get current control value from the
-                                        camera.
-  uvcc set <control> <value1> [value2]  Set control value(s) on the camera.
-  uvcc range <control>                  Get possible range (min and max) for a
-                                        control from the camera.
-  uvcc ranges                           Get all ranges (min and max) for all
-                                        available controls from the camera.
-  uvcc devices                          List connected UVC devices with name,
-                                        vendor id (vId), product id (pId), and
-                                        device address.
-  uvcc controls                         List all supported controls.
-  uvcc export                           Output configuration in JSON format, on
-                                        stdout.
-  uvcc import                           Input configuration in JSON format, from
-                                        stdin.
+  uvcc get <control>                    Get current control value.
+  uvcc set <control> <value1> [value2]  Set control value(s).
+  uvcc range <control>                  Get possible range (min and max) for a control.
+  uvcc ranges                           Get all ranges (min and max).
+  uvcc devices                          List connected UVC devices.
+  uvcc controls                         List all supported controls for the camera.
+  uvcc export                           Output configuration in JSON format, on stdout.
+  uvcc import                           Input configuration in JSON format, from stdin.
 
-Camera selection:
-  --vendor   Camera vendor id in hex (0x000) or decimal (0000) format.
-                                                           [number] [default: 0]
-  --product  Camera product id in hex (0x000) or decimal (0000) format.
-                                                           [number] [default: 0]
-  --address  Camera device address in decimal (00) format. Only used for
-             multi-camera setups.                          [number] [default: 0]
+Device selection for multi-camera setups.
+  Numbers in hex (0x000) or decimal (0000) format.
+  --vendor   Camera vendor id (vId).  [number] [default: 0]
+  --product  Camera product id (pId).  [number] [default: 0]
+  --address  Camera device address.  [number] [default: 0]
 
 Options:
-  --version  Show version number                                       [boolean]
+  --version  Show version number  [boolean]
   --config   Load command arguments from a JSON file.
-  --verbose  Enable verbose output.                   [boolean] [default: false]
-  --help     Show help                                                 [boolean]
+  --verbose  Enable verbose output.  [boolean] [default: false]
+  --help     Show help  [boolean]
 
 Examples:
-  uvcc  vendor 0x46d --product 0x82d get white_balance_temperature
+
+  Basic usage:
+  uvcc controls                                    Available controls for the camera.
+  uvcc set auto_white_balance_temperature 0        Turn off automatic color correction.
+  uvcc set saturation 64                           Low color saturation (near grayscale).
+  uvcc ranges                                      List possible control ranges.
+  uvcc set absolute_zoom 200                       Zoom in.
+
+  Automate config:
+  - Not all controls can be imported.
+  - Control order matters.
+  uvcc export > my-uvcc-export.json                Save to file.
+  cat my-uvcc-export.json | uvcc import            Load from file.
+
+  Target a specific device:
+  - Only useful for multi-camera setups.
+  - For same-model cameras, also specify address.
+  - Alt. use system USB settings to find devices.
+  uvcc devices                                     List available cameras.
+  sudo uvcc devices                                Avoid LIBUSB_ERROR_ACCESS.
+  uvcc --vendor 0x46d --product 0x82d export
 
 uvcc Copyright © 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
-This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you
-are welcome to redistribute it under certain conditions. See GPL-3.0 license for
-details.
+This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it
+under certain conditions. See GPL-3.0 license for details.
 
 See also: https://joelpurra.com/projects/uvcc/
 ```
@@ -69,6 +78,7 @@ The command line arguments can optionally be provided using environment variable
 uvcc devices
 
 # Use the vendor id and product id to export current configuration.
+# NOTE: explicitly defining vendor/product is usually not necessary.
 uvcc --vendor 0x46d --product 0x82d export
 ```
 
