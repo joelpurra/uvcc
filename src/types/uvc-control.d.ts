@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,22 +17,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 declare module "uvc-control" {
+	// TODO: move type declarations to uvc-control.
 	import UvcControlModule from "uvc-control";
+	import {
+		ReadonlyDeep,
+	} from "type-fest";
+
+	// eslint-disable-next-line import/no-extraneous-dependencies
+	import usb from "usb";
 
 	export default class Camera {
-		public static readonly REQUEST: Readonly<RequestTypes>;
-		public static readonly controls: Readonly<CameraControls>;
-
-		public static discover: () => Promise<readonly UvcDevice[]>;
+		public static readonly REQUEST: ReadonlyDeep<RequestTypes>;
+		public static readonly controls: ReadonlyDeep<CameraControls>;
 
 		public readonly supportedControls: readonly ControlName[];
-
-		get: (name: ControlName) => Promise<Readonly<ControlValues>>;
-		range: (name: ControlName) => Promise<Readonly<ControlRange>>;
-		set: (name: ControlName, ...values: readonly ControlValue[]) => Promise<readonly number[]>;
-		close: () => Promise<void>;
+		public readonly device: usb.Device;
 
 		constructor(options: ConstructorOptions);
+
+		public static discover(): Promise<readonly UvcDevice[]>;
+
+		get(name: ControlName): Promise<ReadonlyDeep<ControlValues>>;
+		range(name: ControlName): Promise<ReadonlyDeep<ControlRange>>;
+		set(name: ControlName, ...values: readonly ControlValue[]): Promise<readonly number[]>;
+		close(): Promise<void>;
 	}
 
 	export type UvcControl = typeof Camera;
@@ -57,8 +65,8 @@ declare module "uvc-control" {
 
 	export interface ConstructorOptions {
 		readonly deviceAddress?: number;
-		readonly product?: number;
-		readonly vendor?: number;
+		readonly pid?: number;
+		readonly vid?: number;
 	}
 
 	export interface CameraControl {

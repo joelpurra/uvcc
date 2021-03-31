@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import Camera from "uvc-control";
 
 import CameraFactory from "./camera-factory";
@@ -41,7 +44,7 @@ export default class CommandManager {
 		assert(typeof this.commandHandlers === "object");
 	}
 
-	async execute(runtimeConfig: Readonly<RuntimeConfiguration>): Promise<void> {
+	async execute(runtimeConfig: ReadonlyDeep<RuntimeConfiguration>): Promise<void> {
 		this.output.verbose("Parsed arguments:", JSON.stringify(runtimeConfig, null, 2));
 
 		const commandName = runtimeConfig.cmd;
@@ -102,7 +105,7 @@ export default class CommandManager {
 			}
 
 			await closeCamera();
-		} catch (error) {
+		} catch (error: unknown) {
 			try {
 				await closeCamera();
 			} catch {

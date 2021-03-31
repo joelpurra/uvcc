@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@ import assert from "assert";
 import Bluebird from "bluebird";
 import streamToPromise from "stream-to-promise";
 import {
-	ControlValues,
-} from "uvc-control";
+	ReadonlyDeep,
+} from "type-fest";
 
 import CameraHelper from "../camera-helper";
 import {
@@ -29,6 +29,7 @@ import {
 	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentNames,
 } from "../types/command";
+import isUvccControls from "../utilities/is-uvcc-controls";
 
 export default class ImportCommand implements Command {
 	constructor() {
@@ -44,11 +45,11 @@ export default class ImportCommand implements Command {
 	async execute(...args: readonly unknown[]): Promise<void> {
 		assert.strictEqual(arguments.length, 1);
 
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
+		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
 
 		const stdinTimeout = 1000;
 
-		const parsedControlValues = await Bluebird.try(async () => {
+		const controlValues = await Bluebird.try(async () => {
 			const buffer = await streamToPromise(process.stdin);
 			const json = JSON.parse(buffer.toString()) as unknown;
 
@@ -58,26 +59,11 @@ export default class ImportCommand implements Command {
 			return json;
 		})
 			.timeout(stdinTimeout, `Could not read uvcc configuration from stdin within the ${stdinTimeout} millisecond timeout. Was any data piped in?`)
-			.tapCatch((error) => process.stdin.destroy(error));
+			.tapCatch((error) => {
+				process.stdin.destroy(error);
+			});
 
-		const parsedControlsAreValid = Object
-			.entries(parsedControlValues)
-			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			.every(([
-				controlName,
-				controlValues,
-			]) => (typeof controlName === "string"
-				&& (
-					typeof controlValues === "number"
-						|| (
-							Array.isArray(controlValues)
-								&& controlValues.every((controlValue) => typeof controlValue === "number")
-						)
-				)
-			));
-
-		assert(parsedControlsAreValid);
-		const controlValues = parsedControlValues as ControlValues;
+		assert(isUvccControls(controlValues));
 
 		return cameraHelper.setControls(controlValues);
 	}

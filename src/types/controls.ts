@@ -16,29 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
 import {
 	ReadonlyDeep,
 } from "type-fest";
-import Camera, {
-	UvcControl,
-} from "uvc-control";
 
-import CameraControlHelperClass from "./camera-control-helper";
-
-export default class CameraControlHelperFactory {
-	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>, private readonly CameraControlHelper: typeof CameraControlHelperClass) {
-		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.UVCControl === "function");
-		assert(typeof this.CameraControlHelper === "function");
-	}
-
-	async get(camera: ReadonlyDeep<Camera>): Promise<CameraControlHelperClass> {
-		assert.strictEqual(arguments.length, 1);
-		assert(typeof camera === "object");
-
-		const cameraControlHelper = new this.CameraControlHelper(this.UVCControl, camera);
-
-		return cameraControlHelper;
-	}
-}
+export type UvccControlValue = number | readonly number[];
+export type UvccControls = ReadonlyDeep<Record<string, UvccControlValue>>;

@@ -16,39 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
-import {
-	ReadonlyDeep,
-} from "type-fest";
-
-import CameraHelper,
-{
-	ControlRanges,
-} from "../camera-helper";
-import {
-	Command,
-	CommandHandlerArgumentCameraHelper,
-	CommandHandlerArgumentNames,
-} from "../types/command";
-
-export default class RangesCommand implements Command {
-	constructor() {
-		assert.strictEqual(arguments.length, 0);
-	}
-
-	async getArguments(): Promise<CommandHandlerArgumentNames[]> {
-		return [
-			CommandHandlerArgumentCameraHelper,
-		];
-	}
-
-	async execute(...args: readonly unknown[]): Promise<ReadonlyDeep<ControlRanges>> {
-		assert.strictEqual(arguments.length, 1);
-
-		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
-
-		const ranges = await cameraHelper.getRanges();
-
-		return ranges;
-	}
+export default function toFormattedHex(i: number, minimumDigits: number): string {
+	return `0x${i.toString(16).padStart(minimumDigits, "0")}`;
 }

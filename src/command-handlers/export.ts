@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import assert from "assert";
 import mapObj from "map-obj";
 import {
-	ControlValues,
-} from "uvc-control";
+	ReadonlyDeep,
+} from "type-fest";
 
 import CameraHelper from "../camera-helper";
 import {
@@ -28,9 +28,10 @@ import {
 	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentNames,
 } from "../types/command";
+import {
+	UvccControls,
+} from "../types/controls";
 import flattenControlValues from "../utilities/flatten-control-values";
-
-export type ControlExport = Record<string, number | readonly number[]>;
 
 export default class ExportCommand implements Command {
 	constructor() {
@@ -43,14 +44,14 @@ export default class ExportCommand implements Command {
 		];
 	}
 
-	async execute(...args: readonly unknown[]): Promise<Readonly<ControlExport>> {
+	async execute(...args: readonly unknown[]): Promise<ReadonlyDeep<UvccControls>> {
 		assert.strictEqual(arguments.length, 1);
 
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
+		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
 
 		// NOTE: exporting un-settable values breaks imports because of strict settable value checks.
 		// TODO: export also un-settable values with --all flag?
-		const settableControls = await cameraHelper.getSettableControls() as Record<string, Readonly<ControlValues>>;
+		const settableControls = await cameraHelper.getSettableControls();
 		const values = mapObj(
 			settableControls,
 			(

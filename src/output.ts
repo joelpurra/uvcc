@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,11 +25,15 @@ export default class Output {
 	}
 
 	normal(...args: readonly unknown[]): void {
-		return this.stdout(...args);
+		this.consoleLog(...args);
 	}
 
 	error(...args: readonly unknown[]): void {
-		return this.stderr(...args);
+		this.consoleError(...args);
+	}
+
+	warning(...args: readonly unknown[]): void {
+		this.consoleWarn(...args);
 	}
 
 	verbose(...args: readonly unknown[]): void {
@@ -37,16 +41,21 @@ export default class Output {
 			return undefined;
 		}
 
-		return this.stderr(...args);
+		this.consoleError(...args);
 	}
 
-	private stdout(...args: readonly unknown[]) {
+	private consoleLog(...args: readonly unknown[]) {
 		// eslint-disable-next-line no-console
 		console.log(...args);
 	}
 
-	private stderr(...args: readonly unknown[]) {
+	private consoleError(...args: readonly unknown[]) {
 		// eslint-disable-next-line no-console
 		console.error(...args);
+	}
+
+	private consoleWarn(...args: readonly unknown[]) {
+		// eslint-disable-next-line no-console
+		console.warn(...args);
 	}
 }

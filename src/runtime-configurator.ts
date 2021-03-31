@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,14 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
-import findUp from "find-up";
 import fs from "fs";
 import {
 	join,
 } from "path";
+import {
+	bold, dim, red,
+} from "chalk";
+import findUp from "find-up";
 import yargs, {
 	Argv,
 } from "yargs";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 
 const getJsonSync = (fileRelativePath: string) => {
 	const resolvedPath = join(__dirname, fileRelativePath);
@@ -34,7 +40,7 @@ const getJsonSync = (fileRelativePath: string) => {
 		const json = JSON.parse(fs.readFileSync(resolvedPath).toString());
 
 		return json;
-	} catch (error) {
+	} catch (error: unknown) {
 		throw new Error(`Could not read JSON file ${JSON.stringify(resolvedPath)}: ${JSON.stringify(String(error))}`);
 	}
 };
@@ -51,17 +57,18 @@ export type RuntimeConfiguration = {
 export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
-const getYargsArgv = (): Readonly<Argv["argv"]> => {
+const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
 	const packageJson = getJsonSync("../package.json");
 	const appBinaryName = Object.keys(packageJson.bin)[0];
-	const appDescription = packageJson.description;
+	const appDescription: string = packageJson.description;
 	const {
 		homepage,
 	} = packageJson;
 
+	assert(typeof appBinaryName === "string");
 	assert(typeof homepage === "string");
 
-	const epilogue = `uvcc Copyright © 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
+	const epilogue = dim`uvcc Copyright © 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
 	let fromImplicitConfigFile = null;
 
@@ -82,6 +89,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 	/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
 	yargs
 		.strict()
+		.wrap(yargs.terminalWidth())
 		.config(fromImplicitConfigFile)
 		.config("config", "Load command arguments from a JSON file.", (argumentConfigPath) => {
 			const fromExplicitConfigFile = argumentConfigPath ? getJsonSync(argumentConfigPath) : {};
@@ -89,8 +97,8 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 			return fromExplicitConfigFile;
 		})
 		.env(appBinaryName.toUpperCase())
-		.usage(appDescription)
-		.command("get <control>", "Get current control value from the camera.", (yargsToApplyTo) => {
+		.usage(`${bold("$0")}: ${appDescription}`)
+		.command("get <control>", "Get current control value.", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
 					demandOption: true,
@@ -98,7 +106,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 					type: "string",
 				});
 		})
-		.command("set <control> <value1> [value2]", "Set control value(s) on the camera.", (yargsToApplyTo) => {
+		.command("set <control> <value1> [value2]", "Set control value(s).", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
 					demandOption: true,
@@ -116,7 +124,7 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 					type: "number",
 				});
 		})
-		.command("range <control>", "Get possible range (min and max) for a control from the camera.", (yargsToApplyTo) => {
+		.command("range <control>", "Get possible range (min and max) for a control.", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
 					demandOption: true,
@@ -124,24 +132,24 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 					type: "string",
 				});
 		})
-		.command("ranges", "Get all ranges (min and max) for all available controls from the camera.")
-		.command("devices", "List connected UVC devices with name, vendor id (vId), product id (pId), and device address.")
-		.command("controls", "List all supported controls.")
+		.command("ranges", "Get all ranges (min and max).")
+		.command("devices", "List connected UVC devices.")
+		.command("controls", "List all supported controls for the camera.")
 		.command("export", "Output configuration in JSON format, on stdout.")
 		.command("import", "Input configuration in JSON format, from stdin.")
 		.option("vendor", {
 			"default": 0,
-			describe: "Camera vendor id in hex (0x000) or decimal (0000) format.",
+			describe: "Camera vendor id (vId).",
 			type: "number",
 		})
 		.option("product", {
 			"default": 0,
-			describe: "Camera product id in hex (0x000) or decimal (0000) format.",
+			describe: "Camera product id (pId).",
 			type: "number",
 		})
 		.option("address", {
 			"default": 0,
-			describe: "Camera device address in decimal (00) format. Only used for multi-camera setups.",
+			describe: "Camera device address.",
 			type: "number",
 		})
 		.option("verbose", {
@@ -149,26 +157,54 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 			describe: "Enable verbose output.",
 			type: "boolean",
 		})
-		.demandCommand(1, 1, "Please provide a single command.", "Please provide a single command.")
+		.demandCommand(1, 1, red("Please provide a single command."), red("Please provide a single command."))
 		.group(
 			[
 				"vendor",
 				"product",
 				"address",
 			],
-			"Camera selection:")
+			bold("Device selection for multi-camera setups.") + "\n  " + dim("Numbers in hex (0x000) or decimal (0000) format."))
 		.help()
-		.example("$0", "--vendor 0x46d --product 0x82d get white_balance_temperature")
+		.example("", "")
+		.example(bold("Basic usage:"), "")
+		.example("$0 controls", "Available controls for the camera.")
+		.example("$0 set auto_white_balance_temperature 0", "Turn off automatic color correction.")
+		.example("$0 set saturation 64", "Low color saturation (near grayscale).")
+		.example("$0 ranges", "List possible control ranges.")
+		.example("$0 set absolute_zoom 200", "Zoom in.")
+		.example("", "")
+		.example(bold("Automate config:"), "")
+		.example(dim("- Not all controls can be imported."), "")
+		.example(dim("- Control order matters."), "")
+		.example("$0 export > my-uvcc-export.json", "Save to file.")
+		.example("cat my-uvcc-export.json | $0 import", "Load from file.")
+		.example("", "")
+		.example(bold("Target a specific device:"), "")
+		.example(dim("- Only useful for multi-camera setups."), "")
+		.example(dim("- For same-model cameras, also specify address."), "")
+		.example(dim("- Alt. use system USB settings to find devices."), "")
+		.example("$0 devices", "List available cameras.")
+		.example("sudo $0 devices", "Avoid LIBUSB_ERROR_ACCESS.")
+		.example("$0 --vendor 0x46d --product 0x82d export", "")
 		.epilogue(epilogue);
 	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
 	return yargs.argv;
 };
 
-// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
+const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
 	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
-	const cmd = typeof argv.cmd === "string" ? argv.cmd : (typeof argv._[0] === "string" ? argv._.shift() : null);
+	// eslint-disable-next-line @typescript-eslint/dot-notation
+	const cmd = typeof argv["cmd"] === "string"
+		// eslint-disable-next-line @typescript-eslint/dot-notation
+		? argv["cmd"]
+		: (
+			typeof argv._[0] === "string"
+				? argv._[0]
+				: null
+		);
+
 	const {
 		address,
 		control,
@@ -189,16 +225,12 @@ const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
 	let values: readonly number[] = [];
 
 	if (typeof value1 === "number") {
-		if (typeof value2 === "number") {
-			values = [
-				value1,
-				value2,
-			];
-		} else {
-			values = [
-				value1,
-			];
-		}
+		values = typeof value2 === "number" ? [
+			value1,
+			value2,
+		] : [
+			value1,
+		];
 	}
 
 	const mappedArgv: RuntimeConfiguration = {

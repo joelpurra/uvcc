@@ -2,6 +2,27 @@
 
 See full list of commits for details.
 
+## v3.0.0
+
+- e8d7dec Target node.js v12+
+- efde45e Update example output from Logitech C920
+- bed8ac3 Upgrade forked uvc-control v2
+  - Swallows errors when discovering/listing USB/UVC devices.
+    - Avoids some problems with `LIBUSB_ERROR_IO` when using `uvcc devices`. The issue seems to be dependent on the internal (software) state (perhaps the traversal order) of USB drivers/devices (and perhaps on _which_ other USB devices are used) connected to the system. Using `sudo` does not prevent `LIBUSB_ERROR_IO`.
+    - The change means that `uvcc devices` can be used without `sudo` (by swallowing `LIBUSB_ERROR_ACCESS` thrown when opening some USB devices) even when the user has insufficient privileges, although inaccessible UVC devices will not be listed.
+- e5d9f49 Warn for camera mismatch
+  - Fixes part of [#10](https://github.com/joelpurra/uvcc/issues/10) by warning for unexpected camera results.
+- 526b9f4 Upgrade forked uvc-control v2
+  - Fixes part of [#10](https://github.com/joelpurra/uvcc/issues/10) by allowing filtering by only product id, or only by device address.
+- 7a9dd89 Add some styling to command help
+- 4691cbf Update usage examples
+  - Fixes [#14](https://github.com/joelpurra/uvcc/issues/14) by improving examples.
+
+## v2.0.4
+
+- 9f3073e Upgrade forked uvc-control v2
+  - Fixes [#8](https://github.com/joelpurra/uvcc/issues/8), setting `absolute_focus`.
+
 ## v2.0.3
 
 - d34da77 Upgrade forked uvc-control v2
@@ -67,4 +88,4 @@ See full list of commits for details.
 
 ---
 
-[`uvcc`](https://joelpurra.com/projects/uvcc/) Copyright &copy; 2018, 2019, 2020 [Joel Purra](https://joelpurra.com/). Released under [GNU General Public License version 3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl.html). [Your donations are appreciated!](https://joelpurra.com/donate/)
+[`uvcc`](https://joelpurra.com/projects/uvcc/) Copyright &copy; 2018, 2019, 2020, 2021 [Joel Purra](https://joelpurra.com/). Released under [GNU General Public License version 3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl.html). [Your donations are appreciated!](https://joelpurra.com/donate/)

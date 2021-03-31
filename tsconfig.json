@@ -1,6 +1,7 @@
 {
   "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
+    "module": "commonjs",
     "outDir": "dist",
     "target": "es2018",
     "lib": ["es2018"],

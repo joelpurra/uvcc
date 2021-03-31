@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import {
 	ControlName,
 	ControlValue,
@@ -45,10 +48,10 @@ export default class SetCommand implements Command {
 	async execute(...args: readonly unknown[]): Promise<void> {
 		assert(args.length >= 2);
 
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
+		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
 		const controlName = args[1] as ControlName;
 		const values = args[2] as readonly ControlValue[];
 
-		return cameraHelper.setValues(controlName, ...values);
+		return cameraHelper.setValues(controlName, values);
 	}
 }

@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import arrayNonUniq from "array-non-uniq";
 import assert from "assert";
+import arrayNonUniq from "array-non-uniq";
 import filterObject from "filter-obj";
 import sortKeys from "sort-keys";
 import Camera,
@@ -26,6 +26,9 @@ import Camera,
 	UvcControl,
 } from "uvc-control";
 
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import WrappedError from "./utilities/wrapped-error";
 
 interface ControlFlags {
@@ -37,9 +40,9 @@ interface ControlFlags {
 type ControlsFlags = Record<string, ControlFlags>;
 
 export default class CameraControlHelper {
-	private cachedMappedSupportedControls: Readonly<ControlsFlags> | null = null;
+	private cachedMappedSupportedControls: ReadonlyDeep<ControlsFlags> | null = null;
 
-	constructor(private readonly UVCControl: Readonly<UvcControl>, private readonly camera: Readonly<Camera>) {
+	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>, private readonly camera: ReadonlyDeep<Camera>) {
 		assert.strictEqual(arguments.length, 2);
 		assert(typeof this.UVCControl === "function");
 		assert(typeof this.camera === "object");
@@ -69,18 +72,18 @@ export default class CameraControlHelper {
 		return Object.keys(settableControls);
 	}
 
-	private isGettableControl(control: Readonly<CameraControl>) {
+	private isGettableControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
 		return control.requests.includes(this.UVCControl.REQUEST.GET_CUR);
 	}
 
-	private isRangedControl(control: Readonly<CameraControl>) {
+	private isRangedControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
 		return control.requests.includes(this.UVCControl.REQUEST.GET_MIN)
 			&& control.requests.includes(this.UVCControl.REQUEST.GET_MAX);
 	}
 
-	private isSettableControl(control: Readonly<CameraControl>) {
+	private isSettableControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
 		return control.requests.includes(this.UVCControl.REQUEST.SET_CUR)
 			|| (
@@ -92,17 +95,19 @@ export default class CameraControlHelper {
 
 	private async mapSupportedControls() {
 		const supportedControls = this.camera.supportedControls
-			.map((supportedControlName) => this.UVCControl.controls[supportedControlName]);
+			.map((supportedControlName) => this.UVCControl.controls[supportedControlName])
+			// TODO: proper ducktyping function.
+			.filter((t): t is CameraControl => Boolean(t));
 
 		const missingControls = supportedControls.filter((control) => !control);
 
-		if (missingControls.length !== 0) {
+		if (missingControls.length > 0) {
 			throw new Error(`Controls were not found: ${JSON.stringify(missingControls)}`);
 		}
 
 		const nonUniqueControls = arrayNonUniq(supportedControls);
 
-		if (nonUniqueControls.length !== 0) {
+		if (nonUniqueControls.length > 0) {
 			throw new Error(`Controls were already found: ${JSON.stringify(nonUniqueControls)}`);
 		}
 
@@ -119,10 +124,14 @@ export default class CameraControlHelper {
 				];
 
 				return uvccControl;
-			} catch (error) {
-				const wrappedError = new WrappedError(error, `Could not map control: ${JSON.stringify(control.name)}`);
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					const wrappedError = new WrappedError(error, `Could not map control: ${JSON.stringify(control.name)}`);
 
-				throw wrappedError;
+					throw wrappedError;
+				}
+
+				throw error;
 			}
 		});
 

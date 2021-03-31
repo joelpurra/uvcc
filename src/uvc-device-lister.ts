@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import assert from "assert";
 import {
+	ReadonlyDeep,
+} from "type-fest";
+import {
 	UvcControl,
 } from "uvc-control";
 
@@ -29,7 +32,7 @@ export interface MappedUvcDevice {
 }
 
 export default class UvcDeviceLister {
-	constructor(private readonly UVCControl: Readonly<UvcControl>) {
+	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>) {
 		assert.strictEqual(arguments.length, 1);
 		assert(typeof this.UVCControl === "function");
 	}
