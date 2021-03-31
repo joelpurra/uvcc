@@ -1,4 +1,6 @@
 {
+  "absolute_exposure_time": 333,
+  "absolute_focus": 0,
   "absolute_pan_tilt": [
     0,
     0
@@ -11,9 +13,9 @@
   "backlight_compensation": 0,
   "brightness": 128,
   "contrast": 128,
-  "gain": 13,
+  "gain": 97,
   "power_line_frequency": 2,
   "saturation": 128,
   "sharpness": 128,
-  "white_balance_temperature": 4572
+  "white_balance_temperature": 4852
 }
