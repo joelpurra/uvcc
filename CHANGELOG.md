@@ -2,6 +2,11 @@
 
 See full list of commits for details.
 
+## v2.0.4
+
+- 9f3073e Upgrade forked uvc-control v2
+  - Fixes [#8](https://github.com/joelpurra/uvcc/issues/8), setting `absolute_focus`.
+
 ## v2.0.3
 
 - d34da77 Upgrade forked uvc-control v2
