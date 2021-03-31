@@ -2,7 +2,7 @@
 
 See full list of commits for details.
 
-## vx.x.x
+## v3.0.0
 
 - e8d7dec Target node.js v12+
 - efde45e Update example output from Logitech C920
