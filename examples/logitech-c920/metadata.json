@@ -1,6 +1,6 @@
 {
-  "node": "v14.9.0",
-  "npm": "6.14.8",
-  "uname": "Linux compendious 5.4.0-42-generic #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux",
-  "uvcc": "v2.0.2"
+  "node": "v15.12.0",
+  "npm": "7.6.3",
+  "uname": "Linux compendious 5.4.0-70-generic #78-Ubuntu SMP Fri Mar 19 13:29:52 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux",
+  "uvcc": "2.1.0-alpha.0"
 }
