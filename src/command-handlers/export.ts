@@ -18,6 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import assert from "assert";
 import mapObj from "map-obj";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 
 import CameraHelper from "../camera-helper";
 import {
@@ -41,10 +44,10 @@ export default class ExportCommand implements Command {
 		];
 	}
 
-	async execute(...args: readonly unknown[]): Promise<Readonly<UvccControls>> {
+	async execute(...args: readonly unknown[]): Promise<ReadonlyDeep<UvccControls>> {
 		assert.strictEqual(arguments.length, 1);
 
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
+		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
 
 		// NOTE: exporting un-settable values breaks imports because of strict settable value checks.
 		// TODO: export also un-settable values with --all flag?
@@ -53,7 +56,6 @@ export default class ExportCommand implements Command {
 			settableControls,
 			(
 				settableControlName,
-				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 				settableControlValue,
 			) => [
 				settableControlName,

@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import Camera from "uvc-control";
 
 import CameraFactory from "./camera-factory";
@@ -41,7 +44,7 @@ export default class CommandManager {
 		assert(typeof this.commandHandlers === "object");
 	}
 
-	async execute(runtimeConfig: Readonly<RuntimeConfiguration>): Promise<void> {
+	async execute(runtimeConfig: ReadonlyDeep<RuntimeConfiguration>): Promise<void> {
 		this.output.verbose("Parsed arguments:", JSON.stringify(runtimeConfig, null, 2));
 
 		const commandName = runtimeConfig.cmd;

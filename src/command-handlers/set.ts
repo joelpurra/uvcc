@@ -18,6 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import assert from "assert";
 import {
+	ReadonlyDeep,
+} from "type-fest";
+import {
 	ControlName,
 	ControlValue,
 } from "uvc-control";
@@ -45,7 +48,7 @@ export default class SetCommand implements Command {
 	async execute(...args: readonly unknown[]): Promise<void> {
 		assert(args.length >= 2);
 
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
+		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
 		const controlName = args[1] as ControlName;
 		const values = args[2] as readonly ControlValue[];
 

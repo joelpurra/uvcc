@@ -18,6 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import assert from "assert";
 import {
+	ReadonlyDeep,
+} from "type-fest";
+import {
 	UvcControl,
 } from "uvc-control";
 
@@ -29,7 +32,7 @@ export interface MappedUvcDevice {
 }
 
 export default class UvcDeviceLister {
-	constructor(private readonly UVCControl: Readonly<UvcControl>) {
+	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>) {
 		assert.strictEqual(arguments.length, 1);
 		assert(typeof this.UVCControl === "function");
 	}

@@ -26,6 +26,9 @@ import Camera,
 	UvcControl,
 } from "uvc-control";
 
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import WrappedError from "./utilities/wrapped-error";
 
 interface ControlFlags {
@@ -37,9 +40,9 @@ interface ControlFlags {
 type ControlsFlags = Record<string, ControlFlags>;
 
 export default class CameraControlHelper {
-	private cachedMappedSupportedControls: Readonly<ControlsFlags> | null = null;
+	private cachedMappedSupportedControls: ReadonlyDeep<ControlsFlags> | null = null;
 
-	constructor(private readonly UVCControl: Readonly<UvcControl>, private readonly camera: Readonly<Camera>) {
+	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>, private readonly camera: ReadonlyDeep<Camera>) {
 		assert.strictEqual(arguments.length, 2);
 		assert(typeof this.UVCControl === "function");
 		assert(typeof this.camera === "object");
@@ -69,18 +72,18 @@ export default class CameraControlHelper {
 		return Object.keys(settableControls);
 	}
 
-	private isGettableControl(control: Readonly<CameraControl>) {
+	private isGettableControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
 		return control.requests.includes(this.UVCControl.REQUEST.GET_CUR);
 	}
 
-	private isRangedControl(control: Readonly<CameraControl>) {
+	private isRangedControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
 		return control.requests.includes(this.UVCControl.REQUEST.GET_MIN)
 			&& control.requests.includes(this.UVCControl.REQUEST.GET_MAX);
 	}
 
-	private isSettableControl(control: Readonly<CameraControl>) {
+	private isSettableControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
 		return control.requests.includes(this.UVCControl.REQUEST.SET_CUR)
 			|| (

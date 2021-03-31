@@ -16,6 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export default function toFormattedHex (i: number, minimumDigits: number) {
-	return `0x${i.toString(16).padStart(minimumDigits, "0")}`
+export default function toFormattedHex(i: number, minimumDigits: number): string {
+	return `0x${i.toString(16).padStart(minimumDigits, "0")}`;
 }

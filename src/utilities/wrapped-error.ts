@@ -17,9 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 
 export default class WrappedError extends Error {
-	constructor(public readonly innerError: Readonly<Error>,
+	constructor(public readonly innerError: ReadonlyDeep<Error>,
 		message: string,
 	) {
 		super(message);

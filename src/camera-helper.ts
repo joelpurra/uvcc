@@ -18,6 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import assert from "assert";
 import Bluebird from "bluebird";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import Camera, {
 	ControlName,
 	ControlRange,
@@ -36,14 +39,14 @@ export type ControlsValues = Record<string, ControlValues>;
 export type ControlRanges = Record<string, ControlRange>;
 
 export default class CameraHelper {
-	constructor(private readonly output: Readonly<Output>, private readonly cameraControlHelper: Readonly<CameraControlHelper>, private readonly camera: Readonly<Camera>) {
+	constructor(private readonly output: ReadonlyDeep<Output>, private readonly cameraControlHelper: ReadonlyDeep<CameraControlHelper>, private readonly camera: ReadonlyDeep<Camera>) {
 		assert.strictEqual(arguments.length, 3);
 		assert(typeof this.output === "object");
 		assert(typeof this.cameraControlHelper === "object");
 		assert(typeof this.camera === "object");
 	}
 
-	async getValues(controlName: ControlName): Promise<Readonly<ControlValues>> {
+	async getValues(controlName: ControlName): Promise<ReadonlyDeep<ControlValues>> {
 		const gettableControlNames = await this.cameraControlHelper.getGettableControlNames();
 
 		if (!gettableControlNames.includes(controlName)) {
@@ -55,7 +58,7 @@ export default class CameraHelper {
 		return valueObject;
 	}
 
-	async getRange(controlName: ControlName): Promise<Readonly<ControlRange>> {
+	async getRange(controlName: ControlName): Promise<ReadonlyDeep<ControlRange>> {
 		const rangedControlNames = await this.cameraControlHelper.getRangedControlNames();
 
 		if (!rangedControlNames.includes(controlName)) {
@@ -83,7 +86,7 @@ export default class CameraHelper {
 		return this.cameraControlHelper.getControlNames();
 	}
 
-	async getRanges(): Promise<Readonly<ControlRanges>> {
+	async getRanges(): Promise<ReadonlyDeep<ControlRanges>> {
 		// TODO: replace with Object.fromEntries(...);
 		return Bluebird.reduce(
 			this.cameraControlHelper.getRangedControlNames(),
@@ -102,7 +105,7 @@ export default class CameraHelper {
 		);
 	}
 
-	async getSettableControls(): Promise<Readonly<ControlsValues>> {
+	async getSettableControls(): Promise<ReadonlyDeep<ControlsValues>> {
 		// TODO: replace with Object.fromEntries(...);
 		return Bluebird.reduce(
 			this.cameraControlHelper.getSettableControlNames(),
@@ -121,7 +124,7 @@ export default class CameraHelper {
 		);
 	}
 
-	async setControls(configuration: Readonly<UvccControls>): Promise<void> {
+	async setControls(configuration: ReadonlyDeep<UvccControls>): Promise<void> {
 		const controlNames = Object.keys(configuration);
 		const settableControlNames = await this.cameraControlHelper.getSettableControlNames();
 

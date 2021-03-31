@@ -19,6 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import assert from "assert";
 import Bluebird from "bluebird";
 import streamToPromise from "stream-to-promise";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 
 import CameraHelper from "../camera-helper";
 import {
@@ -42,7 +45,7 @@ export default class ImportCommand implements Command {
 	async execute(...args: readonly unknown[]): Promise<void> {
 		assert.strictEqual(arguments.length, 1);
 
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
+		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
 
 		const stdinTimeout = 1000;
 

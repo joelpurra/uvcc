@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 
 import CameraHelper,
 {
@@ -39,10 +42,10 @@ export default class RangesCommand implements Command {
 		];
 	}
 
-	async execute(...args: readonly unknown[]): Promise<Readonly<ControlRanges>> {
+	async execute(...args: readonly unknown[]): Promise<ReadonlyDeep<ControlRanges>> {
 		assert.strictEqual(arguments.length, 1);
 
-		const cameraHelper = args[0] as Readonly<CameraHelper>;
+		const cameraHelper = args[0] as ReadonlyDeep<CameraHelper>;
 
 		const ranges = await cameraHelper.getRanges();
 

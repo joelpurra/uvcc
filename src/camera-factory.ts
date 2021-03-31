@@ -17,13 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "assert";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import Camera, {
+	ConstructorOptions,
 	UvcControl,
 } from "uvc-control";
 import Output from "./output";
 import toFormattedHex from "./utilities/to-formatted-hex";
 
 import WrappedError from "./utilities/wrapped-error";
+
+interface GetFunctionArguments {
+	address: number | null;
+	product: number | null;
+	vendor: number | null;
+}
 
 export default class CameraFactory {
 	constructor(private readonly output: Output, private readonly UVCControl: UvcControl) {
@@ -37,7 +47,7 @@ export default class CameraFactory {
 		assert(product === null || (typeof product === "number" && product >= 0));
 		assert(address === null || (typeof address === "number" && address >= 0));
 
-		const constructorOptions = {
+		const constructorOptions: ConstructorOptions = {
 			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 			deviceAddress: address || undefined,
 			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -49,52 +59,53 @@ export default class CameraFactory {
 		try {
 			const camera = new this.UVCControl(constructorOptions);
 
-			if(vendor && vendor !== camera.device.deviceDescriptor.idVendor) {
+			if (vendor && vendor !== camera.device.deviceDescriptor.idVendor) {
 				this.output.warning("Camera vendor id mismatch.", "Input", vendor, `(${toFormattedHex(vendor, 4)})`, "Actual", camera.device.deviceDescriptor.idVendor, `(${toFormattedHex(camera.device.deviceDescriptor.idVendor, 4)})`);
 			}
 
-			if(product && product !== camera.device.deviceDescriptor.idProduct) {
+			if (product && product !== camera.device.deviceDescriptor.idProduct) {
 				this.output.warning("Camera product id mismatch.", "Input", product, `(${toFormattedHex(product, 4)})`, "Actual", camera.device.deviceDescriptor.idProduct, `(${toFormattedHex(camera.device.deviceDescriptor.idProduct, 4)})`);
 			}
 
-			if(address && address !== camera.device.deviceAddress) {
+			if (address && address !== camera.device.deviceAddress) {
 				this.output.warning("Camera device address mismatch.", "Input", address, `(${toFormattedHex(address, 1)})`, "Actual", camera.device.deviceAddress, `(${toFormattedHex(camera.device.deviceAddress, 1)})`);
 			}
 
 			return camera;
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				let errorMessage = null;
+			// NOTE: basically a duplicate of both the arguments to this function and to the uvc-control constructor.
+				const getFunctionArguments: GetFunctionArguments = {
+					address,
+					product,
+					vendor,
+				};
 
-				// NOTE: relies on uvc-control internals.
-				// NOTE: may rely on user locale.
-				const guessThatUVCDeviceWasNotFound = typeof error.name === "string"
-				&& error.name === "TypeError"
-				&& typeof error.message === "string"
-				&& error.message === "Cannot read property 'interfaces' of undefined";
-
-				if (guessThatUVCDeviceWasNotFound) {
-				// NOTE: assuming that there was no UVC device available for this configuration.
-				// NOTE: basically a duplicate of both the arguments to this function and to the uvc-control constructor.
-					const functionArguments = {
-						address,
-						product,
-						vendor,
-					};
-
-					errorMessage = `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(functionArguments)}`;
-				} else {
-					errorMessage = `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
-				}
-
-				errorMessage += ` (${JSON.stringify(String(error))})`;
-
-				const wrappedError = new WrappedError(error, errorMessage);
+				const wrappedError = this.createWrappedError(error, getFunctionArguments, constructorOptions);
 
 				throw wrappedError;
 			}
 
 			throw error;
 		}
+	}
+
+	private createWrappedError(error: ReadonlyDeep<Error>, getFunctionArguments: ReadonlyDeep<GetFunctionArguments>, constructorOptions: ReadonlyDeep<ConstructorOptions>) {
+		let errorMessage = null;
+
+		// NOTE: relies on uvc-control internals.
+		// NOTE: may rely on user locale.
+		const guessThatUVCDeviceWasNotFound = typeof error.name === "string"
+			&& error.name === "TypeError"
+			&& typeof error.message === "string"
+			&& error.message === "Cannot read property 'interfaces' of undefined";
+
+		errorMessage = guessThatUVCDeviceWasNotFound ? `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(getFunctionArguments)}` : `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
+
+		errorMessage += ` (${JSON.stringify(String(error))})`;
+
+		const wrappedError = new WrappedError(error, errorMessage);
+
+		return wrappedError;
 	}
 }

@@ -19,23 +19,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 declare module "uvc-control" {
 	// TODO: move type declarations to uvc-control.
 	import UvcControlModule from "uvc-control";
+	import {
+		ReadonlyDeep,
+	} from "type-fest";
+
+	// eslint-disable-next-line import/no-extraneous-dependencies
 	import usb from "usb";
 
 	export default class Camera {
+		public static readonly REQUEST: ReadonlyDeep<RequestTypes>;
+		public static readonly controls: ReadonlyDeep<CameraControls>;
+
 		public readonly supportedControls: readonly ControlName[];
 		public readonly device: usb.Device;
 
-		public static readonly REQUEST: Readonly<RequestTypes>;
-		public static readonly controls: Readonly<CameraControls>;
-
 		constructor(options: ConstructorOptions);
 
-		public static discover: () => Promise<readonly UvcDevice[]>;
+		public static discover(): Promise<readonly UvcDevice[]>;
 
-		get: (name: ControlName) => Promise<Readonly<ControlValues>>;
-		range: (name: ControlName) => Promise<Readonly<ControlRange>>;
-		set: (name: ControlName, ...values: readonly ControlValue[]) => Promise<readonly number[]>;
-		close: () => Promise<void>;
+		get(name: ControlName): Promise<ReadonlyDeep<ControlValues>>;
+		range(name: ControlName): Promise<ReadonlyDeep<ControlRange>>;
+		set(name: ControlName, ...values: readonly ControlValue[]): Promise<readonly number[]>;
+		close(): Promise<void>;
 	}
 
 	export type UvcControl = typeof Camera;
@@ -60,8 +65,8 @@ declare module "uvc-control" {
 
 	export interface ConstructorOptions {
 		readonly deviceAddress?: number;
-		readonly product?: number;
-		readonly vendor?: number;
+		readonly pid?: number;
+		readonly vid?: number;
 	}
 
 	export interface CameraControl {

@@ -17,10 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
+	ReadonlyDeep,
+} from "type-fest";
+import {
 	ControlValues,
 } from "uvc-control";
 
-export default function flattenControlValues(valueObject: Readonly<ControlValues>): number | readonly number[] {
+export default function flattenControlValues(valueObject: ReadonlyDeep<ControlValues>): number | readonly number[] {
 	const values = Object.values(valueObject);
 	const firstValue = values[0];
 

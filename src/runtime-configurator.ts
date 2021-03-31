@@ -28,6 +28,9 @@ import findUp from "find-up";
 import yargs, {
 	Argv,
 } from "yargs";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 
 const getJsonSync = (fileRelativePath: string) => {
 	const resolvedPath = join(__dirname, fileRelativePath);
@@ -54,7 +57,7 @@ export type RuntimeConfiguration = {
 export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
-const getYargsArgv = (): Readonly<Argv["argv"]> => {
+const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
 	const packageJson = getJsonSync("../package.json");
 	const appBinaryName = Object.keys(packageJson.bin)[0];
 	const appDescription: string = packageJson.description;
@@ -190,11 +193,18 @@ const getYargsArgv = (): Readonly<Argv["argv"]> => {
 	return yargs.argv;
 };
 
-// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-const mapArgv = (argv: Readonly<Argv["argv"]>): RuntimeConfiguration => {
+const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
 	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
 	// eslint-disable-next-line @typescript-eslint/dot-notation
-	const cmd = typeof argv["cmd"] === "string" ? argv["cmd"] : (typeof argv._[0] === "string" ? argv._.shift() : null);
+	const cmd = typeof argv["cmd"] === "string"
+		// eslint-disable-next-line @typescript-eslint/dot-notation
+		? argv["cmd"]
+		: (
+			typeof argv._[0] === "string"
+				? argv._[0]
+				: null
+		);
+
 	const {
 		address,
 		control,
