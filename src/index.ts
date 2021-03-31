@@ -59,7 +59,7 @@ const mainAsync = async () => {
 			process.exitCode = 1;
 		});
 
-		const cameraFactory = new CameraFactory(UVCControl);
+		const cameraFactory = new CameraFactory(output, UVCControl);
 		const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
 		const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
 		const uvcDeviceLister = new UvcDeviceLister(UVCControl);

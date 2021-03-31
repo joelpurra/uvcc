@@ -19,21 +19,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 declare module "uvc-control" {
 	// TODO: move type declarations to uvc-control.
 	import UvcControlModule from "uvc-control";
+	import usb from "usb";
 
 	export default class Camera {
+		public readonly supportedControls: readonly ControlName[];
+		public readonly device: usb.Device;
+
 		public static readonly REQUEST: Readonly<RequestTypes>;
 		public static readonly controls: Readonly<CameraControls>;
 
-		public static discover: () => Promise<readonly UvcDevice[]>;
+		constructor(options: ConstructorOptions);
 
-		public readonly supportedControls: readonly ControlName[];
+		public static discover: () => Promise<readonly UvcDevice[]>;
 
 		get: (name: ControlName) => Promise<Readonly<ControlValues>>;
 		range: (name: ControlName) => Promise<Readonly<ControlRange>>;
 		set: (name: ControlName, ...values: readonly ControlValue[]) => Promise<readonly number[]>;
 		close: () => Promise<void>;
-
-		constructor(options: ConstructorOptions);
 	}
 
 	export type UvcControl = typeof Camera;

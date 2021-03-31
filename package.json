@@ -44,6 +44,7 @@
     "@types/bluebird": "^3.5.33",
     "@types/engine-check": "^1.1.0",
     "@types/stream-to-promise": "^2.2.1",
+    "@types/usb": "^1.5.2",
     "@types/yargs": "^16.0.1",
     "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^v3.0.0",
     "husky": "^4.3.8",

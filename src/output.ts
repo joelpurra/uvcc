@@ -25,11 +25,15 @@ export default class Output {
 	}
 
 	normal(...args: readonly unknown[]): void {
-		this.stdout(...args);
+		this.consoleLog(...args);
 	}
 
 	error(...args: readonly unknown[]): void {
-		this.stderr(...args);
+		this.consoleError(...args);
+	}
+
+	warning(...args: readonly unknown[]): void {
+		this.consoleWarn(...args);
 	}
 
 	verbose(...args: readonly unknown[]): void {
@@ -37,16 +41,21 @@ export default class Output {
 			return undefined;
 		}
 
-		this.stderr(...args);
+		this.consoleError(...args);
 	}
 
-	private stdout(...args: readonly unknown[]) {
+	private consoleLog(...args: readonly unknown[]) {
 		// eslint-disable-next-line no-console
 		console.log(...args);
 	}
 
-	private stderr(...args: readonly unknown[]) {
+	private consoleError(...args: readonly unknown[]) {
 		// eslint-disable-next-line no-console
 		console.error(...args);
+	}
+
+	private consoleWarn(...args: readonly unknown[]) {
+		// eslint-disable-next-line no-console
+		console.warn(...args);
 	}
 }
