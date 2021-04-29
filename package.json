@@ -16,6 +16,8 @@
     "build": "tsc",
     "rebuild": "npm run --silent clean && npm run --silent build",
     "build:watch": "tsc --watch",
+    "debug:run": "node --inspect ./dist/index.js",
+    "debug:run:break": "node --inspect-brk ./dist/index.js",
     "test": "npm run --silent lint",
     "lint": "npm run --silent lint:xo && npm run --silent lint:prettier && npm run --silent lint:copyright",
     "lint:fix": "npm run --silent lint:xo:fix && npm run --silent lint:prettier:fix",
