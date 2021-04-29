@@ -29,6 +29,13 @@ node ./dist/index.js export
 node ./dist/index.js get absolute_zoom
 
 node ./dist/index.js set absolute_zoom 120
+
+# Start debugging.
+# Use the Node.js inspector built-in to Chromium-based browsers.
+npm run --silent debug:run:break
+
+# Use -- to separate the npm command from uvcc arguments.
+npm run --silent debug:run:break -- export
 ```
 
 ## Todo
