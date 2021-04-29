@@ -2,6 +2,12 @@
 
 See full list of commits for details.
 
+## v3.0.1
+
+- 08eb9fe Run npm update
+  - Includes fix in [joelpurra/node-uvc-control@8c5f5f4](https://github.com/joelpurra/node-uvc-control/commit/8c5f5f41389bb6a8b4b243115ab92892d633cb55) for [#16](https://github.com/joelpurra/uvcc/issues/16), pin `node-usb` to v1.6.5 due to long delay due when using v1.7.0.
+- b0ad267 Add npm run debug
+
 ## v3.0.0
 
 - e8d7dec Target node.js v12+
