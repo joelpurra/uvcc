@@ -1,0 +1,48 @@
+{
+  "absolute_exposure_time": {
+    "min": 1,
+    "max": 10000
+  },
+  "absolute_focus": {
+    "min": 0,
+    "max": 40
+  },
+  "absolute_pan_tilt": {
+    "min": [
+      -529200,
+      -432000
+    ],
+    "max": [
+      529200,
+      432000
+    ]
+  },
+  "absolute_zoom": {
+    "min": 0,
+    "max": 317
+  },
+  "backlight_compensation": {
+    "min": 0,
+    "max": 10
+  },
+  "brightness": {
+    "min": 30,
+    "max": 255
+  },
+  "contrast": {
+    "min": 0,
+    "max": 10
+  },
+  "saturation": {
+    "min": 0,
+    "max": 200
+  },
+  "sharpness": {
+    "min": 0,
+    "max": 50
+  },
+  "white_balance_temperature": {
+    "min": 2500,
+    "max": 10000
+  }
+}

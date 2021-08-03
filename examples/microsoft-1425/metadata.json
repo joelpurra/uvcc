@@ -1,0 +1,6 @@
+{
+  "node": "v16.6.0",
+  "npm": "7.20.3",
+  "uname": "Darwin MacBook-Pro 20.5.0 Darwin Kernel Version 20.5.0: Sat May  8 05:10:33 PDT 2021; root:xnu-7195.121.3~9/RELEASE_X86_64 x86_64",
+  "uvcc": "3.0.1"
+}
