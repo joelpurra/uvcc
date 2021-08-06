@@ -75,12 +75,16 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 	assert(typeof packageJsonResult !== "undefined");
 
 	const {
-		bin, description, homepage,
+		bin,
+		description,
+		homepage,
+		version,
 	} = packageJsonResult.packageJson;
 
 	assert(typeof bin === "object");
 	assert(typeof description === "string");
 	assert(typeof homepage === "string");
+	assert(!version.startsWith("v"));
 
 	const appBinaryName = Object.keys(bin)[0];
 
@@ -123,6 +127,7 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 			return fromExplicitConfigFile;
 		})
 		.env(appBinaryName.toUpperCase())
+		.version(`v${version}`)
 		.usage(`${chalk.bold("$0")}: ${description}`)
 		.command("get <control>", "Get current control value.", (yargsToApplyTo) => {
 			yargsToApplyTo

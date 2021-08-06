@@ -2,6 +2,10 @@
 
 See full list of commits for details.
 
+## v4.0.1
+
+- ccf5e05 Fix `--version` flag
+
 ## v4.0.0
 
 - 77757f0 Switch to ESM
