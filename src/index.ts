@@ -45,7 +45,7 @@ import UvcDeviceLister from "./uvc-device-lister";
 const mainAsync = async () => {
 	try {
 		// NOTE: ignoring unhandled rejections and exceptions, as there is (practically) nothing to gracefully shut down.
-		const runtimeConfig = runtimeConfigurator();
+		const runtimeConfig = await runtimeConfigurator();
 		const output = new Output(runtimeConfig.verbose);
 
 		process.on("unhandledRejection", (...args: readonly unknown[]) => {

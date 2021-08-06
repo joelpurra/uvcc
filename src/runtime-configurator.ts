@@ -57,7 +57,7 @@ export type RuntimeConfiguration = {
 export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
-const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
+const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 	const packageJson = getJsonSync("../package.json");
 	const appBinaryName = Object.keys(packageJson.bin)[0];
 	const appDescription: string = packageJson.description;
@@ -85,11 +85,12 @@ const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
 
 		fromImplicitConfigFile = configFromNearestConfigPath;
 	}
+	const parserRoot: Argv = yargs(process.argv.slice(2));
 
 	/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
-	yargs
+	const parser = parserRoot
 		.strict()
-		.wrap(yargs.terminalWidth())
+		.wrap(parserRoot.terminalWidth())
 		.config(fromImplicitConfigFile)
 		.config("config", "Load command arguments from a JSON file.", (argumentConfigPath) => {
 			const fromExplicitConfigFile = argumentConfigPath ? getJsonSync(argumentConfigPath) : {};
@@ -190,17 +191,15 @@ const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
 		.epilogue(epilogue);
 	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
-	return yargs.argv;
+	return parser.parseAsync();
 };
 
-const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
+const mapArgv = async (argv: ReadonlyDeep<Argv["argv"]>): Promise<RuntimeConfiguration> => {
 	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
-	// eslint-disable-next-line @typescript-eslint/dot-notation
-	const cmd = typeof argv["cmd"] === "string"
-		// eslint-disable-next-line @typescript-eslint/dot-notation
+	const cmd = "cmd" in argv && typeof argv["cmd"] === "string"
 		? argv["cmd"]
 		: (
-			typeof argv._[0] === "string"
+			"_" in argv && typeof argv._[0] === "string"
 				? argv._[0]
 				: null
 		);
@@ -213,7 +212,7 @@ const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
 		value2,
 		vendor,
 		verbose,
-	} = argv;
+	} = argv as Record<string, unknown>;
 
 	assert(typeof address === "number");
 	assert(typeof cmd === "string");
@@ -246,9 +245,9 @@ const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
 	return mappedArgv;
 };
 
-export default function runtimeConfigurator(): RuntimeConfiguration {
-	const rawArgv = getYargsArgv();
-	const argv = mapArgv(rawArgv);
+export default async function runtimeConfigurator(): Promise<RuntimeConfiguration> {
+	const rawArgv = await getYargsArgv();
+	const argv = await mapArgv(rawArgv);
 
 	return argv;
 }
