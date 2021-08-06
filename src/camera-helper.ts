@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
 import Bluebird from "bluebird";
+import assert from "node:assert";
 import {
 	ReadonlyDeep,
 } from "type-fest";
@@ -28,12 +28,12 @@ import Camera, {
 	ControlValues,
 } from "uvc-control";
 
-import CameraControlHelper from "./camera-control-helper";
-import Output from "./output";
+import CameraControlHelper from "./camera-control-helper.js";
+import Output from "./output.js";
 import {
 	UvccControls,
-} from "./types/controls";
-import isUvccControlValue from "./utilities/is-uvcc-control-value";
+} from "./types/controls.js";
+import isUvccControlValue from "./utilities/is-uvcc-control-value.js";
 
 export type ControlsValues = Record<string, ControlValues>;
 export type ControlRanges = Record<string, ControlRange>;
@@ -137,6 +137,7 @@ export default class CameraHelper {
 
 		await Bluebird.map(
 			controlNames,
+			// eslint-disable-next-line unicorn/no-array-method-this-argument
 			async (controlName) => {
 				const controlValues = configuration[controlName];
 

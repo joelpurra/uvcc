@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import assert from "node:assert";
 import {
 	ReadonlyDeep,
 } from "type-fest";
@@ -25,12 +25,12 @@ import {
 	ControlRange,
 } from "uvc-control";
 
-import CameraHelper from "../camera-helper";
+import CameraHelper from "../camera-helper.js";
 import {
 	Command,
 	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentNames,
-} from "../types/command";
+} from "../types/command.js";
 
 export default class RangeCommand implements Command {
 	constructor() {

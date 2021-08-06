@@ -16,20 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
 import arrayNonUniq from "array-non-uniq";
 import filterObject from "filter-obj";
+import assert from "node:assert";
 import sortKeys from "sort-keys";
+import {
+	ReadonlyDeep,
+} from "type-fest";
 import Camera,
 {
 	CameraControl,
 	UvcControl,
 } from "uvc-control";
 
-import {
-	ReadonlyDeep,
-} from "type-fest";
-import WrappedError from "./utilities/wrapped-error";
+import WrappedError from "./utilities/wrapped-error.js";
 
 interface ControlFlags {
 	readonly isGettable: boolean;

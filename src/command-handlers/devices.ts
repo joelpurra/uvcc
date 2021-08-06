@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import assert from "node:assert";
 
 import {
 	Command,
 	CommandHandlerArgumentNames,
-} from "../types/command";
-import UvcDeviceLister from "../uvc-device-lister";
+} from "../types/command.js";
+import UvcDeviceLister from "../uvc-device-lister.js";
 
 export default class DevicesCommand implements Command {
 	constructor(private readonly uvcDeviceLister: UvcDeviceLister) {

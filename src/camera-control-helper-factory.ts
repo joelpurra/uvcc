@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import assert from "node:assert";
 import {
 	ReadonlyDeep,
 } from "type-fest";
@@ -24,7 +24,7 @@ import Camera, {
 	UvcControl,
 } from "uvc-control";
 
-import CameraControlHelperClass from "./camera-control-helper";
+import CameraControlHelperClass from "./camera-control-helper.js";
 
 export default class CameraControlHelperFactory {
 	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>, private readonly CameraControlHelper: typeof CameraControlHelperClass) {

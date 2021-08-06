@@ -16,20 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
 import Bluebird from "bluebird";
+import assert from "node:assert";
+import process from "node:process";
 import streamToPromise from "stream-to-promise";
 import {
 	ReadonlyDeep,
 } from "type-fest";
 
-import CameraHelper from "../camera-helper";
+import CameraHelper from "../camera-helper.js";
 import {
 	Command,
 	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentNames,
-} from "../types/command";
-import isUvccControls from "../utilities/is-uvcc-controls";
+} from "../types/command.js";
+import isUvccControls from "../utilities/is-uvcc-controls.js";
 
 export default class ImportCommand implements Command {
 	constructor() {

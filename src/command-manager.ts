@@ -16,24 +16,24 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import assert from "node:assert";
 import {
 	ReadonlyDeep,
 } from "type-fest";
 import Camera from "uvc-control";
 
-import CameraFactory from "./camera-factory";
-import CameraHelperFactory from "./camera-helper-factory";
-import CommandHandlers from "./command-handlers";
-import Output from "./output";
+import CameraFactory from "./camera-factory.js";
+import CameraHelperFactory from "./camera-helper-factory.js";
+import CommandHandlers from "./command-handlers.js";
+import Output from "./output.js";
 import {
 	RuntimeConfiguration,
-} from "./runtime-configurator";
+} from "./runtime-configurator.js";
 import {
 	CommandHandlerArgumentCameraHelper,
 	CommandHandlerArgumentTypes,
 	CommandHandlerLookup,
-} from "./types/command";
+} from "./types/command.js";
 
 export default class CommandManager {
 	constructor(private readonly output: Output, private readonly cameraFactory: CameraFactory, private readonly cameraHelperFactory: CameraHelperFactory, private readonly commandHandlers: CommandHandlers) {
