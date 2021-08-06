@@ -16,28 +16,38 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
-import fs from "fs";
-import {
-	join,
-} from "path";
-import {
-	bold, dim, red,
-} from "chalk";
+import chalk from "chalk";
 import findUp from "find-up";
+import assert from "node:assert";
+import fs from "node:fs";
+import {
+	dirname,
+	join,
+} from "node:path";
+import process from "node:process";
+import {
+	fileURLToPath,
+} from "node:url";
+import {
+	readPackageUpAsync,
+} from "read-pkg-up";
+import {
+	JsonValue,
+	ReadonlyDeep,
+} from "type-fest";
 import yargs, {
 	Argv,
 } from "yargs";
-import {
-	ReadonlyDeep,
-} from "type-fest";
 
-const getJsonSync = (fileRelativePath: string) => {
+// TODO: load package.json at compile time, use process.cwd() for resolving other paths.
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const getJsonSync = (fileRelativePath: string): JsonValue => {
 	const resolvedPath = join(__dirname, fileRelativePath);
 
 	try {
 		// eslint-disable-next-line no-sync
-		const json = JSON.parse(fs.readFileSync(resolvedPath).toString());
+		const json = JSON.parse(fs.readFileSync(resolvedPath).toString()) as JsonValue;
 
 		return json;
 	} catch (error: unknown) {
@@ -57,18 +67,26 @@ export type RuntimeConfiguration = {
 export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
-const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
-	const packageJson = getJsonSync("../package.json");
-	const appBinaryName = Object.keys(packageJson.bin)[0];
-	const appDescription: string = packageJson.description;
-	const {
-		homepage,
-	} = packageJson;
+const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
+	const packageJsonResult = await readPackageUpAsync({
+		cwd: __dirname,
+	});
 
-	assert(typeof appBinaryName === "string");
+	assert(typeof packageJsonResult !== "undefined");
+
+	const {
+		bin, description, homepage,
+	} = packageJsonResult.packageJson;
+
+	assert(typeof bin === "object");
+	assert(typeof description === "string");
 	assert(typeof homepage === "string");
 
-	const epilogue = dim`uvcc Copyright © 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
+	const appBinaryName = Object.keys(bin)[0];
+
+	assert(typeof appBinaryName === "string");
+
+	const epilogue = chalk.dim`uvcc Copyright © 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
 	let fromImplicitConfigFile = null;
 
@@ -84,20 +102,28 @@ const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
 		const configFromNearestConfigPath = nearestConfigPath ? getJsonSync(nearestConfigPath) : {};
 
 		fromImplicitConfigFile = configFromNearestConfigPath;
+
+		assert(typeof fromImplicitConfigFile === "object");
+		assert(fromImplicitConfigFile !== null);
 	}
 
+	const parserRoot: Argv = yargs(process.argv.slice(2));
+
 	/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
-	yargs
+	const parser = parserRoot
 		.strict()
-		.wrap(yargs.terminalWidth())
+		.wrap(parserRoot.terminalWidth())
 		.config(fromImplicitConfigFile)
 		.config("config", "Load command arguments from a JSON file.", (argumentConfigPath) => {
 			const fromExplicitConfigFile = argumentConfigPath ? getJsonSync(argumentConfigPath) : {};
 
+			assert(typeof fromExplicitConfigFile === "object");
+			assert(fromExplicitConfigFile !== null);
+
 			return fromExplicitConfigFile;
 		})
 		.env(appBinaryName.toUpperCase())
-		.usage(`${bold("$0")}: ${appDescription}`)
+		.usage(`${chalk.bold("$0")}: ${description}`)
 		.command("get <control>", "Get current control value.", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
@@ -157,50 +183,48 @@ const getYargsArgv = (): ReadonlyDeep<Argv["argv"]> => {
 			describe: "Enable verbose output.",
 			type: "boolean",
 		})
-		.demandCommand(1, 1, red("Please provide a single command."), red("Please provide a single command."))
+		.demandCommand(1, 1, chalk.red("Please provide a single command."), chalk.red("Please provide a single command."))
 		.group(
 			[
 				"vendor",
 				"product",
 				"address",
 			],
-			bold("Device selection for multi-camera setups.") + "\n  " + dim("Numbers in hex (0x000) or decimal (0000) format."))
+			chalk.bold("Device selection for multi-camera setups.") + "\n  " + chalk.dim("Numbers in hex (0x000) or decimal (0000) format."))
 		.help()
 		.example("", "")
-		.example(bold("Basic usage:"), "")
+		.example(chalk.bold("Basic usage:"), "")
 		.example("$0 controls", "Available controls for the camera.")
 		.example("$0 set auto_white_balance_temperature 0", "Turn off automatic color correction.")
 		.example("$0 set saturation 64", "Low color saturation (near grayscale).")
 		.example("$0 ranges", "List possible control ranges.")
 		.example("$0 set absolute_zoom 200", "Zoom in.")
 		.example("", "")
-		.example(bold("Automate config:"), "")
-		.example(dim("- Not all controls can be imported."), "")
-		.example(dim("- Control order matters."), "")
+		.example(chalk.bold("Automate config:"), "")
+		.example(chalk.dim("- Not all controls can be imported."), "")
+		.example(chalk.dim("- Control order matters."), "")
 		.example("$0 export > my-uvcc-export.json", "Save to file.")
 		.example("cat my-uvcc-export.json | $0 import", "Load from file.")
 		.example("", "")
-		.example(bold("Target a specific device:"), "")
-		.example(dim("- Only useful for multi-camera setups."), "")
-		.example(dim("- For same-model cameras, also specify address."), "")
-		.example(dim("- Alt. use system USB settings to find devices."), "")
+		.example(chalk.bold("Target a specific device:"), "")
+		.example(chalk.dim("- Only useful for multi-camera setups."), "")
+		.example(chalk.dim("- For same-model cameras, also specify address."), "")
+		.example(chalk.dim("- Alt. use system USB settings to find devices."), "")
 		.example("$0 devices", "List available cameras.")
 		.example("sudo $0 devices", "Avoid LIBUSB_ERROR_ACCESS.")
 		.example("$0 --vendor 0x46d --product 0x82d export", "")
 		.epilogue(epilogue);
 	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
-	return yargs.argv;
+	return parser.parseAsync();
 };
 
-const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
+const mapArgv = async (argv: ReadonlyDeep<Argv["argv"]>): Promise<RuntimeConfiguration> => {
 	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
-	// eslint-disable-next-line @typescript-eslint/dot-notation
-	const cmd = typeof argv["cmd"] === "string"
-		// eslint-disable-next-line @typescript-eslint/dot-notation
+	const cmd = "cmd" in argv && typeof argv["cmd"] === "string"
 		? argv["cmd"]
 		: (
-			typeof argv._[0] === "string"
+			"_" in argv && typeof argv._[0] === "string"
 				? argv._[0]
 				: null
 		);
@@ -213,7 +237,7 @@ const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
 		value2,
 		vendor,
 		verbose,
-	} = argv;
+	} = argv as Record<string, unknown>;
 
 	assert(typeof address === "number");
 	assert(typeof cmd === "string");
@@ -246,9 +270,9 @@ const mapArgv = (argv: ReadonlyDeep<Argv["argv"]>): RuntimeConfiguration => {
 	return mappedArgv;
 };
 
-export default function runtimeConfigurator(): RuntimeConfiguration {
-	const rawArgv = getYargsArgv();
-	const argv = mapArgv(rawArgv);
+export default async function runtimeConfigurator(): Promise<RuntimeConfiguration> {
+	const rawArgv = await getYargsArgv();
+	const argv = await mapArgv(rawArgv);
 
 	return argv;
 }

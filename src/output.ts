@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import assert from "node:assert";
 
 export default class Output {
 	constructor(public enableVerboseOutput: boolean) {

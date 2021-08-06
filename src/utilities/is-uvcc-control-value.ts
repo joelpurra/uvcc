@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import {
 	UvccControlValue,
-} from "../types/controls";
+} from "../types/controls.js";
 
 export default function isUvccControlValue(controlValues: unknown): controlValues is UvccControlValue {
 	return typeof controlValues === "number"

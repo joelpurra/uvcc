@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import CameraHelper from "../camera-helper";
+import CameraHelper from "../camera-helper.js";
 import {
 	RuntimeConfigurationKeys,
 	RuntimeConfigurationTypes,
-} from "../runtime-configurator";
+} from "../runtime-configurator.js";
 
 export type CommandName = string;
 

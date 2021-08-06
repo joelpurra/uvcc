@@ -1,9 +1,10 @@
 {
   "name": "uvcc",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "USB Video Class (UVC) device configurator for the command line (CLI). Used for webcams, camcorders, etcetera.",
   "homepage": "https://joelpurra.com/projects/uvcc/",
-  "main": "./dist/index.js",
+  "type": "module",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
     "uvcc": "./dist/index.js"
@@ -31,32 +32,33 @@
   "dependencies": {
     "array-non-uniq": "^1.0.0",
     "bluebird": "^3.7.2",
-    "chalk": "^4.1.1",
+    "chalk": "^4.1.2",
     "engine-check": "^1.0.1",
     "filter-obj": "^2.0.2",
     "find-up": "^5.0.0",
     "map-obj": "^4.2.1",
-    "sort-keys": "^4.2.0",
+    "read-pkg-up": "^8.0.0",
+    "sort-keys": "^5.0.0",
     "stream-to-promise": "^3.0.0",
     "uvc-control": "github:joelpurra/node-uvc-control#v2",
-    "yargs": "^16.2.0"
+    "yargs": "^17.1.0"
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^1.0.2",
-    "@types/bluebird": "^3.5.33",
-    "@types/engine-check": "^1.1.0",
+    "@types/bluebird": "^3.5.36",
+    "@types/engine-check": "^1.1.1",
     "@types/stream-to-promise": "^2.2.1",
-    "@types/usb": "^1.5.2",
-    "@types/yargs": "^16.0.1",
-    "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^v3.0.0",
+    "@types/usb": "^1.5.3",
+    "@types/yargs": "^17.0.2",
+    "eslint-config-joelpurra": "github:joelpurra/eslint-config-joelpurra#semver:^v6.0.0",
     "husky": "^4.3.8",
     "rimraf": "^3.0.2",
-    "type-fest": "^0.20.2",
-    "typescript": "^4.2.4",
-    "xo": "^0.38.2"
+    "type-fest": "^2.0.0",
+    "typescript": "^4.3.5",
+    "xo": "^0.43.0"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": "^12.20.0 || ^14.13.1 || ^16.0.0"
   },
   "keywords": [
     "usb",

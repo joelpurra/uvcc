@@ -16,15 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
-import Camera from "uvc-control";
+import assert from "node:assert";
 import {
 	ReadonlyDeep,
 } from "type-fest";
+import Camera from "uvc-control";
 
-import CameraControlHelperFactory from "./camera-control-helper-factory";
-import CameraHelperClass from "./camera-helper";
-import Output from "./output";
+import CameraControlHelperFactory from "./camera-control-helper-factory.js";
+import CameraHelperClass from "./camera-helper.js";
+import Output from "./output.js";
 
 export default class CameraHelperFactory {
 	constructor(private readonly output: ReadonlyDeep<Output>, private readonly cameraControlHelperFactory: ReadonlyDeep<CameraControlHelperFactory>, private readonly CameraHelper: typeof CameraHelperClass) {

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "assert";
+import assert from "node:assert";
 import {
 	ReadonlyDeep,
 } from "type-fest";
@@ -24,10 +24,10 @@ import Camera, {
 	ConstructorOptions,
 	UvcControl,
 } from "uvc-control";
-import Output from "./output";
-import toFormattedHex from "./utilities/to-formatted-hex";
 
-import WrappedError from "./utilities/wrapped-error";
+import Output from "./output.js";
+import toFormattedHex from "./utilities/to-formatted-hex.js";
+import WrappedError from "./utilities/wrapped-error.js";
 
 interface GetFunctionArguments {
 	address: number | null;

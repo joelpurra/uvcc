@@ -18,8 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import {
 	UvccControls,
-} from "../types/controls";
-import isUvccControlValue from "./is-uvcc-control-value";
+} from "../types/controls.js";
+import isUvccControlValue from "./is-uvcc-control-value.js";
 
 export default function isUvccControls(controlValues: unknown): controlValues is UvccControls {
 	return typeof controlValues === "object"
