@@ -2,6 +2,12 @@
 
 See full list of commits for details.
 
+## v4.0.0
+
+- 77757f0 Switch to ESM
+  - Modernizes code to use [Node.js ECMAScript modules](https://nodejs.org/api/esm.html).
+  - Targets [current stable Node.js versions](https://github.com/nodejs/Release) (basically v12, v14, v16) which have ESM support.
+
 ## v3.0.1
 
 - 08eb9fe Run npm update
