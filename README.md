@@ -36,6 +36,8 @@ npm install --global uvcc
 
 Or use [`npx`](https://www.npmjs.com/package/npx) to execute with `npx uvcc`.
 
+On Linux, you may need to [change device access permissions](./USAGE.md#linux).
+
 ## Features
 
 - List available UVC cameras and camera controls.
