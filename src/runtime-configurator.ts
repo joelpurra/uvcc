@@ -31,7 +31,7 @@ import {
 	fileURLToPath,
 } from "node:url";
 import {
-	readPackageUpAsync,
+	readPackageUp,
 } from "read-pkg-up";
 import {
 	JsonValue,
@@ -70,7 +70,7 @@ export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
 const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
-	const packageJsonResult = await readPackageUpAsync({
+	const packageJsonResult = await readPackageUp({
 		cwd: __dirname,
 	});
 

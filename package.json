@@ -37,7 +37,7 @@
     "filter-obj": "^3.0.0",
     "find-up": "^6.2.0",
     "map-obj": "^5.0.0",
-    "read-pkg-up": "^8.0.0",
+    "read-pkg-up": "^9.0.0",
     "sort-keys": "^5.0.0",
     "stream-to-promise": "^3.0.0",
     "uvc-control": "github:joelpurra/node-uvc-control#v2",
