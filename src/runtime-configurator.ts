@@ -17,7 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import chalk from "chalk";
-import findUp from "find-up";
+import {
+	findUpSync,
+} from "find-up";
 import assert from "node:assert";
 import fs from "node:fs";
 import {
@@ -99,7 +101,7 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 	if (hasConfigFlag) {
 		fromImplicitConfigFile = {};
 	} else {
-		const nearestConfigPath = findUp.sync([
+		const nearestConfigPath = findUpSync([
 			`.${appBinaryName}rc`,
 			`.${appBinaryName}rc.json`,
 		]);
