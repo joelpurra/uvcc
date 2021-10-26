@@ -44,7 +44,7 @@
     "yargs": "^17.1.0"
   },
   "devDependencies": {
-    "@sindresorhus/tsconfig": "^1.0.2",
+    "@sindresorhus/tsconfig": "^2.0.0",
     "@types/bluebird": "^3.5.36",
     "@types/engine-check": "^1.1.1",
     "@types/stream-to-promise": "^2.2.1",

@@ -30,7 +30,7 @@ export default class WrappedError extends Error {
 		assert(this.innerError instanceof Error);
 	}
 
-	toString(): string {
+	override toString(): string {
 		// eslint-disable-next-line @typescript-eslint/no-base-to-string
 		return `${super.toString()} (${JSON.stringify(String(this.innerError))})`;
 	}
