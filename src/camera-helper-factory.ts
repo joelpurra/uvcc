@@ -27,7 +27,12 @@ import CameraHelperClass from "./camera-helper.js";
 import Output from "./output.js";
 
 export default class CameraHelperFactory {
-	constructor(private readonly output: ReadonlyDeep<Output>, private readonly cameraControlHelperFactory: ReadonlyDeep<CameraControlHelperFactory>, private readonly CameraHelper: typeof CameraHelperClass) {
+	constructor(
+		private readonly output: ReadonlyDeep<Output>,
+		private readonly cameraControlHelperFactory: ReadonlyDeep<CameraControlHelperFactory>,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		private readonly CameraHelper: typeof CameraHelperClass,
+	) {
 		assert.strictEqual(arguments.length, 3);
 		assert(typeof this.output === "object");
 		assert(typeof this.cameraControlHelperFactory === "object");

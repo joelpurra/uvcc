@@ -39,12 +39,17 @@ interface ControlFlags {
 
 type ControlsFlags = Record<string, ControlFlags>;
 
+/* eslint-disable @typescript-eslint/member-ordering */
 export default class CameraControlHelper {
 	private cachedMappedSupportedControls: ReadonlyDeep<ControlsFlags> | null = null;
 
-	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>, private readonly camera: ReadonlyDeep<Camera>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		private readonly UvcControl: ReadonlyDeep<UvcControl>,
+		private readonly camera: ReadonlyDeep<Camera>,
+	) {
 		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.UVCControl === "function");
+		assert(typeof this.UvcControl === "function");
 		assert(typeof this.camera === "object");
 	}
 
@@ -74,28 +79,28 @@ export default class CameraControlHelper {
 
 	private isGettableControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
-		return control.requests.includes(this.UVCControl.REQUEST.GET_CUR);
+		return control.requests.includes(this.UvcControl.REQUEST.GET_CUR);
 	}
 
 	private isRangedControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
-		return control.requests.includes(this.UVCControl.REQUEST.GET_MIN)
-			&& control.requests.includes(this.UVCControl.REQUEST.GET_MAX);
+		return control.requests.includes(this.UvcControl.REQUEST.GET_MIN)
+			&& control.requests.includes(this.UvcControl.REQUEST.GET_MAX);
 	}
 
 	private isSettableControl(control: ReadonlyDeep<CameraControl>) {
 		// NOTE: relies on uvc-control internals.
-		return control.requests.includes(this.UVCControl.REQUEST.SET_CUR)
+		return control.requests.includes(this.UvcControl.REQUEST.SET_CUR)
 			|| (
 				// TODO: treat optionally settable controls separately?
 				Array.isArray(control.optional_requests)
-					&& control.optional_requests.includes(this.UVCControl.REQUEST.SET_CUR)
+				&& control.optional_requests.includes(this.UvcControl.REQUEST.SET_CUR)
 			);
 	}
 
 	private async mapSupportedControls() {
 		const supportedControls = this.camera.supportedControls
-			.map((supportedControlName) => this.UVCControl.controls[supportedControlName])
+			.map((supportedControlName) => this.UvcControl.controls[supportedControlName])
 			// TODO: proper ducktyping function.
 			.filter((t): t is CameraControl => Boolean(t));
 
@@ -172,3 +177,4 @@ export default class CameraControlHelper {
 		return filterObject(controls, (_key, control) => control.isSettable);
 	}
 }
+/* eslint-enable @typescript-eslint/member-ordering */

@@ -25,6 +25,7 @@ import {
 export type CommandName = string;
 
 // NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const CommandHandlerArgumentCameraHelper = "cameraHelper";
 export type CommandHandlerArgumentNames = RuntimeConfigurationKeys | typeof CommandHandlerArgumentCameraHelper;
 export type CommandHandlerArgumentTypes = RuntimeConfigurationTypes | CameraHelper;

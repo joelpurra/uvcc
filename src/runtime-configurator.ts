@@ -17,7 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import chalk from "chalk";
-import findUp from "find-up";
+import {
+	findUpSync,
+} from "find-up";
 import assert from "node:assert";
 import fs from "node:fs";
 import {
@@ -29,7 +31,7 @@ import {
 	fileURLToPath,
 } from "node:url";
 import {
-	readPackageUpAsync,
+	readPackageUp,
 } from "read-pkg-up";
 import {
 	JsonValue,
@@ -68,7 +70,7 @@ export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
 const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
-	const packageJsonResult = await readPackageUpAsync({
+	const packageJsonResult = await readPackageUp({
 		cwd: __dirname,
 	});
 
@@ -99,7 +101,7 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 	if (hasConfigFlag) {
 		fromImplicitConfigFile = {};
 	} else {
-		const nearestConfigPath = findUp.sync([
+		const nearestConfigPath = findUpSync([
 			`.${appBinaryName}rc`,
 			`.${appBinaryName}rc.json`,
 		]);

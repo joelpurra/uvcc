@@ -24,7 +24,8 @@ import {
 import Output from "./output.js";
 import {
 	CommandHandlerArgumentNames,
-	CommandName, Commands,
+	CommandName,
+	Commands,
 } from "./types/command.js";
 
 export default class CommandHandlers {
