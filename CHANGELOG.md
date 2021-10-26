@@ -2,6 +2,16 @@
 
 See full list of commits for details.
 
+## v5.0.0
+
+- a2bab40 Target Node.js v12, v14, v16, v17
+  - Fixes [#18](https://github.com/joelpurra/uvcc/issues/18).
+- ebea941 Upgrade package-lock.json
+  - Includes an upgrade to [`node-usb` v1.8.0](https://github.com/node-usb/node-usb/releases/tag/v1.8.0) via [the forked `node-uvc-control` v2](https://github.com/joelpurra/node-uvc-control/commit/42d1c526719f064a5bd4edfeab457a81687f69aa), which breaks [#16](https://github.com/joelpurra/uvcc/issues/16) (delay at program exit) again.
+  - The alternative is that `uvcc` doesn't work at all on the [current Node.js v17](https://github.com/nodejs/Release).
+  - See also [node-usb/node-usb#418](https://github.com/node-usb/node-usb/issues/418).
+- Other dependencies also upgraded.
+
 ## v4.0.1
 
 - ccf5e05 Fix `--version` flag
