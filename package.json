@@ -34,7 +34,7 @@
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
     "engine-check": "^1.0.1",
-    "filter-obj": "^2.0.2",
+    "filter-obj": "^3.0.0",
     "find-up": "^5.0.0",
     "map-obj": "^4.2.1",
     "read-pkg-up": "^8.0.0",
