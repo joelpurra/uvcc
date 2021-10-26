@@ -26,6 +26,7 @@ declare module "uvc-control" {
 	// eslint-disable-next-line import/no-extraneous-dependencies
 	import usb from "usb";
 
+	/* eslint-disable @typescript-eslint/member-ordering */
 	export default class Camera {
 		public static readonly REQUEST: ReadonlyDeep<RequestTypes>;
 		public static readonly controls: ReadonlyDeep<CameraControls>;
@@ -42,6 +43,7 @@ declare module "uvc-control" {
 		set(name: ControlName, ...values: readonly ControlValue[]): Promise<readonly number[]>;
 		close(): Promise<void>;
 	}
+	/* eslint-enable @typescript-eslint/member-ordering */
 
 	export type UvcControl = typeof Camera;
 
