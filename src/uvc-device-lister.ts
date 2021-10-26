@@ -32,16 +32,19 @@ export interface MappedUvcDevice {
 }
 
 export default class UvcDeviceLister {
-	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		private readonly UvcControl: ReadonlyDeep<UvcControl>,
+	) {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof this.UVCControl === "function");
+		assert(typeof this.UvcControl === "function");
 	}
 
 	async get(): Promise<readonly MappedUvcDevice[]> {
-		const devices = await this.UVCControl.discover();
+		const devices = await this.UvcControl.discover();
 		const output = devices.map((device) =>
 			({
-				// NOTE: outputting in human-readable "logical" non-alphabetical order.
+			// NOTE: outputting in human-readable "logical" non-alphabetical order.
 				name: device.name,
 				vendor: device.deviceDescriptor.idVendor,
 				// eslint-disable-next-line sort-keys

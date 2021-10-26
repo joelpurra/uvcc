@@ -26,7 +26,7 @@ import process from "node:process";
 import {
 	fileURLToPath,
 } from "node:url";
-import UVCControl from "uvc-control";
+import UvcControl from "uvc-control";
 
 import CameraControlHelper from "./camera-control-helper.js";
 import CameraControlHelperFactory from "./camera-control-helper-factory.js";
@@ -70,10 +70,10 @@ const mainAsync = async () => {
 			process.exitCode = 1;
 		});
 
-		const cameraFactory = new CameraFactory(output, UVCControl);
-		const cameraControlHelperFactory = new CameraControlHelperFactory(UVCControl, CameraControlHelper);
+		const cameraFactory = new CameraFactory(output, UvcControl);
+		const cameraControlHelperFactory = new CameraControlHelperFactory(UvcControl, CameraControlHelper);
 		const cameraHelperFactory = new CameraHelperFactory(output, cameraControlHelperFactory, CameraHelper);
-		const uvcDeviceLister = new UvcDeviceLister(UVCControl);
+		const uvcDeviceLister = new UvcDeviceLister(UvcControl);
 		const commands: Commands = {
 			controls: new ControlsCommand(),
 			devices: new DevicesCommand(uvcDeviceLister),

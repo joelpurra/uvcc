@@ -36,9 +36,13 @@ interface GetFunctionArguments {
 }
 
 export default class CameraFactory {
-	constructor(private readonly output: Output, private readonly UVCControl: UvcControl) {
+	constructor(
+		private readonly output: Output,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		private readonly UvcControl: UvcControl,
+	) {
 		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.UVCControl === "function");
+		assert(typeof this.UvcControl === "function");
 	}
 
 	async get(vendor: number | null, product: number | null, address: number | null): Promise<Camera> {
@@ -57,7 +61,7 @@ export default class CameraFactory {
 		};
 
 		try {
-			const camera = new this.UVCControl(constructorOptions);
+			const camera = new this.UvcControl(constructorOptions);
 
 			if (vendor && vendor !== camera.device.deviceDescriptor.idVendor) {
 				this.output.warning("Camera vendor id mismatch.", "Input", vendor, `(${toFormattedHex(vendor, 4)})`, "Actual", camera.device.deviceDescriptor.idVendor, `(${toFormattedHex(camera.device.deviceDescriptor.idVendor, 4)})`);
@@ -74,7 +78,7 @@ export default class CameraFactory {
 			return camera;
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-			// NOTE: basically a duplicate of both the arguments to this function and to the uvc-control constructor.
+				// NOTE: basically a duplicate of both the arguments to this function and to the uvc-control constructor.
 				const getFunctionArguments: GetFunctionArguments = {
 					address,
 					product,
@@ -95,12 +99,12 @@ export default class CameraFactory {
 
 		// NOTE: relies on uvc-control internals.
 		// NOTE: may rely on user locale.
-		const guessThatUVCDeviceWasNotFound = typeof error.name === "string"
+		const guessThatUvcDeviceWasNotFound = typeof error.name === "string"
 			&& error.name === "TypeError"
 			&& typeof error.message === "string"
 			&& error.message === "Cannot read property 'interfaces' of undefined";
 
-		errorMessage = guessThatUVCDeviceWasNotFound ? `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(getFunctionArguments)}` : `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
+		errorMessage = guessThatUvcDeviceWasNotFound ? `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(getFunctionArguments)}` : `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
 
 		errorMessage += ` (${JSON.stringify(String(error))})`;
 

@@ -27,9 +27,14 @@ import Camera, {
 import CameraControlHelperClass from "./camera-control-helper.js";
 
 export default class CameraControlHelperFactory {
-	constructor(private readonly UVCControl: ReadonlyDeep<UvcControl>, private readonly CameraControlHelper: typeof CameraControlHelperClass) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		private readonly UvcControl: ReadonlyDeep<UvcControl>,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		private readonly CameraControlHelper: typeof CameraControlHelperClass,
+	) {
 		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.UVCControl === "function");
+		assert(typeof this.UvcControl === "function");
 		assert(typeof this.CameraControlHelper === "function");
 	}
 
@@ -37,7 +42,7 @@ export default class CameraControlHelperFactory {
 		assert.strictEqual(arguments.length, 1);
 		assert(typeof camera === "object");
 
-		const cameraControlHelper = new this.CameraControlHelper(this.UVCControl, camera);
+		const cameraControlHelper = new this.CameraControlHelper(this.UvcControl, camera);
 
 		return cameraControlHelper;
 	}
