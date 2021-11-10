@@ -2,6 +2,12 @@
 
 See full list of commits for details.
 
+## v5.0.1
+
+- 3c171b1 Upgrade package-lock.json
+  - Includes [pinning `node-usb` to v1.8.0](https://github.com/node-usb/node-usb/releases/tag/v1.8.0) via [the forked `node-uvc-control` v2](https://github.com/joelpurra/node-uvc-control/commit/d87e551f95d281e6a32f6ad4b379bc7e81ff6273).
+    - Should fix [#19 package errors after node/npm upgrade](https://github.com/joelpurra/uvcc/issues/19).
+
 ## v5.0.0
 
 - a2bab40 Target Node.js v12, v14, v16, v17

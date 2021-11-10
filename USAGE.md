@@ -125,7 +125,6 @@ See additional output examples in [./examples/](./examples/).
 - Note that the order of the imported values matters, as for example automatic white balance needs to be turned off before setting a custom white balance.
 
 ```shell
-# Logitech (0x46d) C920 HD Pro Webcam (0x82d).
 uvcc export
 ```
 
@@ -147,6 +146,50 @@ uvcc export
   "white_balance_temperature": 4675
 }
 ```
+
+## System-specific details
+
+### Linux
+
+User access to hardware devices, such as USB cameras, may be restricted by default on Linux. If, for example, `sudo uvcc devices` lists your camera but `uvcc devices` (without `sudo`) does not, then for ease-of-use you may adjust the device access level.
+
+Below [userspace `/dev`](https://en.wikipedia.org/wiki/Udev) (`udev`) is used to change the access level for a specific device model. Note that relaxing the access level in this way reduces device security.
+
+1. Find your camera model's vendor and product id using, for example, [`lsusb`](https://en.wikipedia.org/wiki/Lspci#lsusb).
+
+   ```shell
+   lsusb
+   ```
+
+   Example output for Logitech (vendor id `046d`) C920 HD Pro Webcam (product id `082d`).
+
+   ```shell
+   Bus 005 Device 013: ID 046d:082d Logitech, Inc. HD Pro Webcam C920
+   ```
+
+1. Create a new `udev` rules file for your UVC camera using your favorite text editor.
+
+   ```shell
+   sudo nano /etc/udev/rules.d/90-uvc-camera.rules
+   ```
+
+1. Add one line for your device by vendor and product id, replacing `046d` and `082d` with the ids for your camera.
+
+   ```text
+   SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="082d", TAG+="uaccess"
+   ```
+
+   If you have more than one camera model, just add more lines.
+
+1. Reload the device rules files after editing, and apply the changes.
+
+   ```shell
+   sudo udevadm control --reload-rules
+   sudo udevadm trigger --action='change'
+   ```
+
+1. Unplug your camera and plug it back in.
+1. Try `uvcc devices` (without `sudo`) and check if your camera is listed.
 
 ---
 
