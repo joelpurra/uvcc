@@ -2,6 +2,13 @@
 
 See full list of commits for details.
 
+## v5.0.2
+
+- 7cc2775 Upgrade [forked uvc-control v2](https://github.com/joelpurra/node-uvc-control)
+  - [Pins `node-usb` to v1.9.2](https://github.com/node-usb/node-usb/releases/tag/v1.9.2) via [the forked `node-uvc-control` v2](https://github.com/joelpurra/node-uvc-control/commit/v2).
+  - Includes an [upstream fix in `node-usb`](https://github.com/node-usb/node-usb/pull/460) for the `uvcc` program exit delay.
+  - Should fix [#20](https://github.com/joelpurra/uvcc/issues/20) and [#22](https://github.com/joelpurra/uvcc/issues/22).
+
 ## v5.0.1
 
 - 3c171b1 Upgrade package-lock.json
