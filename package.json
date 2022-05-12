@@ -32,7 +32,7 @@
   "dependencies": {
     "array-non-uniq": "^1.0.0",
     "bluebird": "^3.7.2",
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.1",
     "engine-check": "^1.0.1",
     "filter-obj": "^3.0.0",
     "find-up": "^6.3.0",
