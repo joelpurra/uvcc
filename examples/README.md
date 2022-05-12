@@ -11,6 +11,7 @@ A small sample of `uvcc` camera control output. See individual subdirectories fo
   - Do not use the full "marketing name", such as "Logitech HD Pro Webcam C920".
   - Correct examples:
     - [`logitech-c920`](./logitech-c920/) from `Logitech HD Pro Webcam C920` (`name` in `uvcc devices`).
+    - [`logitech-c922`](./logitech-c922/) from the vendor name and `C922 Pro Stream Webcam` (`name` in `uvcc devices`).
     - [`microsoft-1425`](./microsoft-1425/) from the vendor name and the model number `1425` found on the label on the camera cable as well as the box the camera was delivered in.
 - Create and/or enter the correct vendor/product id subdirectory.
   - This is due to [cameras with the same "marketing name" having different USB product ids](https://github.com/joelpurra/uvcc/issues/21), and this possibly having different hardware properties.
@@ -18,6 +19,7 @@ A small sample of `uvcc` camera control output. See individual subdirectories fo
   - You can find the USB `vendor` and `product` ids in the output of `uvcc devices`.
   - Correct examples:
     - [`logitech-c920/1133-2093`](./logitech-c920/1133-2093/)
+    - [`logitech-c922/1133-2140`](./logitech-c920/1133-2140/)
     - [`microsoft-1425/1118-1906`](./microsoft-1425/1118-1906/)
     - [`microsoft-1425/1118-2065`](./microsoft-1425/1118-2065/)
 - Reset the camera to default values.
