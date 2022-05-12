@@ -19,6 +19,7 @@ A small sample of `uvcc` camera control output. See individual subdirectories fo
   - Correct examples:
     - [`logitech-c920/1133-2093`](./logitech-c920/1133-2093/)
     - [`microsoft-1425/1118-1906`](./microsoft-1425/1118-1906/)
+    - [`microsoft-1425/1118-2065`](./microsoft-1425/1118-2065/)
 - Reset the camera to default values.
   - Unplug all cameras.
   - Reconnect only the camera you want to test.

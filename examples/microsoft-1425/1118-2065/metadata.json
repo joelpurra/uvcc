@@ -1,0 +1,6 @@
+{
+  "node": "v18.1.0",
+  "npm": "8.8.0",
+  "uname": "Linux compendious 5.15.0-27-generic #28-Ubuntu SMP Thu Apr 14 04:55:28 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux",
+  "uvcc": "v6.0.0"
+}
