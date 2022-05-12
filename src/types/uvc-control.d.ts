@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021, 2022 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,11 +23,13 @@ declare module "uvc-control" {
 		ReadonlyDeep,
 	} from "type-fest";
 
-	// eslint-disable-next-line import/no-extraneous-dependencies
-	import usb from "usb";
+	import {
+		usb,
+	} from "usb";
 
 	/* eslint-disable @typescript-eslint/member-ordering */
 	export default class Camera {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		public static readonly REQUEST: ReadonlyDeep<RequestTypes>;
 		public static readonly controls: ReadonlyDeep<CameraControls>;
 

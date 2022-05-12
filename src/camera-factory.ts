@@ -1,6 +1,6 @@
 /*
 This file is part of uvcc -- USB Video Class (UVC) device configurator.
-Copyright (C) 2018, 2019, 2020, 2021 Joel Purra <https://joelpurra.com/>
+Copyright (C) 2018, 2019, 2020, 2021, 2022 Joel Purra <https://joelpurra.com/>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -102,7 +102,11 @@ export default class CameraFactory {
 		const guessThatUvcDeviceWasNotFound = typeof error.name === "string"
 			&& error.name === "TypeError"
 			&& typeof error.message === "string"
-			&& error.message === "Cannot read property 'interfaces' of undefined";
+			&& (
+				// NOTE: message formatting differs across versions; could use a regular expression instead.
+				error.message === "Cannot read property 'interfaces' of undefined"
+				|| error.message === "Cannot read properties of undefined (reading 'interfaces')"
+			);
 
 		errorMessage = guessThatUvcDeviceWasNotFound ? `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(getFunctionArguments)}` : `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
 
