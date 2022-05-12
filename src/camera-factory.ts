@@ -102,7 +102,11 @@ export default class CameraFactory {
 		const guessThatUvcDeviceWasNotFound = typeof error.name === "string"
 			&& error.name === "TypeError"
 			&& typeof error.message === "string"
-			&& error.message === "Cannot read property 'interfaces' of undefined";
+			&& (
+				// NOTE: message formatting differs across versions; could use a regular expression instead.
+				error.message === "Cannot read property 'interfaces' of undefined"
+				|| error.message === "Cannot read properties of undefined (reading 'interfaces')"
+			);
 
 		errorMessage = guessThatUvcDeviceWasNotFound ? `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(getFunctionArguments)}` : `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
 
