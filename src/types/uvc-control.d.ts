@@ -23,8 +23,9 @@ declare module "uvc-control" {
 		ReadonlyDeep,
 	} from "type-fest";
 
-	// eslint-disable-next-line import/no-extraneous-dependencies
-	import usb from "usb";
+	import {
+		usb,
+	} from "usb";
 
 	/* eslint-disable @typescript-eslint/member-ordering */
 	export default class Camera {
