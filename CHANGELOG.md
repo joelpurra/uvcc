@@ -1,6 +1,20 @@
 # [`uvcc`](https://joelpurra.com/projects/uvcc/) changelog
 
-See full list of commits for details.
+See [full list of commits](https://github.com/joelpurra/uvcc/commits) for details.
+
+## v6.0.0
+
+- 3a79c54 Add example output from Logitech C922 Pro Stream Webcam ([1133:2140](./examples/logitech-c922/1133-2140/))
+- 9342420 Add example output from Microsoft LifeCam Studio Model 1425 ([1118:2065](./examples/microsoft-1425/1118-2065/))
+- aebbe71 Update example output from Logitech C920 ([1133:2093](./examples/logitech-c920/1133-2093/))
+- 235fe37 Take vendor/product ids into account for examples
+  - Relates to [#21](https://github.com/joelpurra/uvcc/issues/21), where the differences between hardware variations within the same camera "marketing name" are discussed.
+- 999c7d5 Upgrade forked uvc-control v2
+  - [Targets `node-usb` ^v2.4.1](https://github.com/node-usb/node-usb/releases/tag/v2.4.1) via [the forked `node-uvc-control` v2](https://github.com/joelpurra/node-uvc-control/commits/v2) at [`267b0db`](https://github.com/joelpurra/node-uvc-control/commit/267b0dbe77636e15e69cfb8f3de310641fac72b5).
+  - Still uses the legacy USB device interface.
+- e5e9748 Target Node.js v14, v16, v17, v18
+  - These are the available [current/active/maintenance releases](https://github.com/nodejs/Release) as of 2022-05-12.
+  - Fixes [#25](https://github.com/joelpurra/uvcc/issues/25).
 
 ## v5.0.2
 
