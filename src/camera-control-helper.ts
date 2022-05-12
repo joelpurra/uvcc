@@ -39,7 +39,6 @@ interface ControlFlags {
 
 type ControlsFlags = Record<string, ControlFlags>;
 
-/* eslint-disable @typescript-eslint/member-ordering */
 export default class CameraControlHelper {
 	private cachedMappedSupportedControls: ReadonlyDeep<ControlsFlags> | null = null;
 
@@ -177,4 +176,3 @@ export default class CameraControlHelper {
 		return filterObject(controls, (_key, control) => control.isSettable);
 	}
 }
-/* eslint-enable @typescript-eslint/member-ordering */

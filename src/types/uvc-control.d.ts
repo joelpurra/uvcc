@@ -28,6 +28,7 @@ declare module "uvc-control" {
 
 	/* eslint-disable @typescript-eslint/member-ordering */
 	export default class Camera {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		public static readonly REQUEST: ReadonlyDeep<RequestTypes>;
 		public static readonly controls: ReadonlyDeep<CameraControls>;
 
