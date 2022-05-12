@@ -18,12 +18,7 @@ rm -f 'controls.json'
 $UVCC controls > 'controls.json'
 
 rm -f 'devices.json'
-if $UVCC devices >& /dev/null;
-then
-	$UVCC devices > 'devices.json'
-else
-	sudo $UVCC devices > 'devices.json'
-fi
+$UVCC devices > 'devices.json'
 
 rm -f 'export.json'
 $UVCC export > 'export.json'
