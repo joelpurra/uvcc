@@ -1,0 +1,18 @@
+[
+  "absolute_exposure_time",
+  "absolute_focus",
+  "absolute_pan_tilt",
+  "absolute_zoom",
+  "auto_exposure_mode",
+  "auto_exposure_priority",
+  "auto_focus",
+  "auto_white_balance_temperature",
+  "backlight_compensation",
+  "brightness",
+  "contrast",
+  "gain",
+  "power_line_frequency",
+  "saturation",
+  "sharpness",
+  "white_balance_temperature"
+]
