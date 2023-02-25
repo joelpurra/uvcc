@@ -2,10 +2,16 @@
 
 See [full list of commits](https://github.com/joelpurra/uvcc/commits) for details.
 
+## v7.0.0
+
+- 8779b90 Target Node.js v16, v18, v19, v20
+  - Drop v14 (about two months early), drop v17 (about eight months late), add v19 (about four months late), add v20 (about two months early).
+- 61d8071 Add example output from Elgato Facecam ([4057:0120](./examples/elgato-facecam/4057-120/)) (#28 by @m0ose)
+
 ## v6.0.0
 
 - 3a79c54 Add example output from Logitech C922 Pro Stream Webcam ([1133:2140](./examples/logitech-c922/1133-2140/))
-- 9342420 Add example output from Microsoft LifeCam Studio Model 1425 ([1118:2065](./examples/microsoft-1425/1118-2065/))
+- 9342420 Add example output from Microsoft LifeCam Studio Model 1425 ([1118:2065](./examples/microsoft-1425/1118-2065/)) (#17 by @holbrookdev)
 - aebbe71 Update example output from Logitech C920 ([1133:2093](./examples/logitech-c920/1133-2093/))
 - 235fe37 Take vendor/product ids into account for examples
   - Relates to [#21](https://github.com/joelpurra/uvcc/issues/21), where the differences between hardware variations within the same camera "marketing name" are discussed.

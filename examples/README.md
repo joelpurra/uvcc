@@ -15,7 +15,7 @@ A small sample of `uvcc` camera control output. See individual subdirectories fo
     - [`microsoft-1425`](./microsoft-1425/) from the vendor name and the model number `1425` found on the label on the camera cable as well as the box the camera was delivered in.
 - Create and/or enter the correct vendor/product id subdirectory.
   - This is due to [cameras with the same "marketing name" having different USB product ids](https://github.com/joelpurra/uvcc/issues/21), and this possibly having different hardware properties.
-  - Use the format `<vendor id>-<product id>` with decimal number formatting.
+  - Use the format `<vendor id>-<product id>` with decimal number formatting, without leading zero padding.
   - You can find the USB `vendor` and `product` ids in the output of `uvcc devices`.
   - Correct examples:
     - [`logitech-c920/1133-2093`](./logitech-c920/1133-2093/)
