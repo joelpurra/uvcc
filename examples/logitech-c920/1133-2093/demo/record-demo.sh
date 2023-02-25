@@ -5,10 +5,19 @@ set -o noclobber
 set -o nounset
 set -o pipefail
 
+function die() {
+	echo "FATAL:" "$@" >&2
+	exit 1
+}
+
 function changeOverlayTextAsync() {
 	# NOTE: don't wait for zmqsend, even if it usually is quick.
 	echo "drawtext reinit 'text=${@}" | zmqsend &
 }
+
+[[ -x "$(which node)" ]] || die 'Could not find ffmpeg executable in $PATH.' 'https://nodejs.org/'
+[[ -x "$(which ffmpeg)" ]] || die 'Could not find ffmpeg executable in $PATH.' 'https://ffmpeg.org/'
+[[ -x "$(which gifski)" ]] || die 'Could not find gifski executable in $PATH.' 'https://gif.ski/'
 
 declare -r SCRIPT_BASE="${BASH_SOURCE%/*}"
 declare SCRIPT_BASE_ABSOLUTE
@@ -16,9 +25,11 @@ SCRIPT_BASE_ABSOLUTE="$(realpath "$SCRIPT_BASE")"
 
 # NOTE: using the local repository version of uvcc, with any local (even uncommitted) changes.
 declare UVCC_INDEX
-UVCC_INDEX="$(realpath "${SCRIPT_BASE_ABSOLUTE}/../../../dist/index.js")"
+UVCC_INDEX="$(realpath "${SCRIPT_BASE_ABSOLUTE}/../../../../dist/index.js")"
 
 declare -r UVCC="node -- ${UVCC_INDEX}"
+
+mkdir -p './recording/'
 
 set -x
 
@@ -53,7 +64,7 @@ coproc 'RECORDER' {
 		-pix_fmt 'yuv420p' \
 		-f 'mp4' \
 		-y \
-		'output/uvcc-demo.mp4'
+		'./recording/uvcc-demo.mp4'
 	}
 
 # NOTE: setting -ss '2' to skip the first two seconds of video, to let the camera autoadjust to current lighting conditions.
@@ -156,9 +167,9 @@ wait "${RECORDER_PID}"
 
 # https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 # https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality
-# ffmpeg -hide_banner -loglevel 'error' -i 'output/uvcc-demo.mp4' -filter_complex "[0:v] fps=4,scale=480:-2:flags=lanczos,split [a][b];[a] palettegen=stats_mode=diff [p];[b][p] paletteuse" -vsync '0' -loop '0' -y 'output/uvcc-demo.gif'
+# ffmpeg -hide_banner -loglevel 'error' -i './recording/uvcc-demo.mp4' -filter_complex "[0:v] fps=4,scale=480:-2:flags=lanczos,split [a][b];[a] palettegen=stats_mode=diff [p];[b][p] paletteuse" -vsync '0' -loop '0' -y './recording/uvcc-demo.gif'
 
 # https://gif.ski/
-find ./output -iname 'demo-*.png' -delete
-ffmpeg -hide_banner -loglevel 'error' -i 'output/uvcc-demo.mp4' -vf "fps='4'" 'output/demo-%04d.png'
-find ./output -iname 'demo-*.png' -print0 | xargs -0 gifski --fps '4' --width '480' --quality '25' --output 'output/uvcc-demo.gif'
+find ./recording -iname 'demo-*.png' -delete
+ffmpeg -hide_banner -loglevel 'error' -i './recording/uvcc-demo.mp4' -vf "fps='4'" './recording/demo-%04d.png'
+find ./recording -iname 'demo-*.png' -print0 | xargs -0 gifski --fps '4' --width '480' --quality '25' --output './recording/uvcc-demo.gif'
