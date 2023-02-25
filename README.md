@@ -16,6 +16,7 @@
 
 ## Compatible cameras
 
+- [Elgato Facecam](https://www.elgato.com/facecam) ([4057:0120](./examples/elgato-facecam/4057-120/))
 - [Logitech C920 HD Pro Webcam](https://www.logitech.com/en-us/products/webcams/c920s-pro-hd-webcam.html) ([1133:2093](./examples/logitech-c920/1133-2093/))
 - [Logitech C922 Pro Stream Webcam](https://www.logitech.com/en-us/products/webcams/c922-pro-stream-webcam.html) ([1133:2140](./examples/logitech-c922/1133-2140/))
 - [Microsoft LifeCam Studio](https://www.microsoft.com/en-WW/accessories/products/webcams/lifecam-studio) Model 1425 ([1118:1906](./examples/microsoft-1425/1118-1906/), [1118:2065](./examples/microsoft-1425/1118-2065/))
