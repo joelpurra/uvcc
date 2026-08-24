@@ -28,7 +28,6 @@ import assert from "node:assert";
 import fs from "node:fs";
 import {
 	dirname,
-	join,
 } from "node:path";
 import process from "node:process";
 import {
@@ -47,16 +46,14 @@ import yargs from "yargs";
 // TODO: load package.json at compile time, use process.cwd() for resolving other paths.
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const getJsonSync = (fileRelativePath: string): JsonValue => {
-	const resolvedPath = join(__dirname, fileRelativePath);
-
+const getJsonSync = (filePath: string): JsonValue => {
 	try {
 		// eslint-disable-next-line no-sync
-		const json = JSON.parse(fs.readFileSync(resolvedPath).toString()) as JsonValue;
+		const json = JSON.parse(fs.readFileSync(filePath).toString()) as JsonValue;
 
 		return json;
 	} catch (error: unknown) {
-		throw new Error(`Could not read JSON file ${JSON.stringify(resolvedPath)}: ${JSON.stringify(String(error))}`, {
+		throw new Error(`Could not read JSON file ${JSON.stringify(filePath)}: ${JSON.stringify(String(error))}`, {
 			cause: error,
 		});
 	}
