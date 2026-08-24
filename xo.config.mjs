@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-module.exports = {
-	extends: [
-		"eslint-config-joelpurra/typescript",
-	],
-};
+import eslintConfigJoelPurraTypescript from "eslint-config-joelpurra/typescript";
+
+const xoConfig = [
+	...eslintConfigJoelPurraTypescript,
+];
+
+export default xoConfig;
