@@ -16,45 +16,54 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "node:assert";
-import {
-	ReadonlyDeep,
-} from "type-fest";
-import Camera from "uvc-control";
+import type Camera from "uvc-control";
 
-import CameraFactory from "./camera-factory.js";
-import CameraHelperFactory from "./camera-helper-factory.js";
-import CommandHandlers from "./command-handlers.js";
-import Output from "./output.js";
+import type CameraFactory from "./camera-factory.js";
+import type CameraHelperFactory from "./camera-helper-factory.js";
+import type CommandHandlers from "./command-handlers.js";
+import type Output from "./output.js";
+
+import assert from "node:assert";
+
 import {
-	RuntimeConfiguration,
+	type ReadonlyDeep,
+} from "type-fest";
+
+import {
+	type RuntimeConfiguration,
 } from "./runtime-configurator.js";
 import {
 	CommandHandlerArgumentCameraHelper,
-	CommandHandlerArgumentTypes,
-	CommandHandlerLookup,
+	type CommandHandlerArgumentTypes,
+	type CommandHandlerLookup,
 } from "./types/command.js";
 
 export default class CommandManager {
-	constructor(private readonly output: Output, private readonly cameraFactory: CameraFactory, private readonly cameraHelperFactory: CameraHelperFactory, private readonly commandHandlers: CommandHandlers) {
+	constructor(
+		private readonly output: Output,
+		private readonly cameraFactory: CameraFactory,
+		private readonly cameraHelperFactory: CameraHelperFactory,
+		private readonly commandHandlers: CommandHandlers,
+	) {
 		assert.strictEqual(arguments.length, 4);
-		assert(typeof this.output === "object");
-		assert(typeof this.cameraFactory === "object");
-		assert(typeof this.cameraHelperFactory === "object");
-		assert(typeof this.commandHandlers === "object");
+		assert.strictEqual(typeof this.output, "object");
+		assert.strictEqual(typeof this.cameraFactory, "object");
+		assert.strictEqual(typeof this.cameraHelperFactory, "object");
+		assert.strictEqual(typeof this.commandHandlers, "object");
 	}
 
 	async execute(runtimeConfig: ReadonlyDeep<RuntimeConfiguration>): Promise<void> {
 		this.output.verbose("Parsed arguments:", JSON.stringify(runtimeConfig, null, 2));
 
 		const commandName = runtimeConfig.cmd;
-		const commandHandlerExists = await this.commandHandlers.has(commandName);
+		const hasCommandHandler = await this.commandHandlers.has(commandName);
 
-		if (!commandHandlerExists) {
+		if (!hasCommandHandler) {
 			this.output.error("Unknown command:", commandName);
 			return;
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-restricted-types
 		let camera: Camera | null = null;
 
 		const closeCamera = async () => {
@@ -73,9 +82,9 @@ export default class CommandManager {
 				address,
 			} = runtimeConfig;
 
-			assert(typeof vendor === "number");
-			assert(typeof product === "number");
-			assert(typeof address === "number");
+			assert.strictEqual(typeof vendor, "number");
+			assert.strictEqual(typeof product, "number");
+			assert.strictEqual(typeof address, "number");
 
 			camera = await this.cameraFactory.get(vendor, product, address);
 		}
@@ -88,7 +97,8 @@ export default class CommandManager {
 
 			// TODO: smarter solution.
 			if (commandArguments.includes(CommandHandlerArgumentCameraHelper)) {
-				assert(camera !== null);
+				// eslint-disable-next-line node-test/prefer-equality-assertion
+				assert.ok(camera !== null);
 
 				const cameraHelper = await this.cameraHelperFactory.get(camera);
 
@@ -98,7 +108,7 @@ export default class CommandManager {
 			const output = await this.commandHandlers.execute(commandName, ...argumentValues);
 
 			// NOTE: could separate of types of commands -- those with output, and those without.
-			if (typeof output !== "undefined") {
+			if (output !== undefined) {
 				const json = JSON.stringify(output, null, 2);
 
 				this.output.normal(json);

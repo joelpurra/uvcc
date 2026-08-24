@@ -16,16 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type CameraHelper from "../camera-helper.js";
+
 import assert from "node:assert";
+
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 
-import CameraHelper from "../camera-helper.js";
 import {
-	Command,
+	type Command,
 	CommandHandlerArgumentCameraHelper,
-	CommandHandlerArgumentNames,
+	type CommandHandlerArgumentNames,
 } from "../types/command.js";
 
 export default class ControlsCommand implements Command {

@@ -16,90 +16,47 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type Camera from "uvc-control";
+
+import type Output from "./output.js";
+
 import assert from "node:assert";
+
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
-import Camera, {
-	ConstructorOptions,
-	UvcControl,
+import {
+	type ConstructorOptions,
+	type UvcControl,
 } from "uvc-control";
 
-import Output from "./output.js";
 import toFormattedHex from "./utilities/to-formatted-hex.js";
 import WrappedError from "./utilities/wrapped-error.js";
 
-interface GetFunctionArguments {
+interface FunctionArguments {
+	// eslint-disable-next-line @typescript-eslint/no-restricted-types
 	address: number | null;
+	// eslint-disable-next-line @typescript-eslint/no-restricted-types
 	product: number | null;
+	// eslint-disable-next-line @typescript-eslint/no-restricted-types
 	vendor: number | null;
 }
 
 export default class CameraFactory {
 	constructor(
 		private readonly output: Output,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		private readonly UvcControl: UvcControl,
 	) {
 		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.UvcControl === "function");
+		assert.strictEqual(typeof this.UvcControl, "function");
 	}
 
-	async get(vendor: number | null, product: number | null, address: number | null): Promise<Camera> {
-		assert.strictEqual(arguments.length, 3);
-		assert(vendor === null || (typeof vendor === "number" && vendor >= 0));
-		assert(product === null || (typeof product === "number" && product >= 0));
-		assert(address === null || (typeof address === "number" && address >= 0));
-
-		const constructorOptions: ConstructorOptions = {
-			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-			deviceAddress: address || undefined,
-			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-			pid: product || undefined,
-			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-			vid: vendor || undefined,
-		};
-
-		try {
-			const camera = new this.UvcControl(constructorOptions);
-
-			if (vendor && vendor !== camera.device.deviceDescriptor.idVendor) {
-				this.output.warning("Camera vendor id mismatch.", "Input", vendor, `(${toFormattedHex(vendor, 4)})`, "Actual", camera.device.deviceDescriptor.idVendor, `(${toFormattedHex(camera.device.deviceDescriptor.idVendor, 4)})`);
-			}
-
-			if (product && product !== camera.device.deviceDescriptor.idProduct) {
-				this.output.warning("Camera product id mismatch.", "Input", product, `(${toFormattedHex(product, 4)})`, "Actual", camera.device.deviceDescriptor.idProduct, `(${toFormattedHex(camera.device.deviceDescriptor.idProduct, 4)})`);
-			}
-
-			if (address && address !== camera.device.deviceAddress) {
-				this.output.warning("Camera device address mismatch.", "Input", address, `(${toFormattedHex(address, 1)})`, "Actual", camera.device.deviceAddress, `(${toFormattedHex(camera.device.deviceAddress, 1)})`);
-			}
-
-			return camera;
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				// NOTE: basically a duplicate of both the arguments to this function and to the uvc-control constructor.
-				const getFunctionArguments: GetFunctionArguments = {
-					address,
-					product,
-					vendor,
-				};
-
-				const wrappedError = this.createWrappedError(error, getFunctionArguments, constructorOptions);
-
-				throw wrappedError;
-			}
-
-			throw error;
-		}
-	}
-
-	private createWrappedError(error: ReadonlyDeep<Error>, getFunctionArguments: ReadonlyDeep<GetFunctionArguments>, constructorOptions: ReadonlyDeep<ConstructorOptions>) {
+	private createWrappedError(error: ReadonlyDeep<Error>, functionArguments: ReadonlyDeep<FunctionArguments>, constructorOptions: ReadonlyDeep<ConstructorOptions>) {
 		let errorMessage = null;
 
 		// NOTE: relies on uvc-control internals.
 		// NOTE: may rely on user locale.
-		const guessThatUvcDeviceWasNotFound = typeof error.name === "string"
+		const canGuessThatUvcDeviceWasNotFound = typeof error.name === "string"
 			&& error.name === "TypeError"
 			&& typeof error.message === "string"
 			&& (
@@ -108,12 +65,65 @@ export default class CameraFactory {
 				|| error.message === "Cannot read properties of undefined (reading 'interfaces')"
 			);
 
-		errorMessage = guessThatUvcDeviceWasNotFound ? `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(getFunctionArguments)}` : `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
+		errorMessage = canGuessThatUvcDeviceWasNotFound
+			? `Could not find UVC device. Is a compatible camera connected? ${JSON.stringify(functionArguments)}`
+			: `Could create uvc-control object: ${JSON.stringify(constructorOptions)}`;
 
+		// eslint-disable-next-line @typescript-eslint/no-base-to-string
 		errorMessage += ` (${JSON.stringify(String(error))})`;
 
 		const wrappedError = new WrappedError(error, errorMessage);
 
 		return wrappedError;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-restricted-types
+	async get(vendor: number | null, product: number | null, address: number | null): Promise<Camera> {
+		assert.strictEqual(arguments.length, 3);
+		assert.ok(vendor === null || (typeof vendor === "number" && vendor >= 0));
+		assert.ok(product === null || (typeof product === "number" && product >= 0));
+		assert.ok(address === null || (typeof address === "number" && address >= 0));
+
+		const constructorOptions: ConstructorOptions = {
+			deviceAddress: address ?? undefined,
+			pid: product ?? undefined,
+			vid: vendor ?? undefined,
+		};
+
+		try {
+			const camera = new this.UvcControl(constructorOptions);
+
+			// eslint-disable-next-line @typescript-eslint/no-restricted-types
+			const checkCameraPropertyNonNullNonZero = (deviceValue: number, inputValue: number | null, propertyName: string) => {
+				if (inputValue !== 0 && inputValue !== null && inputValue !== deviceValue) {
+					this.output.warning(`Camera ${propertyName} mismatch.`, "Input", inputValue, `(${
+						toFormattedHex(inputValue, 4)
+					})`, "Actual", deviceValue, `(${
+						toFormattedHex(deviceValue, 4)
+					})`);
+				}
+			};
+
+			checkCameraPropertyNonNullNonZero(camera.device.deviceDescriptor.idVendor, vendor, "vendor id");
+			checkCameraPropertyNonNullNonZero(camera.device.deviceDescriptor.idProduct, product, "product id");
+			checkCameraPropertyNonNullNonZero(camera.device.deviceAddress, address, "device address");
+
+			return camera;
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				// NOTE: basically a duplicate of both the arguments to this function and to the uvc-control constructor.
+				const functionArguments: FunctionArguments = {
+					address,
+					product,
+					vendor,
+				};
+
+				const wrappedError = this.createWrappedError(error, functionArguments, constructorOptions);
+
+				throw wrappedError;
+			}
+
+			throw error;
+		}
 	}
 }

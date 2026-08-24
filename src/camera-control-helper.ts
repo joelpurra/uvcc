@@ -16,17 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type Camera from "uvc-control";
+
+import assert from "node:assert";
+
 import arrayNonUniq from "array-non-uniq";
 import filterObject from "filter-obj";
-import assert from "node:assert";
 import sortKeys from "sort-keys";
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
-import Camera,
-{
-	CameraControl,
-	UvcControl,
+import {
+	type CameraControl,
+	type UvcControl,
 } from "uvc-control";
 
 import WrappedError from "./utilities/wrapped-error.js";
@@ -40,40 +42,16 @@ interface ControlFlags {
 type ControlsFlags = Record<string, ControlFlags>;
 
 export default class CameraControlHelper {
+	// eslint-disable-next-line @typescript-eslint/no-restricted-types
 	private cachedMappedSupportedControls: ReadonlyDeep<ControlsFlags> | null = null;
 
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		private readonly UvcControl: ReadonlyDeep<UvcControl>,
 		private readonly camera: ReadonlyDeep<Camera>,
 	) {
 		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.UvcControl === "function");
-		assert(typeof this.camera === "object");
-	}
-
-	async getControlNames(): Promise<readonly string[]> {
-		const controls = await this.getSupportedControls();
-
-		return Object.keys(controls);
-	}
-
-	async getGettableControlNames(): Promise<readonly string[]> {
-		const gettableControls = await this.getGettableControls();
-
-		return Object.keys(gettableControls);
-	}
-
-	async getRangedControlNames(): Promise<readonly string[]> {
-		const rangedControls = await this.getRangedControls();
-
-		return Object.keys(rangedControls);
-	}
-
-	async getSettableControlNames(): Promise<readonly string[]> {
-		const settableControls = await this.getSettableControls();
-
-		return Object.keys(settableControls);
+		assert.strictEqual(typeof this.UvcControl, "function");
+		assert.strictEqual(typeof this.camera, "object");
 	}
 
 	private isGettableControl(control: ReadonlyDeep<CameraControl>) {
@@ -98,12 +76,12 @@ export default class CameraControlHelper {
 	}
 
 	private async mapSupportedControls() {
-		const supportedControls = this.camera.supportedControls
-			.map((supportedControlName) => this.UvcControl.controls[supportedControlName])
-			// TODO: proper ducktyping function.
-			.filter((t): t is CameraControl => Boolean(t));
+		const allControls = this.camera.supportedControls
+			.map((supportedControlName) => this.UvcControl.controls[supportedControlName]);
 
-		const missingControls = supportedControls.filter((control) => !control);
+		// TODO: proper duck-typing function.
+		const supportedControls = allControls.filter((control): control is CameraControl => Boolean(control));
+		const missingControls = allControls.filter((control): control is CameraControl => !control);
 
 		if (missingControls.length > 0) {
 			throw new Error(`Controls were not found: ${JSON.stringify(missingControls)}`);
@@ -151,9 +129,7 @@ export default class CameraControlHelper {
 	}
 
 	private async getSupportedControls() {
-		if (this.cachedMappedSupportedControls === null) {
-			this.cachedMappedSupportedControls = await this.mapSupportedControls();
-		}
+		this.cachedMappedSupportedControls ??= await this.mapSupportedControls();
 
 		return this.cachedMappedSupportedControls;
 	}
@@ -174,5 +150,29 @@ export default class CameraControlHelper {
 		const controls = await this.getSupportedControls();
 
 		return filterObject(controls, (_key, control) => control.isSettable);
+	}
+
+	async getControlNames(): Promise<readonly string[]> {
+		const controls = await this.getSupportedControls();
+
+		return Object.keys(controls);
+	}
+
+	async getGettableControlNames(): Promise<readonly string[]> {
+		const gettableControls = await this.getGettableControls();
+
+		return Object.keys(gettableControls);
+	}
+
+	async getRangedControlNames(): Promise<readonly string[]> {
+		const rangedControls = await this.getRangedControls();
+
+		return Object.keys(rangedControls);
+	}
+
+	async getSettableControlNames(): Promise<readonly string[]> {
+		const settableControls = await this.getSettableControls();
+
+		return Object.keys(settableControls);
 	}
 }

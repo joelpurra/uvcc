@@ -17,16 +17,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 import {
-	ControlValues,
+	type ControlValues,
 } from "uvc-control";
 
 export default function flattenControlValues(valueObject: ReadonlyDeep<ControlValues>): number | readonly number[] {
 	const values = Object.values(valueObject);
 	const firstValue = values[0];
 
+	// eslint-disable-next-line unicorn/prefer-simple-condition-first
 	const value = values.length === 1 && typeof firstValue === "number"
 		? firstValue
 		// NOTE: presumably the same order has to be used when setting values later.

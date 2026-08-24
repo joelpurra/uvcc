@@ -16,16 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import CameraHelper from "../camera-helper.js";
+import type CameraHelper from "../camera-helper.js";
+
 import {
-	RuntimeConfigurationKeys,
-	RuntimeConfigurationTypes,
+	type RuntimeConfigurationKeys,
+	type RuntimeConfigurationTypes,
 } from "../runtime-configurator.js";
 
 export type CommandName = string;
 
 // NOTE HACK: magic string hack so the command manager can inject camera helper to command handlers which need it.
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export const CommandHandlerArgumentCameraHelper = "cameraHelper";
 export type CommandHandlerArgumentNames = RuntimeConfigurationKeys | typeof CommandHandlerArgumentCameraHelper;
 export type CommandHandlerArgumentTypes = RuntimeConfigurationTypes | CameraHelper;

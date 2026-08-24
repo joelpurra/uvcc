@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import engineCheck from "engine-check";
 import {
 	dirname,
 	join,
@@ -26,14 +25,15 @@ import process from "node:process";
 import {
 	fileURLToPath,
 } from "node:url";
+
+import engineCheck from "engine-check";
 import UvcControl from "uvc-control";
 
-import CameraControlHelper from "./camera-control-helper.js";
 import CameraControlHelperFactory from "./camera-control-helper-factory.js";
+import CameraControlHelper from "./camera-control-helper.js";
 import CameraFactory from "./camera-factory.js";
-import CameraHelper from "./camera-helper.js";
 import CameraHelperFactory from "./camera-helper-factory.js";
-import CommandHandlers from "./command-handlers.js";
+import CameraHelper from "./camera-helper.js";
 import ControlsCommand from "./command-handlers/controls.js";
 import DevicesCommand from "./command-handlers/devices.js";
 import ExportCommand from "./command-handlers/export.js";
@@ -42,11 +42,12 @@ import ImportCommand from "./command-handlers/import.js";
 import RangeCommand from "./command-handlers/range.js";
 import RangesCommand from "./command-handlers/ranges.js";
 import SetCommand from "./command-handlers/set.js";
+import CommandHandlers from "./command-handlers.js";
 import CommandManager from "./command-manager.js";
 import Output from "./output.js";
 import runtimeConfigurator from "./runtime-configurator.js";
 import {
-	Commands,
+	type Commands,
 } from "./types/command.js";
 import UvcDeviceLister from "./uvc-device-lister.js";
 

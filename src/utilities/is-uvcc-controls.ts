@@ -17,8 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
-	UvccControls,
+	type UvccControls,
 } from "../types/controls.js";
+
 import isUvccControlValue from "./is-uvcc-control-value.js";
 
 export default function isUvccControls(controlValues: unknown): controlValues is UvccControls {
@@ -30,7 +31,7 @@ export default function isUvccControls(controlValues: unknown): controlValues is
 				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 				([
 					controlName,
-					controlValues,
-				]) => typeof controlName === "string" && isUvccControlValue(controlValues),
+					controlValue,
+				]) => typeof controlName === "string" && isUvccControlValue(controlValue),
 			);
 }

@@ -17,17 +17,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "node:assert";
+
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 
 export default class WrappedError extends Error {
-	constructor(public readonly innerError: ReadonlyDeep<Error>,
-		message: string,
-	) {
+	constructor(public readonly innerError: ReadonlyDeep<Error>, message: string) {
 		super(message);
 
-		assert(this.innerError instanceof Error);
+		assert.ok(this.innerError instanceof Error);
 	}
 
 	override toString(): string {

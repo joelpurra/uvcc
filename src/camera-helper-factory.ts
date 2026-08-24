@@ -16,32 +16,34 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "node:assert";
-import {
-	ReadonlyDeep,
-} from "type-fest";
-import Camera from "uvc-control";
+import type Camera from "uvc-control";
 
-import CameraControlHelperFactory from "./camera-control-helper-factory.js";
-import CameraHelperClass from "./camera-helper.js";
-import Output from "./output.js";
+import type CameraControlHelperFactory from "./camera-control-helper-factory.js";
+import type CameraHelperClass from "./camera-helper.js";
+import type Output from "./output.js";
+
+import assert from "node:assert";
+
+import {
+	type ReadonlyDeep,
+} from "type-fest";
 
 export default class CameraHelperFactory {
 	constructor(
 		private readonly output: ReadonlyDeep<Output>,
 		private readonly cameraControlHelperFactory: ReadonlyDeep<CameraControlHelperFactory>,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
+
 		private readonly CameraHelper: typeof CameraHelperClass,
 	) {
 		assert.strictEqual(arguments.length, 3);
-		assert(typeof this.output === "object");
-		assert(typeof this.cameraControlHelperFactory === "object");
-		assert(typeof this.CameraHelper === "function");
+		assert.strictEqual(typeof this.output, "object");
+		assert.strictEqual(typeof this.cameraControlHelperFactory, "object");
+		assert.strictEqual(typeof this.CameraHelper, "function");
 	}
 
 	async get(camera: ReadonlyDeep<Camera>): Promise<CameraHelperClass> {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof camera === "object");
+		assert.strictEqual(typeof camera, "object");
 
 		const cameraControlHelper = await this.cameraControlHelperFactory.get(camera);
 		const cameraHelper = new this.CameraHelper(this.output, cameraControlHelper, camera);

@@ -16,10 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import chalk from "chalk";
-import {
-	findUpSync,
-} from "find-up";
+import type {
+	JsonValue,
+	ReadonlyDeep,
+} from "type-fest";
+import type {
+	Argv,
+} from "yargs";
+
 import assert from "node:assert";
 import fs from "node:fs";
 import {
@@ -30,16 +34,15 @@ import process from "node:process";
 import {
 	fileURLToPath,
 } from "node:url";
+
+import chalk from "chalk";
+import {
+	findUpSync,
+} from "find-up";
 import {
 	readPackageUp,
 } from "read-pkg-up";
-import {
-	JsonValue,
-	ReadonlyDeep,
-} from "type-fest";
-import yargs, {
-	Argv,
-} from "yargs";
+import yargs from "yargs";
 
 // TODO: load package.json at compile time, use process.cwd() for resolving other paths.
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -53,11 +56,13 @@ const getJsonSync = (fileRelativePath: string): JsonValue => {
 
 		return json;
 	} catch (error: unknown) {
-		throw new Error(`Could not read JSON file ${JSON.stringify(resolvedPath)}: ${JSON.stringify(String(error))}`);
+		throw new Error(`Could not read JSON file ${JSON.stringify(resolvedPath)}: ${JSON.stringify(String(error))}`, {
+			cause: error,
+		});
 	}
 };
 
-export type RuntimeConfiguration = {
+export interface RuntimeConfiguration {
 	address: number;
 	cmd: string;
 	control?: string;
@@ -65,7 +70,7 @@ export type RuntimeConfiguration = {
 	values: readonly number[];
 	vendor: number;
 	verbose: boolean;
-};
+}
 export type RuntimeConfigurationKeys = keyof RuntimeConfiguration;
 export type RuntimeConfigurationTypes = readonly number[] | number | string | boolean | undefined;
 
@@ -74,7 +79,8 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 		cwd: __dirname,
 	});
 
-	assert(typeof packageJsonResult !== "undefined");
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(packageJsonResult !== undefined);
 
 	const {
 		bin,
@@ -83,14 +89,17 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 		version,
 	} = packageJsonResult.packageJson;
 
-	assert(typeof bin === "object");
-	assert(typeof description === "string");
-	assert(typeof homepage === "string");
-	assert(!version.startsWith("v"));
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(typeof bin === "object");
+	assert.strictEqual(typeof description, "string");
+	assert.strictEqual(typeof homepage, "string");
+
+	assert.ok(!version.startsWith("v"));
 
 	const appBinaryName = Object.keys(bin)[0];
 
-	assert(typeof appBinaryName === "string");
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(typeof appBinaryName === "string");
 
 	const epilogue = chalk.dim`uvcc Copyright © 2018, 2019, 2020, 2021, 2022 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
@@ -105,32 +114,36 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 			`.${appBinaryName}rc`,
 			`.${appBinaryName}rc.json`,
 		]);
-		const configFromNearestConfigPath = nearestConfigPath ? getJsonSync(nearestConfigPath) : {};
+		const configFromNearestConfigPath = typeof nearestConfigPath === "string" && nearestConfigPath.length > 0 ? getJsonSync(nearestConfigPath) : {};
 
 		fromImplicitConfigFile = configFromNearestConfigPath;
 
-		assert(typeof fromImplicitConfigFile === "object");
-		assert(fromImplicitConfigFile !== null);
+		// eslint-disable-next-line node-test/prefer-equality-assertion
+		assert.ok(typeof fromImplicitConfigFile === "object");
+		// eslint-disable-next-line node-test/prefer-equality-assertion
+		assert.ok(fromImplicitConfigFile !== null);
 	}
 
 	const parserRoot: Argv = yargs(process.argv.slice(2));
 
-	/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
 	const parser = parserRoot
 		.strict()
 		.wrap(parserRoot.terminalWidth())
 		.config(fromImplicitConfigFile)
 		.config("config", "Load command arguments from a JSON file.", (argumentConfigPath) => {
-			const fromExplicitConfigFile = argumentConfigPath ? getJsonSync(argumentConfigPath) : {};
+			const fromExplicitConfigFile = argumentConfigPath.length > 0 ? getJsonSync(argumentConfigPath) : {};
 
-			assert(typeof fromExplicitConfigFile === "object");
-			assert(fromExplicitConfigFile !== null);
+			// eslint-disable-next-line node-test/prefer-equality-assertion
+			assert.ok(typeof fromExplicitConfigFile === "object");
+			// eslint-disable-next-line node-test/prefer-equality-assertion
+			assert.ok(fromExplicitConfigFile !== null);
 
 			return fromExplicitConfigFile;
 		})
 		.env(appBinaryName.toUpperCase())
 		.version(`v${version}`)
 		.usage(`${chalk.bold("$0")}: ${description}`)
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		.command("get <control>", "Get current control value.", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
@@ -139,6 +152,7 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 					type: "string",
 				});
 		})
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		.command("set <control> <value1> [value2]", "Set control value(s).", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
@@ -157,6 +171,7 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 					type: "number",
 				});
 		})
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		.command("range <control>", "Get possible range (min and max) for a control.", (yargsToApplyTo) => {
 			yargsToApplyTo
 				.positional("control", {
@@ -197,7 +212,8 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 				"product",
 				"address",
 			],
-			chalk.bold("Device selection for multi-camera setups.") + "\n  " + chalk.dim("Numbers in hex (0x000) or decimal (0000) format."))
+			chalk.bold("Device selection for multi-camera setups.") + "\n  " + chalk.dim("Numbers in hex (0x000) or decimal (0000) format."),
+		)
 		.help()
 		.example("", "")
 		.example(chalk.bold("Basic usage:"), "")
@@ -221,15 +237,14 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 		.example("sudo $0 devices", "Avoid LIBUSB_ERROR_ACCESS.")
 		.example("$0 --vendor 0x46d --product 0x82d export", "")
 		.epilogue(epilogue);
-	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
 
 	return parser.parseAsync();
 };
 
 const mapArgv = async (argv: ReadonlyDeep<Argv["argv"]>): Promise<RuntimeConfiguration> => {
 	// NOTE HACK: workaround yargs not being consistent with yargs.cmd versus yargs._ for defined/non-defined commands.
-	const cmd = "cmd" in argv && typeof argv["cmd"] === "string"
-		? argv["cmd"]
+	const cmd = "cmd" in argv && typeof argv.cmd === "string"
+		? argv.cmd
 		: (
 			"_" in argv && typeof argv._[0] === "string"
 				? argv._[0]
@@ -246,22 +261,29 @@ const mapArgv = async (argv: ReadonlyDeep<Argv["argv"]>): Promise<RuntimeConfigu
 		verbose,
 	} = argv as Record<string, unknown>;
 
-	assert(typeof address === "number");
-	assert(typeof cmd === "string");
-	assert(typeof product === "number");
-	assert(typeof vendor === "number");
-	assert(typeof verbose === "boolean");
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(typeof address === "number");
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(typeof cmd === "string");
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(typeof product === "number");
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(typeof vendor === "number");
+	// eslint-disable-next-line node-test/prefer-equality-assertion
+	assert.ok(typeof verbose === "boolean");
 
 	// NOTE: accept one value if the first is a number, two if both are numbers.
 	let values: readonly number[] = [];
 
 	if (typeof value1 === "number") {
-		values = typeof value2 === "number" ? [
-			value1,
-			value2,
-		] : [
-			value1,
-		];
+		values = typeof value2 === "number"
+			? [
+				value1,
+				value2,
+			]
+			: [
+				value1,
+			];
 	}
 
 	const mappedArgv: RuntimeConfiguration = {
