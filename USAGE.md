@@ -153,7 +153,7 @@ uvcc export
 
 User access to hardware devices, such as USB cameras, may be restricted by default on Linux. If, for example, `sudo uvcc devices` lists your camera but `uvcc devices` (without `sudo`) does not, then for ease-of-use you may adjust the device access level.
 
-Below [userspace `/dev`](https://en.wikipedia.org/wiki/Udev) (`udev`) is used to change the access level for a specific device model. Note that relaxing the access level in this way reduces device security.
+Below [userspace `/dev`](https://en.wikipedia.org/wiki/Udev) (`udev`) is used to change the access level for a specific device model. Note that relaxing the access level in this way reduces device security. More `udev` information is available, for example, on the [ArchWiki udev page](https://wiki.archlinux.org/title/Udev).
 
 1. Find your camera model's vendor and product id using, for example, [`lsusb`](https://en.wikipedia.org/wiki/Lspci#lsusb).
 
@@ -176,7 +176,7 @@ Below [userspace `/dev`](https://en.wikipedia.org/wiki/Udev) (`udev`) is used to
 1. Add one line for your device by vendor and product id, replacing `046d` and `082d` with the ids for your camera.
 
    ```text
-   SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="082d", TAG+="uaccess"
+   ACTION!="remove", SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="082d", MODE="0660", TAG+="uaccess"
    ```
 
    If you have more than one camera model, just add more lines.
@@ -184,8 +184,8 @@ Below [userspace `/dev`](https://en.wikipedia.org/wiki/Udev) (`udev`) is used to
 1. Reload the device rules files after editing, and apply the changes.
 
    ```shell
-   sudo udevadm control --reload-rules
-   sudo udevadm trigger --action='change'
+   sudo udevadm control --reload
+   sudo udevadm trigger --action 'change'
    ```
 
 1. Unplug your camera and plug it back in.
