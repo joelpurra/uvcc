@@ -28,6 +28,9 @@ import type {
 import assert from "node:assert";
 import fs from "node:fs";
 import {
+	homedir,
+} from "node:os";
+import {
 	dirname,
 } from "node:path";
 import process from "node:process";
@@ -111,7 +114,13 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 	const hasConfigFlag = process.argv.includes("--config");
 
 	if (!hasConfigFlag) {
-		const implicitConfigPath = await findUp(implicitConfigFilenames);
+		// NOTE: search "up" in the directory structure for configuration files; primarily from cwd, secondarily from homedir.
+		const implicitConfigPath = await findUp(implicitConfigFilenames) ?? await findUp(
+			implicitConfigFilenames,
+			{
+				cwd: homedir(),
+			},
+		);
 
 		if (typeof implicitConfigPath === "string" && implicitConfigPath.length > 0) {
 			// TODO: verify shape/contents of loaded configuration file.
