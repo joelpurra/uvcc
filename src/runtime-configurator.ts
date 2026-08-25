@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type {
+	JsonObject,
 	JsonValue,
 	ReadonlyDeep,
 } from "type-fest";
@@ -36,7 +37,7 @@ import {
 
 import chalk from "chalk";
 import {
-	findUpSync,
+	findUp,
 } from "find-up";
 import {
 	readPackageUp,
@@ -62,6 +63,7 @@ const getJsonSync = (filePath: string): JsonValue => {
 export interface RuntimeConfiguration {
 	address: number;
 	cmd: string;
+	config: string | undefined;
 	control?: string;
 	product: number;
 	values: readonly number[];
@@ -100,25 +102,39 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 
 	const epilogue = chalk.dim`uvcc Copyright © 2018, 2019, 2020, 2021, 2022 Joel Purra <https://joelpurra.com/>\n\nThis program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See GPL-3.0 license for details.\n\nSee also: ${homepage}`;
 
-	let fromImplicitConfigFile = null;
+	let fromImplicitConfigFile: JsonObject = {};
+	const implicitConfigFilenames = [
+		`.${appBinaryName}rc`,
+		`.${appBinaryName}rc.json`,
+	];
 
 	const hasConfigFlag = process.argv.includes("--config");
 
-	if (hasConfigFlag) {
-		fromImplicitConfigFile = {};
-	} else {
-		const nearestConfigPath = findUpSync([
-			`.${appBinaryName}rc`,
-			`.${appBinaryName}rc.json`,
-		]);
-		const configFromNearestConfigPath = typeof nearestConfigPath === "string" && nearestConfigPath.length > 0 ? getJsonSync(nearestConfigPath) : {};
+	if (!hasConfigFlag) {
+		const implicitConfigPath = await findUp(implicitConfigFilenames);
 
-		fromImplicitConfigFile = configFromNearestConfigPath;
+		if (typeof implicitConfigPath === "string" && implicitConfigPath.length > 0) {
+			// TODO: verify shape/contents of loaded configuration file.
+			const configFromNearestConfigPath = getJsonSync(implicitConfigPath);
 
-		// eslint-disable-next-line node-test/prefer-equality-assertion
-		assert.ok(typeof fromImplicitConfigFile === "object");
-		// eslint-disable-next-line node-test/prefer-equality-assertion
-		assert.ok(fromImplicitConfigFile !== null);
+			// eslint-disable-next-line node-test/prefer-equality-assertion
+			assert.ok(typeof configFromNearestConfigPath === "object");
+			// eslint-disable-next-line node-test/prefer-equality-assertion
+			assert.ok(configFromNearestConfigPath !== null);
+			assert.ok(!Array.isArray(configFromNearestConfigPath));
+
+			// NOTE: disallow setting/changing the config argument from within the loaded config file.
+			assert.ok(!Object.hasOwn(configFromNearestConfigPath, "config"));
+			assert.strictEqual(configFromNearestConfigPath.config, undefined);
+
+			// TODO: use deep object clone.
+			fromImplicitConfigFile = {
+				...configFromNearestConfigPath,
+
+				// NOTE: include resolved config path in verbose/debug output.
+				config: implicitConfigPath,
+			};
+		}
 	}
 
 	const parserRoot: Argv = yargs(process.argv.slice(2));
@@ -128,7 +144,9 @@ const getYargsArgv = async (): Promise<ReadonlyDeep<Argv["argv"]>> => {
 		.wrap(parserRoot.terminalWidth())
 		.config(fromImplicitConfigFile)
 		.config("config", "Load command arguments from a JSON file.", (argumentConfigPath) => {
-			const fromExplicitConfigFile = argumentConfigPath.length > 0 ? getJsonSync(argumentConfigPath) : {};
+			assert.ok(argumentConfigPath.length > 0);
+
+			const fromExplicitConfigFile = getJsonSync(argumentConfigPath);
 
 			// eslint-disable-next-line node-test/prefer-equality-assertion
 			assert.ok(typeof fromExplicitConfigFile === "object");
@@ -250,6 +268,7 @@ const mapArgv = async (argv: ReadonlyDeep<Argv["argv"]>): Promise<RuntimeConfigu
 
 	const {
 		address,
+		config,
 		control,
 		product,
 		value1,
@@ -286,6 +305,7 @@ const mapArgv = async (argv: ReadonlyDeep<Argv["argv"]>): Promise<RuntimeConfigu
 	const mappedArgv: RuntimeConfiguration = {
 		address,
 		cmd,
+		config: typeof config === "string" ? config : undefined,
 		control: typeof control === "string" ? control : undefined,
 		product,
 		values,
