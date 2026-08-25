@@ -2,6 +2,27 @@
 
 See [full list of commits](https://github.com/joelpurra/uvcc/commits) for details.
 
+## v8.0.0
+
+Released <time datetime="2026-08-25">2026-08-25</time>.
+
+- 343afc6 Upgrade joelpurra/node-uvc-control#v2
+  - Improve device list filter
+    - Exclude non-video devices by also checking for a video USB Interface Association Descriptor (IAD).
+  - Add fallback product name in device list (#32)
+    - Previously devices without a defined name would be excluded from the device listing, despite otherwise working.
+    - Unnamed products/devices now show up in `uvcc devices` with the generic name "USB Camera".
+    - Untested due to lack of unnamed hardware devices.
+- f1d6824 Include homedir in config search path
+  - `uvcc` now falls back to `~/.uvccrc`, even if executed outside the home directory.
+- 82f8944 Include resolved config path in verbose/debug output
+  - Use `uvcc --verbose` to see config path etcetera.
+- 6a97468 Use absolute paths to configuration files (#33)
+  - Previously used paths relative to the current source code file.
+- f3b6e0e Relax engines.node to minimum current Node.js LTS version
+  - Strict checks prevented newer Node.js versions from working, despite presumably working well.
+  - Reduces administrative efforts for `uvcc` in keeping up with Node.js releases.
+
 ## v7.0.0
 
 Released <time datetime="2023-03-25">2023-03-25</time>.
