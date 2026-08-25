@@ -19,29 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import assert from "node:assert";
 
 export default class Output {
-	constructor(public enableVerboseOutput: boolean) {
+	constructor(public shouldEnableVerboseOutput: boolean) {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof this.enableVerboseOutput === "boolean");
-	}
-
-	normal(...args: readonly unknown[]): void {
-		this.consoleLog(...args);
-	}
-
-	error(...args: readonly unknown[]): void {
-		this.consoleError(...args);
-	}
-
-	warning(...args: readonly unknown[]): void {
-		this.consoleWarn(...args);
-	}
-
-	verbose(...args: readonly unknown[]): void {
-		if (!this.enableVerboseOutput) {
-			return undefined;
-		}
-
-		this.consoleError(...args);
+		assert.strictEqual(typeof this.shouldEnableVerboseOutput, "boolean");
 	}
 
 	private consoleLog(...args: readonly unknown[]) {
@@ -57,5 +37,25 @@ export default class Output {
 	private consoleWarn(...args: readonly unknown[]) {
 		// eslint-disable-next-line no-console
 		console.warn(...args);
+	}
+
+	normal(...args: readonly unknown[]): void {
+		this.consoleLog(...args);
+	}
+
+	error(...args: readonly unknown[]): void {
+		this.consoleError(...args);
+	}
+
+	warning(...args: readonly unknown[]): void {
+		this.consoleWarn(...args);
+	}
+
+	verbose(...args: readonly unknown[]): void {
+		if (!this.shouldEnableVerboseOutput) {
+			return undefined;
+		}
+
+		this.consoleError(...args);
 	}
 }

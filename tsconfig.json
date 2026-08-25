@@ -1,11 +1,15 @@
 {
-  "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
-    "module": "es2020",
+    "composite": true,
+    "declarationMap": true,
+    "experimentalDecorators": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "rootDir": "src",
     "outDir": "dist",
-    "target": "es2018",
-    "lib": ["es2018"],
-    "esModuleInterop": true
+    "erasableSyntaxOnly": false
   },
-  "include": ["./src/**/*"]
+  "exclude": ["node_modules", "dist"],
+  "extends": "@sindresorhus/tsconfig"
 }

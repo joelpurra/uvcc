@@ -17,11 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import assert from "node:assert";
+
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 import {
-	UvcControl,
+	type UvcControl,
 } from "uvc-control";
 
 export interface MappedUvcDevice {
@@ -33,11 +34,10 @@ export interface MappedUvcDevice {
 
 export default class UvcDeviceLister {
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		private readonly UvcControl: ReadonlyDeep<UvcControl>,
 	) {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof this.UvcControl === "function");
+		assert.strictEqual(typeof this.UvcControl, "function");
 	}
 
 	async get(): Promise<readonly MappedUvcDevice[]> {

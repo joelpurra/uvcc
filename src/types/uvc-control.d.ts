@@ -18,34 +18,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 declare module "uvc-control" {
 	// TODO: move type declarations to uvc-control.
-	import UvcControlModule from "uvc-control";
 	import {
-		ReadonlyDeep,
+		type ReadonlyDeep,
 	} from "type-fest";
-
 	import {
-		usb,
+		type usb,
 	} from "usb";
+	import UvcControlModule from "uvc-control";
 
-	/* eslint-disable @typescript-eslint/member-ordering */
 	export default class Camera {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		public static readonly REQUEST: ReadonlyDeep<RequestTypes>;
 		public static readonly controls: ReadonlyDeep<CameraControls>;
+
+		public static discover(): Promise<readonly UvcDevice[]>;
 
 		public readonly supportedControls: readonly ControlName[];
 		public readonly device: usb.Device;
 
 		constructor(options: ConstructorOptions);
 
-		public static discover(): Promise<readonly UvcDevice[]>;
-
 		get(name: ControlName): Promise<ReadonlyDeep<ControlValues>>;
 		range(name: ControlName): Promise<ReadonlyDeep<ControlRange>>;
 		set(name: ControlName, ...values: readonly ControlValue[]): Promise<readonly number[]>;
 		close(): Promise<void>;
 	}
-	/* eslint-enable @typescript-eslint/member-ordering */
 
 	export type UvcControl = typeof Camera;
 
@@ -61,10 +57,10 @@ declare module "uvc-control" {
 	export type RequestType = number;
 
 	export interface RequestTypes {
-		readonly "GET_CUR": RequestType;
-		readonly "GET_MAX": RequestType;
-		readonly "GET_MIN": RequestType;
-		readonly "SET_CUR": RequestType;
+		readonly GET_CUR: RequestType;
+		readonly GET_MAX: RequestType;
+		readonly GET_MIN: RequestType;
+		readonly SET_CUR: RequestType;
 	}
 
 	export interface ConstructorOptions {

@@ -16,20 +16,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import mapObj from "map-obj";
+import type CameraHelper from "../camera-helper.js";
+
 import assert from "node:assert";
+
+import mapObj from "map-obj";
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 
-import CameraHelper from "../camera-helper.js";
 import {
-	Command,
+	type Command,
 	CommandHandlerArgumentCameraHelper,
-	CommandHandlerArgumentNames,
+	type CommandHandlerArgumentNames,
 } from "../types/command.js";
 import {
-	UvccControls,
+	type UvccControls,
 } from "../types/controls.js";
 import flattenControlValues from "../utilities/flatten-control-values.js";
 

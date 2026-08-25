@@ -16,31 +16,32 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import assert from "node:assert";
-import {
-	ReadonlyDeep,
-} from "type-fest";
-import Camera, {
-	UvcControl,
-} from "uvc-control";
+import type Camera from "uvc-control";
 
-import CameraControlHelperClass from "./camera-control-helper.js";
+import type CameraControlHelperClass from "./camera-control-helper.js";
+
+import assert from "node:assert";
+
+import {
+	type ReadonlyDeep,
+} from "type-fest";
+import {
+	type UvcControl,
+} from "uvc-control";
 
 export default class CameraControlHelperFactory {
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		private readonly UvcControl: ReadonlyDeep<UvcControl>,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		private readonly CameraControlHelper: typeof CameraControlHelperClass,
 	) {
 		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.UvcControl === "function");
-		assert(typeof this.CameraControlHelper === "function");
+		assert.strictEqual(typeof this.UvcControl, "function");
+		assert.strictEqual(typeof this.CameraControlHelper, "function");
 	}
 
 	async get(camera: ReadonlyDeep<Camera>): Promise<CameraControlHelperClass> {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof camera === "object");
+		assert.strictEqual(typeof camera, "object");
 
 		const cameraControlHelper = new this.CameraControlHelper(this.UvcControl, camera);
 

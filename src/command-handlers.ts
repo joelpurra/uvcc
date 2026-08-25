@@ -16,28 +16,30 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type Output from "./output.js";
+
 import assert from "node:assert";
+
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 
-import Output from "./output.js";
 import {
-	CommandHandlerArgumentNames,
-	CommandName,
-	Commands,
+	type CommandHandlerArgumentNames,
+	type CommandName,
+	type Commands,
 } from "./types/command.js";
 
 export default class CommandHandlers {
 	constructor(private readonly output: Output, private readonly commands: ReadonlyDeep<Commands>) {
 		assert.strictEqual(arguments.length, 2);
-		assert(typeof this.output === "object");
-		assert(typeof this.commands === "object");
+		assert.strictEqual(typeof this.output, "object");
+		assert.strictEqual(typeof this.commands, "object");
 	}
 
 	async has(commandName: CommandName): Promise<boolean> {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof commandName === "string");
+		assert.strictEqual(typeof commandName, "string");
 
 		const command = this.commands[commandName];
 
@@ -45,13 +47,15 @@ export default class CommandHandlers {
 	}
 
 	async execute(commandName: CommandName, ...args: readonly unknown[]): Promise<unknown> {
-		assert(typeof commandName === "string");
-		assert(Array.isArray(args));
+		assert.strictEqual(typeof commandName, "string");
+		assert.ok(Array.isArray(args));
 
 		const command = this.commands[commandName];
 
-		assert(typeof command === "object");
+		// eslint-disable-next-line node-test/prefer-equality-assertion
+		assert.ok(typeof command === "object");
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const output = await command.execute(...args);
 
 		return output;
@@ -59,11 +63,12 @@ export default class CommandHandlers {
 
 	async getArguments(commandName: CommandName): Promise<CommandHandlerArgumentNames[]> {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof commandName === "string");
+		assert.strictEqual(typeof commandName, "string");
 
 		const command = this.commands[commandName];
 
-		assert(typeof command === "object");
+		// eslint-disable-next-line node-test/prefer-equality-assertion
+		assert.ok(typeof command === "object");
 
 		return command.getArguments();
 	}

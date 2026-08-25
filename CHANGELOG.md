@@ -2,13 +2,38 @@
 
 See [full list of commits](https://github.com/joelpurra/uvcc/commits) for details.
 
+## v8.0.0
+
+Released <time datetime="2026-08-25">2026-08-25</time>.
+
+- 343afc6 Upgrade joelpurra/node-uvc-control#v2
+  - Improve device list filter
+    - Exclude non-video devices by also checking for a video USB Interface Association Descriptor (IAD).
+  - Add fallback product name in device list (#32)
+    - Previously devices without a defined name would be excluded from the device listing, despite otherwise working.
+    - Unnamed products/devices now show up in `uvcc devices` with the generic name "USB Camera".
+    - Untested due to lack of unnamed hardware devices.
+- f1d6824 Include homedir in config search path
+  - `uvcc` now falls back to `~/.uvccrc`, even if executed outside the home directory.
+- 82f8944 Include resolved config path in verbose/debug output
+  - Use `uvcc --verbose` to see config path etcetera.
+- 6a97468 Use absolute paths to configuration files (#33)
+  - Previously used paths relative to the current source code file.
+- f3b6e0e Relax engines.node to minimum current Node.js LTS version
+  - Strict checks prevented newer Node.js versions from working, despite presumably working well.
+  - Reduces administrative efforts for `uvcc` in keeping up with Node.js releases.
+
 ## v7.0.0
+
+Released <time datetime="2023-03-25">2023-03-25</time>.
 
 - 8779b90 Target Node.js v16, v18, v19, v20
   - Drop v14 (about two months early), drop v17 (about eight months late), add v19 (about four months late), add v20 (about two months early).
 - 61d8071 Add example output from Elgato Facecam ([4057:0120](./examples/elgato-facecam/4057-120/)) (#28 by @m0ose)
 
 ## v6.0.0
+
+Released <time datetime="2022-05-12">2022-05-12</time>.
 
 - 3a79c54 Add example output from Logitech C922 Pro Stream Webcam ([1133:2140](./examples/logitech-c922/1133-2140/))
 - 9342420 Add example output from Microsoft LifeCam Studio Model 1425 ([1118:2065](./examples/microsoft-1425/1118-2065/)) (#17 by @holbrookdev)
@@ -24,6 +49,8 @@ See [full list of commits](https://github.com/joelpurra/uvcc/commits) for detail
 
 ## v5.0.2
 
+Released <time datetime="2021-12-06">2021-12-06</time>.
+
 - 7cc2775 Upgrade [forked uvc-control v2](https://github.com/joelpurra/node-uvc-control)
   - [Pins `node-usb` to v1.9.2](https://github.com/node-usb/node-usb/releases/tag/v1.9.2) via [the forked `node-uvc-control` v2](https://github.com/joelpurra/node-uvc-control/commit/v2).
   - Includes an [upstream fix in `node-usb`](https://github.com/node-usb/node-usb/pull/460) for the `uvcc` program exit delay.
@@ -31,11 +58,15 @@ See [full list of commits](https://github.com/joelpurra/uvcc/commits) for detail
 
 ## v5.0.1
 
+Released <time datetime="2021-11-10">2021-11-10</time>.
+
 - 3c171b1 Upgrade package-lock.json
   - Includes [pinning `node-usb` to v1.8.0](https://github.com/node-usb/node-usb/releases/tag/v1.8.0) via [the forked `node-uvc-control` v2](https://github.com/joelpurra/node-uvc-control/commit/d87e551f95d281e6a32f6ad4b379bc7e81ff6273).
     - Should fix [#19 package errors after node/npm upgrade](https://github.com/joelpurra/uvcc/issues/19).
 
 ## v5.0.0
+
+Released <time datetime="2021-10-26">2021-10-26</time>.
 
 - a2bab40 Target Node.js v12, v14, v16, v17
   - Fixes [#18](https://github.com/joelpurra/uvcc/issues/18).
@@ -47,9 +78,13 @@ See [full list of commits](https://github.com/joelpurra/uvcc/commits) for detail
 
 ## v4.0.1
 
+Released <time datetime="2021-08-06">2021-08-06</time>.
+
 - ccf5e05 Fix `--version` flag
 
 ## v4.0.0
+
+Released <time datetime="2021-08-06">2021-08-06</time>.
 
 - 77757f0 Switch to ESM
   - Modernizes code to use [Node.js ECMAScript modules](https://nodejs.org/api/esm.html).
@@ -57,11 +92,15 @@ See [full list of commits](https://github.com/joelpurra/uvcc/commits) for detail
 
 ## v3.0.1
 
+Released <time datetime="2021-04-29">2021-04-29</time>.
+
 - 08eb9fe Run npm update
   - Includes fix in [joelpurra/node-uvc-control@8c5f5f4](https://github.com/joelpurra/node-uvc-control/commit/8c5f5f41389bb6a8b4b243115ab92892d633cb55) for [#16](https://github.com/joelpurra/uvcc/issues/16), pin `node-usb` to v1.6.5 due to long delay due when using v1.7.0.
 - b0ad267 Add npm run debug
 
 ## v3.0.0
+
+Released <time datetime="2021-03-31">2021-03-31</time>.
 
 - e8d7dec Target node.js v12+
 - efde45e Update example output from Logitech C920
@@ -79,23 +118,33 @@ See [full list of commits](https://github.com/joelpurra/uvcc/commits) for detail
 
 ## v2.0.4
 
+Released <time datetime="2020-10-20">2020-10-20</time>.
+
 - 9f3073e Upgrade forked uvc-control v2
   - Fixes [#8](https://github.com/joelpurra/uvcc/issues/8), setting `absolute_focus`.
 
 ## v2.0.3
+
+Released <time datetime="2020-10-01">2020-10-01</time>.
 
 - d34da77 Upgrade forked uvc-control v2
   - Fixes [#6](https://github.com/joelpurra/uvcc/issues/6), setting `absolute_exposure_time`.
 
 ## v2.0.2
 
+Released <time datetime="2020-09-04">2020-09-04</time>.
+
 - 8c24f19 Add compatible cameras and help wanted notes
 
 ## v2.0.1
 
+Released <time datetime="2020-09-02">2020-09-02</time>.
+
 - ff28515 Fix broken anchor tag in README.md
 
 ## v2.0.0
+
+Released <time datetime="2020-09-02">2020-09-02</time>.
 
 ### ⚠ Breaking changes
 
@@ -134,13 +183,19 @@ See [full list of commits](https://github.com/joelpurra/uvcc/commits) for detail
 
 ## v1.0.2
 
+Released <time datetime="2018-02-01">2018-02-01</time>.
+
 - 51e824c Add `find-up`
 
 ## v1.0.1
 
+Released <time datetime="2018-02-01">2018-02-01</time>.
+
 - a4eb66f Use file-relative path to file in the `uvc-control` package
 
 ## v1.0.0
+
+Released <time datetime="2018-02-01">2018-02-01</time>.
 
 - 047980e Initial public release
 - Thanks you [Pawel Szymczykowski](http://twitter.com/makenai) for [uvc-control](https://github.com/makenai/node-uvc-control) for node.js. Without his code I would never have gotten close to automating — or perhaps even being _able_ to — changing camera controls on macOS.

@@ -16,19 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Bluebird from "bluebird";
+import type CameraHelper from "../camera-helper.js";
+
 import assert from "node:assert";
 import process from "node:process";
+
+import Bluebird from "bluebird";
 import streamToPromise from "stream-to-promise";
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 
-import CameraHelper from "../camera-helper.js";
 import {
-	Command,
+	type Command,
 	CommandHandlerArgumentCameraHelper,
-	CommandHandlerArgumentNames,
+	type CommandHandlerArgumentNames,
 } from "../types/command.js";
 import isUvccControls from "../utilities/is-uvcc-controls.js";
 
@@ -54,17 +56,18 @@ export default class ImportCommand implements Command {
 			const buffer = await streamToPromise(process.stdin);
 			const json = JSON.parse(buffer.toString()) as unknown;
 
-			assert(typeof json === "object");
-			assert(json !== null);
+			assert.strictEqual(typeof json, "object");
+			assert.notStrictEqual(json, null);
 
 			return json;
 		})
 			.timeout(stdinTimeout, `Could not read uvcc configuration from stdin within the ${stdinTimeout} millisecond timeout. Was any data piped in?`)
 			.tapCatch((error) => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				process.stdin.destroy(error);
 			});
 
-		assert(isUvccControls(controlValues));
+		assert.ok(isUvccControls(controlValues));
 
 		return cameraHelper.setControls(controlValues);
 	}

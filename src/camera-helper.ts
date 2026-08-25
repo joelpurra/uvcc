@@ -16,22 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Bluebird from "bluebird";
+import type Camera from "uvc-control";
+
+import type CameraControlHelper from "./camera-control-helper.js";
+import type Output from "./output.js";
+
 import assert from "node:assert";
+
+import Bluebird from "bluebird";
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
-import Camera, {
-	ControlName,
-	ControlRange,
-	ControlValue,
-	ControlValues,
+import {
+	type ControlName,
+	type ControlRange,
+	type ControlValue,
+	type ControlValues,
 } from "uvc-control";
 
-import CameraControlHelper from "./camera-control-helper.js";
-import Output from "./output.js";
 import {
-	UvccControls,
+	type UvccControls,
 } from "./types/controls.js";
 import isUvccControlValue from "./utilities/is-uvcc-control-value.js";
 
@@ -41,9 +45,9 @@ export type ControlRanges = Record<string, ControlRange>;
 export default class CameraHelper {
 	constructor(private readonly output: ReadonlyDeep<Output>, private readonly cameraControlHelper: ReadonlyDeep<CameraControlHelper>, private readonly camera: ReadonlyDeep<Camera>) {
 		assert.strictEqual(arguments.length, 3);
-		assert(typeof this.output === "object");
-		assert(typeof this.cameraControlHelper === "object");
-		assert(typeof this.camera === "object");
+		assert.strictEqual(typeof this.output, "object");
+		assert.strictEqual(typeof this.cameraControlHelper, "object");
+		assert.strictEqual(typeof this.camera, "object");
 	}
 
 	async getValues(controlName: ControlName): Promise<ReadonlyDeep<ControlValues>> {
@@ -101,6 +105,7 @@ export default class CameraHelper {
 
 				return object;
 			},
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 			{} as ControlRanges,
 		);
 	}
@@ -120,6 +125,7 @@ export default class CameraHelper {
 
 				return object;
 			},
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 			{} as ControlsValues,
 		);
 	}
@@ -137,7 +143,7 @@ export default class CameraHelper {
 
 		await Bluebird.map(
 			controlNames,
-			// eslint-disable-next-line unicorn/no-array-method-this-argument
+
 			async (controlName) => {
 				const controlValues = configuration[controlName];
 

@@ -16,18 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type UvcDeviceLister from "../uvc-device-lister.js";
+
 import assert from "node:assert";
 
 import {
-	Command,
-	CommandHandlerArgumentNames,
+	type Command,
+	type CommandHandlerArgumentNames,
 } from "../types/command.js";
-import UvcDeviceLister from "../uvc-device-lister.js";
 
 export default class DevicesCommand implements Command {
 	constructor(private readonly uvcDeviceLister: UvcDeviceLister) {
 		assert.strictEqual(arguments.length, 1);
-		assert(typeof this.uvcDeviceLister === "object");
+		assert.strictEqual(typeof this.uvcDeviceLister, "object");
 	}
 
 	async getArguments(): Promise<CommandHandlerArgumentNames[]> {

@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
-	ReadonlyDeep,
+	type ReadonlyDeep,
 } from "type-fest";
 
 export type UvccControlValue = number | readonly number[];
