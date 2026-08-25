@@ -31,10 +31,12 @@
 
 ## Installation
 
-Requires [Node.js](https://nodejs.org/) (`node` and `npm` commands). Published on npm as [`uvcc`](https://www.npmjs.com/package/uvcc).
+Requires [Node.js](https://nodejs.org/) (`node` and `npm` commands). Published on [npm](https://www.npmjs.com/) as [`uvcc`](https://www.npmjs.com/package/uvcc).
+
+Install or upgrade to the [latest `uvcc` version](https://www.npmjs.com/package/uvcc):
 
 ```shell
-npm install --global uvcc
+npm install --global uvcc@latest
 ```
 
 Or use [`npx`](https://www.npmjs.com/package/npx) to execute with `npx uvcc`.
